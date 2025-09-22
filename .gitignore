@@ -1,0 +1,51 @@
+# Koi Blog System - Git Ignore File
+
+# Configuration files (contains sensitive data)
+config/config.php
+
+# Upload directory (user uploaded files)
+uploads/*
+!uploads/.gitkeep
+
+# Log files
+*.log
+logs/
+
+# Cache files
+cache/
+tmp/
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
+
+# PHP specific
+vendor/
+composer.lock
+
+# Database dumps
+*.sql
+*.db
+*.sqlite
+
+# Environment files
+.env
+.env.local
+.env.production
