@@ -3,6 +3,10 @@
 # Configuration files (contains sensitive data)
 config/config.php
 
+# Installation and test files (should not be in production)
+install.php
+test.php
+
 # Upload directory (user uploaded files)
 uploads/*
 !uploads/.gitkeep
