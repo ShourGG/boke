@@ -268,15 +268,6 @@ class Post extends BaseModel
     }
 
     /**
-     * Increment view count for a post
-     */
-    public function incrementViews($id)
-    {
-        $sql = "UPDATE `{$this->table}` SET view_count = view_count + 1 WHERE id = ?";
-        return $this->db->execute($sql, [$id]);
-    }
-
-    /**
      * Get total views across all posts
      */
     public function getTotalViews()
