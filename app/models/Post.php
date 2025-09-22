@@ -255,7 +255,7 @@ class Post extends BaseModel
     {
         // Remove existing tags
         $this->db->execute("DELETE FROM `post_tags` WHERE `post_id` = ?", [$postId]);
-        
+
         // Add new tags
         if (!empty($tagIds)) {
             foreach ($tagIds as $tagId) {
@@ -265,5 +265,39 @@ class Post extends BaseModel
                 );
             }
         }
+    }
+
+    /**
+     * Increment view count for a post
+     */
+    public function incrementViews($id)
+    {
+        $sql = "UPDATE `{$this->table}` SET view_count = view_count + 1 WHERE id = ?";
+        return $this->db->execute($sql, [$id]);
+    }
+
+    /**
+     * Get total views across all posts
+     */
+    public function getTotalViews()
+    {
+        $sql = "SELECT SUM(view_count) as total_views FROM `{$this->table}` WHERE status = 'published'";
+        $result = $this->db->fetch($sql);
+        return $result['total_views'] ?? 0;
+    }
+
+    /**
+     * Get post statistics
+     */
+    public function getStats()
+    {
+        $sql = "SELECT
+                    COUNT(*) as total_posts,
+                    SUM(view_count) as total_views,
+                    COUNT(CASE WHEN status = 'published' THEN 1 END) as published_posts,
+                    COUNT(CASE WHEN status = 'draft' THEN 1 END) as draft_posts
+                FROM `{$this->table}`";
+
+        return $this->db->fetch($sql);
     }
 }

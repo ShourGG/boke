@@ -241,4 +241,14 @@ class Website extends BaseModel
     {
         return $this->update($id, ['status' => 'rejected']);
     }
+
+    /**
+     * Get total count of approved websites
+     */
+    public function getTotalCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'approved'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
 }
