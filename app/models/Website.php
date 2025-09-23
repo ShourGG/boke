@@ -251,4 +251,253 @@ class Website extends BaseModel
         $result = $this->db->fetch($sql);
         return $result['total'] ?? 0;
     }
+
+    /**
+     * Check if URL already exists
+     */
+    public function urlExists($url, $excludeId = null)
+    {
+        $sql = "SELECT COUNT(*) as count FROM `{$this->table}` WHERE url = ?";
+        $params = [$url];
+
+        if ($excludeId) {
+            $sql .= " AND id != ?";
+            $params[] = $excludeId;
+        }
+
+        $result = $this->db->fetch($sql, $params);
+        return ($result['count'] ?? 0) > 0;
+    }
+
+    /**
+     * Check if title already exists
+     */
+    public function titleExists($title, $excludeId = null)
+    {
+        $sql = "SELECT COUNT(*) as count FROM `{$this->table}` WHERE title = ?";
+        $params = [$title];
+
+        if ($excludeId) {
+            $sql .= " AND id != ?";
+            $params[] = $excludeId;
+        }
+
+        $result = $this->db->fetch($sql, $params);
+        return ($result['count'] ?? 0) > 0;
+    }
+
+    /**
+     * Check if name already exists (alias for titleExists)
+     */
+    public function nameExists($name, $excludeId = null)
+    {
+        return $this->titleExists($name, $excludeId);
+    }
+
+    /**
+     * Get websites by status with pagination
+     */
+    public function getByStatus($status, $page = 1, $perPage = 20)
+    {
+        return $this->paginate($page, $perPage, ['status' => $status], 'created_at DESC');
+    }
+
+    /**
+     * Get websites with statistics
+     */
+    public function getAllWithStats($page = 1, $perPage = 20, $search = '')
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $whereClause = "1=1";
+        $params = [];
+
+        if (!empty($search)) {
+            $whereClause .= " AND (w.title LIKE ? OR w.url LIKE ? OR w.description LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = [$searchTerm, $searchTerm, $searchTerm];
+        }
+
+        $sql = "SELECT w.*, c.name as category_name,
+                       COALESCE(w.click_count, 0) as click_count
+                FROM `{$this->table}` w
+                LEFT JOIN categories c ON w.category_id = c.id
+                WHERE {$whereClause}
+                ORDER BY w.created_at DESC
+                LIMIT {$perPage} OFFSET {$offset}";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Get search count for pagination
+     */
+    public function getSearchCount($search = '')
+    {
+        $whereClause = "1=1";
+        $params = [];
+
+        if (!empty($search)) {
+            $whereClause .= " AND (title LIKE ? OR url LIKE ? OR description LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = [$searchTerm, $searchTerm, $searchTerm];
+        }
+
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE {$whereClause}";
+        $result = $this->db->fetch($sql, $params);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Batch delete websites
+     */
+    public function batchDelete($ids)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "DELETE FROM `{$this->table}` WHERE id IN ({$placeholders})";
+
+        $this->db->execute($sql, $ids);
+        return $this->db->getAffectedRows();
+    }
+
+    /**
+     * Batch update status
+     */
+    public function batchUpdateStatus($ids, $status)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "UPDATE `{$this->table}` SET status = ? WHERE id IN ({$placeholders})";
+
+        $params = array_merge([$status], $ids);
+        $this->db->execute($sql, $params);
+        return $this->db->getAffectedRows();
+    }
+
+    /**
+     * Increment click count
+     */
+    public function incrementClicks($id)
+    {
+        $sql = "UPDATE `{$this->table}` SET click_count = COALESCE(click_count, 0) + 1 WHERE id = ?";
+        return $this->db->execute($sql, [$id]);
+    }
+
+    /**
+     * Batch update featured status
+     */
+    public function batchUpdateFeatured($ids, $featured)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "UPDATE `{$this->table}` SET is_featured = ? WHERE id IN ({$placeholders})";
+
+        $params = array_merge([$featured], $ids);
+        $this->db->execute($sql, $params);
+        return $this->db->getAffectedRows();
+    }
+
+    /**
+     * Get admin list with filters
+     */
+    public function getAdminList($offset, $perPage, $status = 'all', $category = 0, $search = '')
+    {
+        $whereClause = "1=1";
+        $params = [];
+
+        if ($status !== 'all') {
+            $whereClause .= " AND w.status = ?";
+            $params[] = $status;
+        }
+
+        if ($category > 0) {
+            $whereClause .= " AND w.category_id = ?";
+            $params[] = $category;
+        }
+
+        if (!empty($search)) {
+            $whereClause .= " AND (w.title LIKE ? OR w.url LIKE ? OR w.description LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+        }
+
+        $sql = "SELECT w.*, c.name as category_name,
+                       COALESCE(w.click_count, 0) as click_count
+                FROM `{$this->table}` w
+                LEFT JOIN categories c ON w.category_id = c.id
+                WHERE {$whereClause}
+                ORDER BY w.created_at DESC
+                LIMIT {$perPage} OFFSET {$offset}";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Get admin count with filters
+     */
+    public function getAdminCount($status = 'all', $category = 0, $search = '')
+    {
+        $whereClause = "1=1";
+        $params = [];
+
+        if ($status !== 'all') {
+            $whereClause .= " AND status = ?";
+            $params[] = $status;
+        }
+
+        if ($category > 0) {
+            $whereClause .= " AND category_id = ?";
+            $params[] = $category;
+        }
+
+        if (!empty($search)) {
+            $whereClause .= " AND (title LIKE ? OR url LIKE ? OR description LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+        }
+
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE {$whereClause}";
+        $result = $this->db->fetch($sql, $params);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get pending count
+     */
+    public function getPendingCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'pending'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get approved count
+     */
+    public function getApprovedCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'approved'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get rejected count
+     */
+    public function getRejectedCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'rejected'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
 }

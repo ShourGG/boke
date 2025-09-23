@@ -87,14 +87,19 @@ class AdminWebsiteController extends BaseController
     private function handleCreate()
     {
         $data = [
-            'name' => trim($this->getPost('name')),
+            'title' => trim($this->getPost('name')),
             'url' => trim($this->getPost('url')),
             'description' => trim($this->getPost('description')),
             'category_id' => intval($this->getPost('category_id')),
             'tags' => trim($this->getPost('tags')),
             'status' => $this->getPost('status', 'pending'),
-            'featured' => $this->getPost('featured') ? 1 : 0,
-            'rating' => floatval($this->getPost('rating', 0))
+            'is_featured' => $this->getPost('featured') ? 1 : 0,
+            'submitter_name' => trim($this->getPost('submitter_name', '')),
+            'submitter_email' => trim($this->getPost('submitter_email', '')),
+            'submitter_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+            'meta_title' => trim($this->getPost('meta_title', '')),
+            'meta_description' => trim($this->getPost('meta_description', '')),
+            'meta_keywords' => trim($this->getPost('meta_keywords', ''))
         ];
         
         // 验证数据
@@ -150,14 +155,18 @@ class AdminWebsiteController extends BaseController
     private function handleEdit($id)
     {
         $data = [
-            'name' => trim($this->getPost('name')),
+            'title' => trim($this->getPost('name')),
             'url' => trim($this->getPost('url')),
             'description' => trim($this->getPost('description')),
             'category_id' => intval($this->getPost('category_id')),
             'tags' => trim($this->getPost('tags')),
             'status' => $this->getPost('status'),
-            'featured' => $this->getPost('featured') ? 1 : 0,
-            'rating' => floatval($this->getPost('rating'))
+            'is_featured' => $this->getPost('featured') ? 1 : 0,
+            'submitter_name' => trim($this->getPost('submitter_name', '')),
+            'submitter_email' => trim($this->getPost('submitter_email', '')),
+            'meta_title' => trim($this->getPost('meta_title', '')),
+            'meta_description' => trim($this->getPost('meta_description', '')),
+            'meta_keywords' => trim($this->getPost('meta_keywords', ''))
         ];
         
         // 验证数据
@@ -272,10 +281,10 @@ class AdminWebsiteController extends BaseController
     {
         $errors = [];
         
-        if (empty($data['name'])) {
+        if (empty($data['title'])) {
             $errors[] = '网站名称不能为空';
-        } elseif (strlen($data['name']) > 100) {
-            $errors[] = '网站名称不能超过100个字符';
+        } elseif (strlen($data['title']) > 255) {
+            $errors[] = '网站名称不能超过255个字符';
         }
         
         if (empty($data['url'])) {
