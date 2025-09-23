@@ -49,24 +49,36 @@ class Router
         $this->addRoute('admin', 'AdminController@dashboard');
         $this->addRoute('admin/login', 'AdminController@login');
         $this->addRoute('admin/logout', 'AdminController@logout');
+        $this->addRoute('admin/profile', 'AdminController@profile');
 
         // Admin Posts
         $this->addRoute('admin/posts', 'AdminPostController@index');
         $this->addRoute('admin/posts/create', 'AdminPostController@create');
         $this->addRoute('admin/posts/edit/{id}', 'AdminPostController@edit');
         $this->addRoute('admin/posts/delete/{id}', 'AdminPostController@delete');
+        $this->addRoute('admin/posts/batch', 'AdminPostController@batchAction');
 
         // Admin Categories
         $this->addRoute('admin/categories', 'AdminCategoryController@index');
         $this->addRoute('admin/categories/create', 'AdminCategoryController@create');
         $this->addRoute('admin/categories/edit/{id}', 'AdminCategoryController@edit');
         $this->addRoute('admin/categories/delete/{id}', 'AdminCategoryController@delete');
+        $this->addRoute('admin/categories/sort', 'AdminCategoryController@updateSort');
+
+        // Admin Tags
+        $this->addRoute('admin/tags', 'AdminTagController@index');
+        $this->addRoute('admin/tags/create', 'AdminTagController@create');
+        $this->addRoute('admin/tags/edit/{id}', 'AdminTagController@edit');
+        $this->addRoute('admin/tags/delete/{id}', 'AdminTagController@delete');
+        $this->addRoute('admin/tags/batch', 'AdminTagController@batchAction');
+        $this->addRoute('admin/tags/cleanup', 'AdminTagController@cleanup');
 
         // Admin Websites
         $this->addRoute('admin/websites', 'AdminWebsiteController@index');
         $this->addRoute('admin/websites/create', 'AdminWebsiteController@create');
         $this->addRoute('admin/websites/edit/{id}', 'AdminWebsiteController@edit');
         $this->addRoute('admin/websites/delete/{id}', 'AdminWebsiteController@delete');
+        $this->addRoute('admin/websites/batch', 'AdminWebsiteController@batchAction');
 
         // Admin Settings
         $this->addRoute('admin/settings', 'AdminSettingsController@index');
