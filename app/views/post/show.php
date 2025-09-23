@@ -427,21 +427,36 @@ $(document).ready(function() {
                 var flowIndex = 0;
                 while ((flowMatch = flowRegex.exec(markdownContent)) !== null) {
                     var flowCode = flowMatch[1].trim();
+                    console.log('Found flow chart:', flowCode);
+
                     if (flowCode && typeof $.fn.flowChart !== 'undefined') {
                         try {
                             // Create a new div for the flowchart
-                            var flowDiv = $('<div class="flowchart-custom" id="flowchart-' + flowIndex + '"></div>');
+                            var flowDiv = $('<div class="flowchart-custom" id="flowchart-' + flowIndex + '" style="text-align: center; margin: 20px 0;"></div>');
                             flowDiv.text(flowCode);
 
                             // Find the corresponding code block and replace it
-                            $("#post-content-view pre code").each(function() {
-                                if ($(this).text().indexOf(flowCode) !== -1) {
-                                    $(this).parent().replaceWith(flowDiv);
+                            var replaced = false;
+                            $("#post-content-view pre").each(function() {
+                                var codeText = $(this).find('code').text().trim();
+                                // More flexible matching - check if the code block contains flow syntax
+                                if (codeText.indexOf('st=>start') !== -1 || codeText.indexOf('=>') !== -1) {
+                                    console.log('Replacing code block with flowchart');
+                                    $(this).replaceWith(flowDiv);
                                     flowDiv.flowChart();
                                     console.log('FlowChart ' + flowIndex + ' initialized successfully');
+                                    replaced = true;
                                     return false; // break the loop
                                 }
                             });
+
+                            if (!replaced) {
+                                console.warn('Could not find matching code block for flowchart');
+                                // Append to the end as fallback
+                                $("#post-content-view").append(flowDiv);
+                                flowDiv.flowChart();
+                                console.log('FlowChart ' + flowIndex + ' appended and initialized');
+                            }
                             flowIndex++;
                         } catch (flowError) {
                             console.error('FlowChart error:', flowError);
@@ -454,21 +469,36 @@ $(document).ready(function() {
                 var sequenceIndex = 0;
                 while ((sequenceMatch = sequenceRegex.exec(markdownContent)) !== null) {
                     var sequenceCode = sequenceMatch[1].trim();
+                    console.log('Found sequence diagram:', sequenceCode);
+
                     if (sequenceCode && typeof $.fn.sequenceDiagram !== 'undefined') {
                         try {
                             // Create a new div for the sequence diagram
-                            var sequenceDiv = $('<div class="sequence-diagram-custom" id="sequence-' + sequenceIndex + '"></div>');
+                            var sequenceDiv = $('<div class="sequence-diagram-custom" id="sequence-' + sequenceIndex + '" style="text-align: center; margin: 20px 0;"></div>');
                             sequenceDiv.text(sequenceCode);
 
                             // Find the corresponding code block and replace it
-                            $("#post-content-view pre code").each(function() {
-                                if ($(this).text().indexOf(sequenceCode) !== -1) {
-                                    $(this).parent().replaceWith(sequenceDiv);
+                            var replaced = false;
+                            $("#post-content-view pre").each(function() {
+                                var codeText = $(this).find('code').text().trim();
+                                // More flexible matching - check if the code block contains sequence syntax
+                                if (codeText.indexOf('->') !== -1 || codeText.indexOf('Andrew') !== -1) {
+                                    console.log('Replacing code block with sequence diagram');
+                                    $(this).replaceWith(sequenceDiv);
                                     sequenceDiv.sequenceDiagram({theme: "simple"});
                                     console.log('SequenceDiagram ' + sequenceIndex + ' initialized successfully');
+                                    replaced = true;
                                     return false; // break the loop
                                 }
                             });
+
+                            if (!replaced) {
+                                console.warn('Could not find matching code block for sequence diagram');
+                                // Append to the end as fallback
+                                $("#post-content-view").append(sequenceDiv);
+                                sequenceDiv.sequenceDiagram({theme: "simple"});
+                                console.log('SequenceDiagram ' + sequenceIndex + ' appended and initialized');
+                            }
                             sequenceIndex++;
                         } catch (seqError) {
                             console.error('SequenceDiagram error:', seqError);
