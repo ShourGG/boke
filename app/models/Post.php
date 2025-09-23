@@ -405,4 +405,44 @@ class Post extends BaseModel
         $this->db->execute($sql, $ids);
         return $this->db->getAffectedRows();
     }
+
+    /**
+     * Get total count of all posts
+     */
+    public function getTotalCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}`";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get published posts count
+     */
+    public function getPublishedCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'published'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get draft posts count
+     */
+    public function getDraftCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'draft'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get pending posts count
+     */
+    public function getPendingCount()
+    {
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE status = 'pending'";
+        $result = $this->db->fetch($sql);
+        return $result['total'] ?? 0;
+    }
 }
