@@ -408,61 +408,82 @@ $(document).ready(function() {
             emoji: true,
             taskList: true,
             tex: true,  // Math formulas with KaTeX
-            flowChart: typeof $.fn.flowChart !== 'undefined',  // Only enable if plugin loaded
-            sequenceDiagram: true,  // Sequence diagrams
+            flowChart: false,  // Disable auto flowChart to prevent content corruption
+            sequenceDiagram: false,  // Disable auto sequenceDiagram to prevent content corruption
             tocm: true,  // Table of contents
             autoLoadKaTeX: false,  // Don't auto-load since we already loaded it
             // Improve code block rendering
             previewCodeHighlight: true,
         });
 
-        // Manual initialization for flowChart and sequenceDiagram after rendering
+        // Manual processing for flowChart and sequenceDiagram from original markdown
         setTimeout(function() {
             try {
-                // Initialize flowChart if available
-                if (typeof $.fn.flowChart !== 'undefined') {
-                    $("#post-content-view .flowchart").each(function() {
-                        var $this = $(this);
-                        var flowText = $this.text().trim();
+                // Extract and process flow charts from original markdown
+                var flowRegex = /```flow\s*\n([\s\S]*?)\n```/g;
+                var sequenceRegex = /```sequence\s*\n([\s\S]*?)\n```/g;
 
-                        // Check if flowchart text is valid
-                        if (flowText && flowText.length > 0) {
-                            try {
-                                $this.flowChart();
-                                console.log('FlowChart initialized successfully');
-                            } catch (flowError) {
-                                console.error('FlowChart syntax error:', flowError);
-                                console.log('FlowChart text:', flowText);
-                                // Show error message in the div
-                                $this.html('<div style="color: red; padding: 10px; border: 1px solid red;">流程图语法错误: ' + flowError.message + '</div>');
-                            }
-                        } else {
-                            console.warn('Empty flowchart content');
+                var flowMatch;
+                var flowIndex = 0;
+                while ((flowMatch = flowRegex.exec(markdownContent)) !== null) {
+                    var flowCode = flowMatch[1].trim();
+                    if (flowCode && typeof $.fn.flowChart !== 'undefined') {
+                        try {
+                            // Create a new div for the flowchart
+                            var flowDiv = $('<div class="flowchart-custom" id="flowchart-' + flowIndex + '"></div>');
+                            flowDiv.text(flowCode);
+
+                            // Find the corresponding code block and replace it
+                            $("#post-content-view pre code").each(function() {
+                                if ($(this).text().indexOf(flowCode) !== -1) {
+                                    $(this).parent().replaceWith(flowDiv);
+                                    flowDiv.flowChart();
+                                    console.log('FlowChart ' + flowIndex + ' initialized successfully');
+                                    return false; // break the loop
+                                }
+                            });
+                            flowIndex++;
+                        } catch (flowError) {
+                            console.error('FlowChart error:', flowError);
                         }
-                    });
-                } else {
-                    console.warn('flowChart plugin not available');
+                    }
                 }
 
-                // Initialize sequenceDiagram if available
-                if (typeof $.fn.sequenceDiagram !== 'undefined') {
-                    $("#post-content-view .sequence-diagram").each(function() {
-                        var $this = $(this);
+                // Extract and process sequence diagrams from original markdown
+                var sequenceMatch;
+                var sequenceIndex = 0;
+                while ((sequenceMatch = sequenceRegex.exec(markdownContent)) !== null) {
+                    var sequenceCode = sequenceMatch[1].trim();
+                    if (sequenceCode && typeof $.fn.sequenceDiagram !== 'undefined') {
                         try {
-                            $this.sequenceDiagram({theme: "simple"});
-                            console.log('SequenceDiagram initialized successfully');
+                            // Create a new div for the sequence diagram
+                            var sequenceDiv = $('<div class="sequence-diagram-custom" id="sequence-' + sequenceIndex + '"></div>');
+                            sequenceDiv.text(sequenceCode);
+
+                            // Find the corresponding code block and replace it
+                            $("#post-content-view pre code").each(function() {
+                                if ($(this).text().indexOf(sequenceCode) !== -1) {
+                                    $(this).parent().replaceWith(sequenceDiv);
+                                    sequenceDiv.sequenceDiagram({theme: "simple"});
+                                    console.log('SequenceDiagram ' + sequenceIndex + ' initialized successfully');
+                                    return false; // break the loop
+                                }
+                            });
+                            sequenceIndex++;
                         } catch (seqError) {
                             console.error('SequenceDiagram error:', seqError);
-                            $this.html('<div style="color: red; padding: 10px; border: 1px solid red;">时序图语法错误: ' + seqError.message + '</div>');
                         }
-                    });
-                } else {
-                    console.warn('sequenceDiagram plugin not available');
+                    }
                 }
+
+                if (flowIndex === 0 && sequenceIndex === 0) {
+                    console.log('No flow charts or sequence diagrams found in markdown');
+                }
+
             } catch (e) {
-                console.error('Error initializing diagrams:', e);
+                console.error('Error processing diagrams:', e);
             }
-        }, 100);
+        }, 200);
     }
 });
 </script>
