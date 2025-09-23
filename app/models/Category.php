@@ -128,4 +128,18 @@ class Category extends BaseModel
         
         return $this->db->fetchAll($sql);
     }
+
+    /**
+     * Check if category exists by ID
+     */
+    public function exists($id)
+    {
+        if (empty($id)) {
+            return false;
+        }
+
+        $sql = "SELECT COUNT(*) as count FROM `{$this->table}` WHERE `id` = ?";
+        $result = $this->db->fetch($sql, [$id]);
+        return $result['count'] > 0;
+    }
 }
