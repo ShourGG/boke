@@ -13,24 +13,65 @@ class Router
         // Define default routes
         $this->addRoute('', 'HomeController@index');
         $this->addRoute('home', 'HomeController@index');
+
+        // Post routes
         $this->addRoute('post/{id}', 'PostController@show');
+
+        // Category routes
+        $this->addRoute('categories', 'CategoryController@index');
         $this->addRoute('category/{slug}', 'CategoryController@show');
+        $this->addRoute('category/{id}/posts', 'CategoryController@posts');
+
+        // Tag routes
+        $this->addRoute('tags', 'TagController@index');
         $this->addRoute('tag/{slug}', 'TagController@show');
+        $this->addRoute('tag/{id}/posts', 'TagController@posts');
+        $this->addRoute('tags/popular', 'TagController@popular');
+        $this->addRoute('tags/search', 'TagController@search');
+
+        // Website routes
         $this->addRoute('websites', 'WebsiteController@index');
         $this->addRoute('websites/submit', 'WebsiteController@submit');
         $this->addRoute('website/{id}', 'WebsiteController@show');
+
+        // Search routes
         $this->addRoute('search', 'SearchController@index');
-        
+        $this->addRoute('search/advanced', 'SearchController@advanced');
+
+        // API routes
+        $this->addRoute('api/posts', 'ApiController@posts');
+        $this->addRoute('api/websites', 'ApiController@websites');
+        $this->addRoute('api/categories', 'ApiController@categories');
+        $this->addRoute('api/search', 'ApiController@search');
+        $this->addRoute('api/stats', 'ApiController@stats');
+
         // Admin routes
         $this->addRoute('admin', 'AdminController@dashboard');
         $this->addRoute('admin/login', 'AdminController@login');
         $this->addRoute('admin/logout', 'AdminController@logout');
+
+        // Admin Posts
         $this->addRoute('admin/posts', 'AdminPostController@index');
         $this->addRoute('admin/posts/create', 'AdminPostController@create');
         $this->addRoute('admin/posts/edit/{id}', 'AdminPostController@edit');
+        $this->addRoute('admin/posts/delete/{id}', 'AdminPostController@delete');
+
+        // Admin Categories
+        $this->addRoute('admin/categories', 'AdminCategoryController@index');
+        $this->addRoute('admin/categories/create', 'AdminCategoryController@create');
+        $this->addRoute('admin/categories/edit/{id}', 'AdminCategoryController@edit');
+        $this->addRoute('admin/categories/delete/{id}', 'AdminCategoryController@delete');
+
+        // Admin Websites
         $this->addRoute('admin/websites', 'AdminWebsiteController@index');
         $this->addRoute('admin/websites/create', 'AdminWebsiteController@create');
+        $this->addRoute('admin/websites/edit/{id}', 'AdminWebsiteController@edit');
+        $this->addRoute('admin/websites/delete/{id}', 'AdminWebsiteController@delete');
+
+        // Admin Settings
         $this->addRoute('admin/settings', 'AdminSettingsController@index');
+        $this->addRoute('admin/settings/cache/clear', 'AdminSettingsController@clearCache');
+        $this->addRoute('admin/settings/backup', 'AdminSettingsController@backup');
     }
     
     /**
