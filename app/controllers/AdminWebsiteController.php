@@ -220,14 +220,22 @@ class AdminWebsiteController extends BaseController
     public function batchAction()
     {
         $this->requireAuth();
-        
+
         if (!$this->isPost()) {
             $this->jsonError('Invalid request method', 405);
             return;
         }
-        
-        $action = $this->getPost('action');
-        $ids = $this->getPost('ids', []);
+
+        // Get JSON data from request body
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (!$input) {
+            $this->jsonError('Invalid JSON data', 400);
+            return;
+        }
+
+        $action = $input['action'] ?? '';
+        $ids = $input['ids'] ?? [];
         
         if (empty($ids) || !is_array($ids)) {
             $this->jsonError('请选择要操作的网站', 400);
