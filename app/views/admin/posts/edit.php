@@ -349,7 +349,7 @@ function createMarkdownEditor() {
             width: "100%",
             height: 500,
             syncScrolling: "single",
-            path: "/editor.md/lib/",
+            path: "/public/editor.md/lib/",
             placeholder: "请输入文章内容，支持Markdown语法...",
             saveHTMLToTextarea: true,
             searchReplace: true,
@@ -551,9 +551,9 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
 </script>
 
 <!-- 本地Editor.md资源 -->
-<link rel="stylesheet" href="/editor.md/css/editormd.min.css">
-<script src="/editor.md/lib/jquery.min.js"></script>
-<script src="/editor.md/editormd.min.js"></script>
+<link rel="stylesheet" href="/public/editor.md/css/editormd.min.css">
+<script src="/public/editor.md/lib/jquery.min.js"></script>
+<script src="/public/editor.md/editormd.min.js"></script>
 
 <!-- 编辑器样式 -->
 <style>
