@@ -372,9 +372,9 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
 <script src="<?= SITE_URL ?>/public/editor.md/lib/flowchart.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/sequence-diagram.min.js"></script>
 
-<!-- KaTeX for math formulas -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+<!-- KaTeX for math formulas - Use Editor.md compatible version -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
 
 <script src="<?= SITE_URL ?>/public/editor.md/editormd.min.js"></script>
 
@@ -385,6 +385,16 @@ $(document).ready(function() {
     var markdownContent = $('#post-markdown-content').val();
 
     if (markdownContent) {
+        // Set Editor.md KaTeX URL to use the same version we loaded
+        editormd.katexURL = {
+            css: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min",
+            js: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min"
+        };
+
+        // Mark KaTeX as loaded since we already loaded it
+        editormd.$katex = katex;
+        editormd.kaTeXLoaded = true;
+
         // Convert markdown to HTML using Editor.md
         editormd.markdownToHTML("post-content-view", {
             markdown: markdownContent,
@@ -395,18 +405,9 @@ $(document).ready(function() {
             flowChart: true,  // Flow charts
             sequenceDiagram: true,  // Sequence diagrams
             tocm: true,  // Table of contents
-            // Disable features that might cause issues
-            searchReplace: false,
-            codeFold: false,
+            autoLoadKaTeX: false,  // Don't auto-load since we already loaded it
             // Improve code block rendering
             previewCodeHighlight: true,
-            // Configure paths for libraries
-            path: "<?= SITE_URL ?>/public/editor.md/lib/",
-            // KaTeX configuration
-            katexConfig: {
-                throwOnError: false,  // Don't throw errors on invalid LaTeX
-                displayMode: false,   // Inline mode by default
-            },
         });
     }
 });
