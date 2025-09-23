@@ -10,7 +10,6 @@ class AdminWebsiteController extends BaseController
     
     public function __construct()
     {
-        parent::__construct();
         $this->websiteModel = new Website();
         $this->categoryModel = new WebsiteCategory();
     }

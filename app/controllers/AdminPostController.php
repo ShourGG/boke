@@ -11,7 +11,6 @@ class AdminPostController extends BaseController
     
     public function __construct()
     {
-        parent::__construct();
         $this->postModel = new Post();
         $this->categoryModel = new Category();
         $this->tagModel = new Tag();
