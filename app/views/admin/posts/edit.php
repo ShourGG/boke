@@ -51,14 +51,42 @@
             
             <!-- 文章内容 -->
             <div class="card mb-4">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">文章内容</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="editorMode" id="markdownMode" value="markdown" checked>
+                        <label class="btn btn-outline-primary" for="markdownMode">
+                            <i class="fab fa-markdown"></i> Markdown
+                        </label>
+                        <input type="radio" class="btn-check" name="editorMode" id="richMode" value="rich">
+                        <label class="btn btn-outline-primary" for="richMode">
+                            <i class="fas fa-edit"></i> 富文本
+                        </label>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="content" class="form-label">正文内容 <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="content" name="content" rows="20" required><?= htmlspecialchars($post['content']) ?></textarea>
-                        <div class="form-text">支持Markdown语法</div>
+
+                        <!-- Markdown编辑器 -->
+                        <div id="markdownEditor" class="editor-container">
+                            <div id="editormd">
+                                <textarea id="content" name="content" required><?= htmlspecialchars($post['content']) ?></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 富文本编辑器 -->
+                        <div id="richEditor" class="editor-container d-none">
+                            <div id="quillEditor" style="height: 400px;"></div>
+                            <textarea id="richContent" name="rich_content" style="display: none;"></textarea>
+                        </div>
+
+                        <div class="form-text mt-2">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Markdown模式：</strong>支持完整Markdown语法、代码高亮、数学公式、流程图等
+                            <br>
+                            <strong>富文本模式：</strong>所见即所得编辑，支持图片上传、表格、链接等
+                        </div>
                     </div>
                 </div>
             </div>
@@ -276,4 +304,229 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
         return;
     }
 });
+
+// 编辑器初始化
+let markdownEditor;
+let quillEditor;
+
+// 初始化编辑器
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditors();
+
+    // 编辑器模式切换
+    document.querySelectorAll('input[name="editorMode"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            switchEditorMode(this.value);
+        });
+    });
+});
+
+// 初始化编辑器
+function initializeEditors() {
+    // 初始化Markdown编辑器 (Editor.md)
+    initMarkdownEditor();
+
+    // 初始化富文本编辑器 (Quill)
+    initRichEditor();
+}
+
+// 初始化Markdown编辑器
+function initMarkdownEditor() {
+    // 动态加载Editor.md
+    if (typeof editormd === 'undefined') {
+        loadEditorMd();
+    } else {
+        createMarkdownEditor();
+    }
+}
+
+// 加载Editor.md资源
+function loadEditorMd() {
+    // 加载CSS
+    const editormdCSS = document.createElement('link');
+    editormdCSS.rel = 'stylesheet';
+    editormdCSS.href = 'https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.min.css';
+    document.head.appendChild(editormdCSS);
+
+    // 加载JS
+    const editormdJS = document.createElement('script');
+    editormdJS.src = 'https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js';
+    editormdJS.onload = function() {
+        createMarkdownEditor();
+    };
+    document.head.appendChild(editormdJS);
+}
+
+// 创建Markdown编辑器
+function createMarkdownEditor() {
+    markdownEditor = editormd("editormd", {
+        width: "100%",
+        height: 500,
+        syncScrolling: "single",
+        path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
+        placeholder: "请输入文章内容，支持Markdown语法...",
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        watch: true,
+        htmlDecode: "style,script,iframe|on*",
+        toolbar: true,
+        previewCodeHighlight: true,
+        emoji: true,
+        taskList: true,
+        tocm: true,
+        tex: true,
+        flowChart: true,
+        sequenceDiagram: true,
+        dialogLockScreen: false,
+        dialogShowMask: false,
+        dialogDraggable: false,
+        dialogMaskOpacity: 0.4,
+        dialogMaskBgColor: "#000",
+        imageUpload: true,
+        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+        imageUploadURL: "/admin/upload/image",
+        onload: function() {
+            console.log('Markdown编辑器加载完成');
+        }
+    });
+}
+
+// 初始化富文本编辑器
+function initRichEditor() {
+    // 动态加载Quill
+    if (typeof Quill === 'undefined') {
+        loadQuill();
+    } else {
+        createRichEditor();
+    }
+}
+
+// 加载Quill资源
+function loadQuill() {
+    // 加载CSS
+    const quillCSS = document.createElement('link');
+    quillCSS.rel = 'stylesheet';
+    quillCSS.href = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css';
+    document.head.appendChild(quillCSS);
+
+    // 加载JS
+    const quillJS = document.createElement('script');
+    quillJS.src = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js';
+    quillJS.onload = function() {
+        createRichEditor();
+    };
+    document.head.appendChild(quillJS);
+}
+
+// 创建富文本编辑器
+function createRichEditor() {
+    quillEditor = new Quill('#quillEditor', {
+        theme: 'snow',
+        placeholder: '请输入文章内容...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }],
+                [{ 'align': [] }],
+                ['blockquote', 'code-block'],
+                ['link', 'image', 'video'],
+                ['clean']
+            ]
+        }
+    });
+
+    // 监听内容变化
+    quillEditor.on('text-change', function() {
+        document.getElementById('richContent').value = quillEditor.root.innerHTML;
+    });
+}
+
+// 切换编辑器模式
+function switchEditorMode(mode) {
+    const markdownContainer = document.getElementById('markdownEditor');
+    const richContainer = document.getElementById('richEditor');
+
+    if (mode === 'markdown') {
+        markdownContainer.classList.remove('d-none');
+        richContainer.classList.add('d-none');
+
+        // 如果有富文本内容，尝试转换为Markdown
+        if (quillEditor && quillEditor.getText().trim()) {
+            const richText = quillEditor.getText();
+            if (markdownEditor) {
+                markdownEditor.setValue(richText);
+            }
+        }
+    } else {
+        markdownContainer.classList.add('d-none');
+        richContainer.classList.remove('d-none');
+
+        // 如果有Markdown内容，设置到富文本编辑器
+        if (markdownEditor && markdownEditor.getValue().trim()) {
+            const markdownText = markdownEditor.getValue();
+            if (quillEditor) {
+                quillEditor.setText(markdownText);
+            }
+        }
+    }
+}
+
+// 表单提交前处理
+document.getElementById('postForm').addEventListener('submit', function(e) {
+    const mode = document.querySelector('input[name="editorMode"]:checked').value;
+
+    if (mode === 'markdown' && markdownEditor) {
+        // Markdown模式：确保内容同步到textarea
+        document.getElementById('content').value = markdownEditor.getValue();
+    } else if (mode === 'rich' && quillEditor) {
+        // 富文本模式：将HTML内容设置到content字段
+        document.getElementById('content').value = quillEditor.root.innerHTML;
+    }
+});
 </script>
+
+<!-- 编辑器样式 -->
+<style>
+.editor-container {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.btn-group .btn-check:checked + .btn {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+/* Markdown编辑器样式调整 */
+.editormd {
+    border: none !important;
+}
+
+.editormd .editormd-toolbar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* 富文本编辑器样式调整 */
+.ql-toolbar {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background: #f8f9fa;
+}
+
+.ql-container {
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+</style>
