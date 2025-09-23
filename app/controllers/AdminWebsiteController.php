@@ -128,7 +128,7 @@ class AdminWebsiteController extends BaseController
     {
         $this->requireAuth();
         
-        $website = $this->websiteModel->getById($id);
+        $website = $this->websiteModel->find($id);
         if (!$website) {
             $this->setFlash('error', '网站不存在');
             $this->redirect('admin/websites');
@@ -201,7 +201,7 @@ class AdminWebsiteController extends BaseController
         }
         
         try {
-            $website = $this->websiteModel->getById($id);
+            $website = $this->websiteModel->find($id);
             if (!$website) {
                 $this->jsonError('网站不存在', 404);
                 return;

@@ -178,10 +178,10 @@
                                             <a href="<?= htmlspecialchars($website['url']) ?>" 
                                                target="_blank" 
                                                class="text-decoration-none">
-                                                <?= htmlspecialchars($website['name']) ?>
+                                                <?= htmlspecialchars($website['title']) ?>
                                                 <i class="fas fa-external-link-alt fa-sm text-muted"></i>
                                             </a>
-                                            <?php if ($website['featured']): ?>
+                                            <?php if ($website['is_featured']): ?>
                                                 <span class="badge bg-warning">推荐</span>
                                             <?php endif; ?>
                                         </h6>
@@ -218,12 +218,12 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-star text-warning"></i>
-                                        <span class="ms-1"><?= $website['rating'] ?></span>
+                                        <span class="ms-1">-</span>
                                     </div>
                                 </td>
                                 <td>
-                                    <i class="fas fa-eye text-muted"></i>
-                                    <?= number_format($website['views']) ?>
+                                    <i class="fas fa-mouse-pointer text-muted"></i>
+                                    <?= number_format($website['click_count'] ?? 0) ?>
                                 </td>
                                 <td>
                                     <small class="text-muted">
