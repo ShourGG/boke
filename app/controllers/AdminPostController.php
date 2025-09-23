@@ -97,8 +97,7 @@ class AdminPostController extends BaseController
             'content' => $this->getPost('content'),
             'category_id' => intval($this->getPost('category_id')),
             'status' => $this->getPost('status', 'draft'),
-            'featured' => $this->getPost('featured') ? 1 : 0,
-            'allow_comments' => $this->getPost('allow_comments') ? 1 : 0,
+            'is_featured' => $this->getPost('featured') ? 1 : 0,
             'meta_title' => trim($this->getPost('meta_title')),
             'meta_description' => trim($this->getPost('meta_description')),
             'meta_keywords' => trim($this->getPost('meta_keywords'))
@@ -174,8 +173,7 @@ class AdminPostController extends BaseController
             'content' => $this->getPost('content'),
             'category_id' => intval($this->getPost('category_id')),
             'status' => $this->getPost('status'),
-            'featured' => $this->getPost('featured') ? 1 : 0,
-            'allow_comments' => $this->getPost('allow_comments') ? 1 : 0,
+            'is_featured' => $this->getPost('featured') ? 1 : 0,
             'meta_title' => trim($this->getPost('meta_title')),
             'meta_description' => trim($this->getPost('meta_description')),
             'meta_keywords' => trim($this->getPost('meta_keywords'))
