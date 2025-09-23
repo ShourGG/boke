@@ -56,7 +56,7 @@ class Router
         $this->addRoute('admin/posts/create', 'AdminPostController@create');
         $this->addRoute('admin/posts/edit/{id}', 'AdminPostController@edit');
         $this->addRoute('admin/posts/delete/{id}', 'AdminPostController@delete');
-        $this->addRoute('admin/posts/batch', 'AdminPostController@batchAction');
+        $this->addRoute('admin/posts/batch-action', 'AdminPostController@batchAction');
 
         // Admin Categories
         $this->addRoute('admin/categories', 'AdminCategoryController@index');
@@ -78,7 +78,7 @@ class Router
         $this->addRoute('admin/websites/create', 'AdminWebsiteController@create');
         $this->addRoute('admin/websites/edit/{id}', 'AdminWebsiteController@edit');
         $this->addRoute('admin/websites/delete/{id}', 'AdminWebsiteController@delete');
-        $this->addRoute('admin/websites/batch', 'AdminWebsiteController@batchAction');
+        $this->addRoute('admin/websites/batch-action', 'AdminWebsiteController@batchAction');
 
         // Admin Settings
         $this->addRoute('admin/settings', 'AdminSettingsController@index');
