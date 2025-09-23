@@ -176,7 +176,7 @@ class Post extends BaseModel
     /**
      * Check if slug exists
      */
-    private function slugExists($slug, $excludeId = null)
+    public function slugExists($slug, $excludeId = null)
     {
         $sql = "SELECT COUNT(*) as count FROM `{$this->table}` WHERE `slug` = ?";
         $params = [$slug];
