@@ -318,6 +318,49 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
 <!-- Editor.md CSS for Markdown display -->
 <link rel="stylesheet" href="<?= SITE_URL ?>/public/editor.md/css/editormd.preview.css">
 
+<!-- Custom CSS to fix code block display issues -->
+<style>
+/* Fix code block display - remove line-by-line copy buttons */
+.markdown-body pre code {
+    display: block !important;
+    white-space: pre !important;
+    word-wrap: normal !important;
+}
+
+/* Improve code block styling */
+.markdown-body pre {
+    background: #f8f8f8 !important;
+    border: 1px solid #e1e4e8 !important;
+    border-radius: 6px !important;
+    padding: 16px !important;
+    overflow: auto !important;
+    line-height: 1.45 !important;
+}
+
+/* Hide any copy buttons that might appear */
+.markdown-body pre .copy-btn,
+.markdown-body pre .copy-button,
+.markdown-body pre button {
+    display: none !important;
+}
+
+/* Ensure proper code formatting */
+.markdown-body code {
+    background: rgba(175, 184, 193, 0.2) !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 3px !important;
+    font-size: 85% !important;
+}
+
+/* Fix inline code in pre blocks */
+.markdown-body pre code {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 100% !important;
+}
+</style>
+
 <!-- Editor.md JS for Markdown to HTML conversion -->
 <script src="<?= SITE_URL ?>/public/editor.md/lib/jquery.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/marked.min.js"></script>
@@ -341,6 +384,11 @@ $(document).ready(function() {
             flowChart: true,  // Flow charts
             sequenceDiagram: true,  // Sequence diagrams
             tocm: true,  // Table of contents
+            // Disable features that might cause issues
+            searchReplace: false,
+            codeFold: false,
+            // Improve code block rendering
+            previewCodeHighlight: true,
         });
     }
 });
