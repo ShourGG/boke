@@ -448,6 +448,25 @@ function fallbackToTextarea() {
     console.log('已降级到简单textarea模式');
 }
 
+// 隐藏富文本选项
+function hideRichTextOption() {
+    const richModeButton = document.getElementById('richMode');
+    const richModeLabel = document.querySelector('label[for="richMode"]');
+
+    if (richModeButton && richModeLabel) {
+        richModeButton.style.display = 'none';
+        richModeLabel.style.display = 'none';
+
+        // 确保Markdown模式被选中
+        const markdownMode = document.getElementById('markdownMode');
+        if (markdownMode) {
+            markdownMode.checked = true;
+        }
+
+        console.log('富文本编辑器不可用，已隐藏选项');
+    }
+}
+
 // 初始化富文本编辑器
 function initRichEditor() {
     // 动态加载Quill
@@ -463,46 +482,66 @@ function loadQuill() {
     // 加载CSS
     const quillCSS = document.createElement('link');
     quillCSS.rel = 'stylesheet';
-    quillCSS.href = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css';
+    quillCSS.href = 'https://unpkg.com/quill@1.3.7/dist/quill.snow.css';
     document.head.appendChild(quillCSS);
 
     // 加载JS
     const quillJS = document.createElement('script');
-    quillJS.src = 'https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js';
+    quillJS.src = 'https://unpkg.com/quill@1.3.7/dist/quill.min.js';
     quillJS.onload = function() {
-        createRichEditor();
+        // 确保Quill全局可用
+        setTimeout(function() {
+            if (typeof Quill !== 'undefined') {
+                createRichEditor();
+            } else {
+                console.error('Quill failed to load');
+                // 富文本编辑器加载失败，隐藏富文本选项
+                hideRichTextOption();
+            }
+        }, 100);
+    };
+    quillJS.onerror = function() {
+        console.error('Failed to load Quill');
+        hideRichTextOption();
     };
     document.head.appendChild(quillJS);
 }
 
 // 创建富文本编辑器
 function createRichEditor() {
-    quillEditor = new Quill('#quillEditor', {
-        theme: 'snow',
-        placeholder: '请输入文章内容...',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
-                [{ 'size': ['small', false, 'large', 'huge'] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'script': 'sub'}, { 'script': 'super' }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                [{ 'direction': 'rtl' }],
-                [{ 'align': [] }],
-                ['blockquote', 'code-block'],
-                ['link', 'image', 'video'],
-                ['clean']
-            ]
-        }
-    });
+    try {
+        quillEditor = new Quill('#quillEditor', {
+            theme: 'snow',
+            placeholder: '请输入文章内容...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'font': [] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }],
+                    [{ 'align': [] }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ]
+            }
+        });
 
-    // 监听内容变化
-    quillEditor.on('text-change', function() {
-        document.getElementById('richContent').value = quillEditor.root.innerHTML;
-    });
+        // 监听内容变化
+        quillEditor.on('text-change', function() {
+            document.getElementById('richContent').value = quillEditor.root.innerHTML;
+        });
+
+        console.log('富文本编辑器创建成功');
+    } catch (error) {
+        console.error('创建富文本编辑器失败:', error);
+        hideRichTextOption();
+    }
 }
 
 // 切换编辑器模式
