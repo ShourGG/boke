@@ -501,21 +501,43 @@ $(document).ready(function() {
 
                             // Find the corresponding code block and replace it
                             var replaced = false;
-                            $("#post-content-view pre").each(function() {
+
+                            // Debug: log all code blocks for sequence diagram
+                            console.log('Looking for sequence diagram code blocks...');
+                            $("#post-content-view pre").each(function(index) {
                                 var codeText = $(this).find('code').text().trim();
-                                // More flexible matching - check if the code block contains sequence syntax
-                                if (codeText.indexOf('->') !== -1 || codeText.indexOf('Andrew') !== -1) {
-                                    console.log('Replacing code block with sequence diagram');
-                                    $(this).replaceWith(sequenceDiv);
-                                    sequenceDiv.sequenceDiagram({theme: "simple"});
-                                    console.log('SequenceDiagram ' + sequenceIndex + ' initialized successfully');
-                                    replaced = true;
-                                    return false; // break the loop
-                                }
+                                console.log('Code block ' + index + ' for sequence:', codeText.substring(0, 100) + '...');
                             });
 
+                            // Try different selectors to find the sequence diagram text
+                            var selectors = [
+                                "#post-content-view pre code",
+                                "#post-content-view code",
+                                "#post-content-view p",
+                                "#post-content-view div"
+                            ];
+
+                            for (var s = 0; s < selectors.length && !replaced; s++) {
+                                $(selectors[s]).each(function() {
+                                    var elementText = $(this).text().trim();
+                                    // Check if this element contains the sequence diagram syntax
+                                    if (elementText.indexOf('Andrew->China') !== -1 && elementText.indexOf('Says Hello') !== -1) {
+                                        console.log('Found matching sequence element with selector:', selectors[s]);
+                                        console.log('Element text:', elementText.substring(0, 100) + '...');
+
+                                        // Replace the parent element
+                                        var parentToReplace = $(this).closest('pre').length > 0 ? $(this).closest('pre') : $(this);
+                                        parentToReplace.replaceWith(sequenceDiv);
+                                        sequenceDiv.sequenceDiagram({theme: "simple"});
+                                        console.log('SequenceDiagram ' + sequenceIndex + ' replaced and initialized successfully');
+                                        replaced = true;
+                                        return false; // break the loop
+                                    }
+                                });
+                            }
+
                             if (!replaced) {
-                                console.warn('Could not find matching code block for sequence diagram');
+                                console.warn('Could not find matching element for sequence diagram, using fallback');
                                 // Append to the end as fallback
                                 $("#post-content-view").append(sequenceDiv);
                                 sequenceDiv.sequenceDiagram({theme: "simple"});
