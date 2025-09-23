@@ -291,4 +291,118 @@ class Post extends BaseModel
 
         return $this->db->fetch($sql);
     }
+
+    /**
+     * Get admin list with filters
+     */
+    public function getAdminList($offset, $perPage, $status = 'all', $category = 0, $search = '')
+    {
+        $whereClause = "1=1";
+        $params = [];
+
+        if ($status !== 'all') {
+            $whereClause .= " AND p.status = ?";
+            $params[] = $status;
+        }
+
+        if ($category > 0) {
+            $whereClause .= " AND p.category_id = ?";
+            $params[] = $category;
+        }
+
+        if (!empty($search)) {
+            $whereClause .= " AND (p.title LIKE ? OR p.content LIKE ? OR p.excerpt LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+        }
+
+        $sql = "SELECT p.*, c.name as category_name,
+                       COALESCE(p.view_count, 0) as view_count
+                FROM `{$this->table}` p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE {$whereClause}
+                ORDER BY p.created_at DESC
+                LIMIT {$perPage} OFFSET {$offset}";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Get admin count with filters
+     */
+    public function getAdminCount($status = 'all', $category = 0, $search = '')
+    {
+        $whereClause = "1=1";
+        $params = [];
+
+        if ($status !== 'all') {
+            $whereClause .= " AND status = ?";
+            $params[] = $status;
+        }
+
+        if ($category > 0) {
+            $whereClause .= " AND category_id = ?";
+            $params[] = $category;
+        }
+
+        if (!empty($search)) {
+            $whereClause .= " AND (title LIKE ? OR content LIKE ? OR excerpt LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+        }
+
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE {$whereClause}";
+        $result = $this->db->fetch($sql, $params);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Batch update status
+     */
+    public function batchUpdateStatus($ids, $status)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "UPDATE `{$this->table}` SET status = ? WHERE id IN ({$placeholders})";
+
+        $params = array_merge([$status], $ids);
+        $this->db->execute($sql, $params);
+        return $this->db->getAffectedRows();
+    }
+
+    /**
+     * Batch update featured status
+     */
+    public function batchUpdateFeatured($ids, $featured)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "UPDATE `{$this->table}` SET is_featured = ? WHERE id IN ({$placeholders})";
+
+        $params = array_merge([$featured], $ids);
+        $this->db->execute($sql, $params);
+        return $this->db->getAffectedRows();
+    }
+
+    /**
+     * Batch delete posts
+     */
+    public function batchDelete($ids)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return 0;
+        }
+
+        $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "DELETE FROM `{$this->table}` WHERE id IN ({$placeholders})";
+
+        $this->db->execute($sql, $ids);
+        return $this->db->getAffectedRows();
+    }
 }
