@@ -423,6 +423,10 @@ $(document).ready(function() {
                 var flowRegex = /```flow\s*\n([\s\S]*?)\n```/g;
                 var sequenceRegex = /```sequence\s*\n([\s\S]*?)\n```/g;
 
+                // Debug: log the original markdown content
+                console.log('Original markdown content:', markdownContent.substring(0, 500) + '...');
+                console.log('Looking for flow and sequence patterns...');
+
                 var flowMatch;
                 var flowIndex = 0;
                 while ((flowMatch = flowRegex.exec(markdownContent)) !== null) {
@@ -487,6 +491,7 @@ $(document).ready(function() {
                 }
 
                 // Extract and process sequence diagrams from original markdown
+                console.log('Starting sequence diagram processing...');
                 var sequenceMatch;
                 var sequenceIndex = 0;
                 while ((sequenceMatch = sequenceRegex.exec(markdownContent)) !== null) {
@@ -549,6 +554,10 @@ $(document).ready(function() {
                         }
                     }
                 }
+
+                console.log('Diagram processing summary:');
+                console.log('- Flow charts found and processed:', flowIndex);
+                console.log('- Sequence diagrams found and processed:', sequenceIndex);
 
                 if (flowIndex === 0 && sequenceIndex === 0) {
                     console.log('No flow charts or sequence diagrams found in markdown');
