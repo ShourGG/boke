@@ -12,6 +12,7 @@ class Database
     private $username;
     private $password;
     private $charset;
+    private $lastAffectedRows = 0;
     
     /**
      * Private constructor for singleton pattern
@@ -104,7 +105,8 @@ class Database
     public function execute($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
-        return $stmt->rowCount();
+        $this->lastAffectedRows = $stmt->rowCount();
+        return $this->lastAffectedRows;
     }
     
     /**
@@ -138,7 +140,17 @@ class Database
     {
         return $this->connection->rollback();
     }
-    
+
+    /**
+     * Get affected rows from last operation
+     */
+    public function getAffectedRows()
+    {
+        // For PDO, we need to store the last statement's rowCount
+        // This is a simple implementation that works with the execute method
+        return $this->lastAffectedRows ?? 0;
+    }
+
     /**
      * Check if table exists
      */
