@@ -437,21 +437,43 @@ $(document).ready(function() {
 
                             // Find the corresponding code block and replace it
                             var replaced = false;
-                            $("#post-content-view pre").each(function() {
+
+                            // Debug: log all code blocks
+                            console.log('Looking for code blocks to replace...');
+                            $("#post-content-view pre").each(function(index) {
                                 var codeText = $(this).find('code').text().trim();
-                                // More flexible matching - check if the code block contains flow syntax
-                                if (codeText.indexOf('st=>start') !== -1 || codeText.indexOf('=>') !== -1) {
-                                    console.log('Replacing code block with flowchart');
-                                    $(this).replaceWith(flowDiv);
-                                    flowDiv.flowChart();
-                                    console.log('FlowChart ' + flowIndex + ' initialized successfully');
-                                    replaced = true;
-                                    return false; // break the loop
-                                }
+                                console.log('Code block ' + index + ':', codeText.substring(0, 100) + '...');
                             });
 
+                            // Try different selectors to find the flow chart text
+                            var selectors = [
+                                "#post-content-view pre code",
+                                "#post-content-view code",
+                                "#post-content-view p",
+                                "#post-content-view div"
+                            ];
+
+                            for (var s = 0; s < selectors.length && !replaced; s++) {
+                                $(selectors[s]).each(function() {
+                                    var elementText = $(this).text().trim();
+                                    // Check if this element contains the flow chart syntax
+                                    if (elementText.indexOf('st=>start') !== -1 && elementText.indexOf('用户登陆') !== -1) {
+                                        console.log('Found matching element with selector:', selectors[s]);
+                                        console.log('Element text:', elementText.substring(0, 100) + '...');
+
+                                        // Replace the parent element
+                                        var parentToReplace = $(this).closest('pre').length > 0 ? $(this).closest('pre') : $(this);
+                                        parentToReplace.replaceWith(flowDiv);
+                                        flowDiv.flowChart();
+                                        console.log('FlowChart ' + flowIndex + ' replaced and initialized successfully');
+                                        replaced = true;
+                                        return false; // break the loop
+                                    }
+                                });
+                            }
+
                             if (!replaced) {
-                                console.warn('Could not find matching code block for flowchart');
+                                console.warn('Could not find matching element for flowchart, using fallback');
                                 // Append to the end as fallback
                                 $("#post-content-view").append(flowDiv);
                                 flowDiv.flowChart();
