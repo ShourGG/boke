@@ -64,8 +64,8 @@
     <?php endif; ?>
     
     <!-- Post Content -->
-    <div class="post-body">
-        <?= $post['content'] ?>
+    <div class="post-body" id="post-content-view">
+        <textarea style="display:none;" id="post-markdown-content"><?= htmlspecialchars($post['content']) ?></textarea>
     </div>
     
     <!-- Post Footer -->
@@ -314,3 +314,34 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
     border-color: #3498db;
 }
 </style>
+
+<!-- Editor.md CSS for Markdown display -->
+<link rel="stylesheet" href="<?= SITE_URL ?>/public/editor.md/css/editormd.preview.css">
+
+<!-- Editor.md JS for Markdown to HTML conversion -->
+<script src="<?= SITE_URL ?>/public/editor.md/lib/jquery.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/marked.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/prettify.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/editormd.min.js"></script>
+
+<script>
+// Convert Markdown to HTML when page loads
+$(document).ready(function() {
+    // Get the markdown content
+    var markdownContent = $('#post-markdown-content').val();
+
+    if (markdownContent) {
+        // Convert markdown to HTML using Editor.md
+        editormd.markdownToHTML("post-content-view", {
+            markdown: markdownContent,
+            htmlDecode: "style,script,iframe",  // Filter dangerous tags
+            emoji: true,
+            taskList: true,
+            tex: true,  // Math formulas
+            flowChart: true,  // Flow charts
+            sequenceDiagram: true,  // Sequence diagrams
+            tocm: true,  // Table of contents
+        });
+    }
+});
+</script>
