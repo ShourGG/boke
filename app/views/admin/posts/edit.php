@@ -1,4 +1,9 @@
-<?php $this->layout('layouts/admin', ['title' => $title]) ?>
+<?php
+/**
+ * Admin Posts Edit View
+ * 管理后台编辑文章页面
+ */
+?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">
