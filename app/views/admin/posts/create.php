@@ -285,7 +285,7 @@ function initializeTinyMCE() {
     tinymce.init({
         selector: '#content',
         height: 500,
-        language: 'zh_CN',
+        // 移除语言配置，使用默认英文
         plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
@@ -320,12 +320,11 @@ function initializeTinyMCE() {
         quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
         quickbars_insert_toolbar: 'quickimage quicktable',
 
-        // 表格配置
+        // 表格配置（移除过时的配置）
         table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
         table_appearance_options: false,
         table_grid: false,
         table_resize_bars: true,
-        table_responsive_width: true,
 
         // 代码样式
         codesample_languages: [
