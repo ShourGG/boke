@@ -337,10 +337,40 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
     line-height: 1.45 !important;
 }
 
-/* Hide any copy buttons that might appear */
+/* Custom copy button styling */
+.code-block-container {
+    position: relative;
+    margin: 20px 0;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 10;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.copy-code-btn:hover {
+    opacity: 1;
+    background: #0056b3;
+}
+
+.copy-code-btn.copied {
+    background: #28a745;
+}
+
+/* Hide any unwanted copy buttons */
 .markdown-body pre .copy-btn,
-.markdown-body pre .copy-button,
-.markdown-body pre button {
+.markdown-body pre .copy-button {
     display: none !important;
 }
 
@@ -567,6 +597,83 @@ $(document).ready(function() {
                 console.error('Error processing diagrams:', e);
             }
         }, 200);
+
+        // Add copy buttons to code blocks
+        setTimeout(function() {
+            $("#post-content-view pre").each(function(index) {
+                var $pre = $(this);
+                var $code = $pre.find('code');
+
+                // Skip if this is a diagram or already has a copy button
+                if ($pre.hasClass('flowchart-custom') || $pre.hasClass('sequence-diagram-custom') || $pre.find('.copy-code-btn').length > 0) {
+                    return;
+                }
+
+                // Wrap the pre element in a container
+                var $container = $('<div class="code-block-container"></div>');
+                $pre.wrap($container);
+
+                // Create copy button
+                var $copyBtn = $('<button class="copy-code-btn" title="复制代码">复制</button>');
+
+                // Add click event
+                $copyBtn.click(function() {
+                    var codeText = $code.text();
+
+                    // Use modern clipboard API if available
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(codeText).then(function() {
+                            showCopySuccess($copyBtn);
+                        }).catch(function(err) {
+                            console.error('复制失败:', err);
+                            fallbackCopyTextToClipboard(codeText, $copyBtn);
+                        });
+                    } else {
+                        // Fallback for older browsers
+                        fallbackCopyTextToClipboard(codeText, $copyBtn);
+                    }
+                });
+
+                // Add button to container
+                $pre.parent().append($copyBtn);
+            });
+
+            console.log('Copy buttons added to code blocks');
+        }, 300);
+
+        // Copy success feedback
+        function showCopySuccess($btn) {
+            $btn.text('已复制!').addClass('copied');
+            setTimeout(function() {
+                $btn.text('复制').removeClass('copied');
+            }, 2000);
+        }
+
+        // Fallback copy function for older browsers
+        function fallbackCopyTextToClipboard(text, $btn) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess($btn);
+                } else {
+                    console.error('复制命令失败');
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
     }
 });
 </script>
