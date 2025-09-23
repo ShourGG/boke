@@ -1,5 +1,3 @@
-<?php $this->layout('layouts/main', ['title' => $title, 'description' => $description, 'canonical' => $canonical ?? '']) ?>
-
 <!-- Website Detail Header -->
 <div class="website-detail-header bg-gradient text-white p-4 rounded mb-4">
     <div class="row align-items-center">
