@@ -32,6 +32,7 @@ class Router
         // Website routes
         $this->addRoute('websites', 'WebsiteController@index');
         $this->addRoute('websites/submit', 'WebsiteController@submit');
+        $this->addRoute('websites/click', 'WebsiteController@click');
         $this->addRoute('website/{id}', 'WebsiteController@show');
 
         // Search routes
