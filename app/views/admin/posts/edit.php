@@ -53,20 +53,22 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fab fa-markdown"></i> 文章内容
+                        <i class="fab fa-markdown"></i> 文章内容 (Markdown编辑器)
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="content" class="form-label">
                             正文内容 <span class="text-danger">*</span>
-                            <small class="text-muted">(富文本编辑器)</small>
+                            <small class="text-muted">(支持Markdown语法)</small>
                         </label>
-                        <textarea id="content" name="content" required><?= htmlspecialchars($post['content']) ?></textarea>
+                        <div id="editormd">
+                            <textarea id="content" name="content" required><?= htmlspecialchars($post['content']) ?></textarea>
+                        </div>
 
                         <div class="form-text mt-2">
                             <i class="fas fa-info-circle"></i>
-                            支持富文本编辑：粗体、斜体、颜色、链接、图片、表格、代码块等，所见即所得
+                            支持完整Markdown语法：**粗体**、*斜体*、`代码`、[链接](url)、![图片](url)、表格、列表、数学公式、流程图等
                         </div>
                     </div>
                 </div>
@@ -321,44 +323,23 @@ function initMarkdownEditor() {
     }
 }
 
-// 加载Editor.md资源
+// 加载Editor.md资源（本地版本）
 function loadEditorMd() {
-    // 加载CSS
-    const editormdCSS = document.createElement('link');
-    editormdCSS.rel = 'stylesheet';
-    editormdCSS.href = 'https://unpkg.com/editor.md@1.5.0/css/editormd.min.css';
-    document.head.appendChild(editormdCSS);
+    // 检查本地资源是否已加载
+    if (typeof $ !== 'undefined' && typeof editormd !== 'undefined') {
+        createMarkdownEditor();
+        return;
+    }
 
-    // 加载依赖库
-    const jqueryScript = document.createElement('script');
-    jqueryScript.src = 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js';
-    jqueryScript.onload = function() {
-        // jQuery加载完成后加载Editor.md
-        const editormdJS = document.createElement('script');
-        editormdJS.src = 'https://unpkg.com/editor.md@1.5.0/editormd.min.js';
-        editormdJS.onload = function() {
-            // 确保editormd全局可用
-            setTimeout(function() {
-                if (typeof editormd !== 'undefined') {
-                    createMarkdownEditor();
-                } else {
-                    console.error('Editor.md failed to load');
-                    // 降级到简单textarea
-                    fallbackToTextarea();
-                }
-            }, 100);
-        };
-        editormdJS.onerror = function() {
-            console.error('Failed to load Editor.md');
+    // 本地资源已在页面头部加载，直接创建编辑器
+    setTimeout(function() {
+        if (typeof $ !== 'undefined' && typeof editormd !== 'undefined') {
+            createMarkdownEditor();
+        } else {
+            console.error('本地Editor.md资源加载失败');
             fallbackToTextarea();
-        };
-        document.head.appendChild(editormdJS);
-    };
-    jqueryScript.onerror = function() {
-        console.error('Failed to load jQuery');
-        fallbackToTextarea();
-    };
-    document.head.appendChild(jqueryScript);
+        }
+    }, 100);
 }
 
 // 创建Markdown编辑器
@@ -368,7 +349,7 @@ function createMarkdownEditor() {
             width: "100%",
             height: 500,
             syncScrolling: "single",
-            path: "https://unpkg.com/editor.md@1.5.0/lib/",
+            path: "/editor.md/lib/",
             placeholder: "请输入文章内容，支持Markdown语法...",
             saveHTMLToTextarea: true,
             searchReplace: true,
@@ -568,6 +549,11 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
     }
 });
 </script>
+
+<!-- 本地Editor.md资源 -->
+<link rel="stylesheet" href="/editor.md/css/editormd.min.css">
+<script src="/editor.md/lib/jquery.min.js"></script>
+<script src="/editor.md/editormd.min.js"></script>
 
 <!-- 编辑器样式 -->
 <style>

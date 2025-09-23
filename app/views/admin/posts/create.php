@@ -47,20 +47,22 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fab fa-markdown"></i> 文章内容
+                        <i class="fab fa-markdown"></i> 文章内容 (Markdown编辑器)
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="content" class="form-label">
                             正文内容 <span class="text-danger">*</span>
-                            <small class="text-muted">(富文本编辑器)</small>
+                            <small class="text-muted">(支持Markdown语法)</small>
                         </label>
-                        <textarea id="content" name="content" required></textarea>
+                        <div id="editormd">
+                            <textarea id="content" name="content" required></textarea>
+                        </div>
 
                         <div class="form-text mt-2">
                             <i class="fas fa-info-circle"></i>
-                            支持富文本编辑：粗体、斜体、颜色、链接、图片、表格、代码块等，所见即所得
+                            支持完整Markdown语法：**粗体**、*斜体*、`代码`、[链接](url)、![图片](url)、表格、列表、数学公式、流程图等
                         </div>
                     </div>
                 </div>
@@ -210,8 +212,10 @@
     </div>
 </form>
 
-<!-- TinyMCE富文本编辑器 -->
-<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+<!-- 本地Editor.md资源 -->
+<link rel="stylesheet" href="/editor.md/css/editormd.min.css">
+<script src="/editor.md/lib/jquery.min.js"></script>
+<script src="/editor.md/editormd.min.js"></script>
 
 <script>
 // 自动生成slug
@@ -268,109 +272,70 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
     }
 });
 
-// TinyMCE富文本编辑器初始化
+// 本地Editor.md初始化
+let markdownEditor;
+
 document.addEventListener('DOMContentLoaded', function() {
-    initializeTinyMCE();
+    initializeEditorMD();
 });
 
-// 初始化TinyMCE编辑器
-function initializeTinyMCE() {
-    // 检查TinyMCE是否加载
-    if (typeof tinymce === 'undefined') {
-        console.error('TinyMCE未加载，降级到简单编辑器');
+// 初始化Editor.md编辑器
+function initializeEditorMD() {
+    // 检查依赖是否加载
+    if (typeof $ === 'undefined') {
+        console.error('jQuery未加载，降级到简单编辑器');
         fallbackToSimpleEditor();
         return;
     }
 
-    tinymce.init({
-        selector: '#content',
-        height: 500,
-        // 移除语言配置，使用默认英文
-        plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'help', 'wordcount', 'emoticons',
-            'codesample', 'quickbars'
-        ],
-        toolbar: 'undo redo | blocks | bold italic underline strikethrough | ' +
-                'alignleft aligncenter alignright alignjustify | ' +
-                'bullist numlist outdent indent | ' +
-                'forecolor backcolor | ' +
-                'link image media table | ' +
-                'codesample emoticons | ' +
-                'code preview fullscreen | help',
-        menubar: 'file edit view insert format tools table help',
-        branding: false,
-        promotion: false,
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.6; }',
-
-        // 图片上传配置
-        images_upload_url: '/admin/upload/image',
-        images_upload_base_path: '/',
-        images_upload_credentials: true,
-
-        // 自动保存
-        autosave_ask_before_unload: true,
-        autosave_interval: '30s',
-        autosave_prefix: 'tinymce-autosave-{path}{query}-{id}-',
-        autosave_restore_when_empty: false,
-        autosave_retention: '2m',
-
-        // 快速工具栏
-        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-        quickbars_insert_toolbar: 'quickimage quicktable',
-
-        // 表格配置（移除过时的配置）
-        table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
-        table_appearance_options: false,
-        table_grid: false,
-        table_resize_bars: true,
-
-        // 代码样式
-        codesample_languages: [
-            {text: 'HTML/XML', value: 'markup'},
-            {text: 'JavaScript', value: 'javascript'},
-            {text: 'CSS', value: 'css'},
-            {text: 'PHP', value: 'php'},
-            {text: 'Python', value: 'python'},
-            {text: 'Java', value: 'java'},
-            {text: 'C', value: 'c'},
-            {text: 'C++', value: 'cpp'},
-            {text: 'C#', value: 'csharp'},
-            {text: 'SQL', value: 'sql'},
-            {text: 'JSON', value: 'json'},
-            {text: 'Bash', value: 'bash'}
-        ],
-
-        // 初始化完成回调
-        setup: function(editor) {
-            editor.on('init', function() {
-                console.log('TinyMCE编辑器初始化成功');
-                // 隐藏加载提示
-                hideLoadingIndicator();
-            });
-
-            editor.on('change', function() {
-                // 自动保存内容
-                editor.save();
-            });
-        },
-
-        // 初始化失败回调
-        init_instance_callback: function(editor) {
-            if (!editor) {
-                console.error('TinyMCE初始化失败');
-                fallbackToSimpleEditor();
-            }
-        }
-    }).catch(function(error) {
-        console.error('TinyMCE加载失败:', error);
+    if (typeof editormd === 'undefined') {
+        console.error('Editor.md未加载，降级到简单编辑器');
         fallbackToSimpleEditor();
-    });
+        return;
+    }
+
+    try {
+        markdownEditor = editormd("editormd", {
+            width: "100%",
+            height: 500,
+            syncScrolling: "single",
+            path: "/editor.md/lib/",
+            placeholder: "请输入文章内容，支持Markdown语法...",
+            saveHTMLToTextarea: true,
+            searchReplace: true,
+            watch: true,
+            htmlDecode: "style,script,iframe|on*",
+            toolbar: true,
+            previewCodeHighlight: true,
+            emoji: true,
+            taskList: true,
+            tocm: true,
+            tex: true,
+            flowChart: true,
+            sequenceDiagram: true,
+            dialogLockScreen: false,
+            dialogShowMask: false,
+            dialogDraggable: false,
+            dialogMaskOpacity: 0.4,
+            dialogMaskBgColor: "#000",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "/admin/upload/image",
+            onload: function() {
+                console.log('Editor.md编辑器初始化成功');
+                hideLoadingIndicator();
+            }
+        });
+    } catch (error) {
+        console.error('Editor.md初始化失败:', error);
+        fallbackToSimpleEditor();
+    }
 
     // 显示加载提示
     showLoadingIndicator();
 }
+
+
 
 // 显示加载提示
 function showLoadingIndicator() {
@@ -386,7 +351,7 @@ function showLoadingIndicator() {
                 <span class="visually-hidden">加载中...</span>
             </div>
             <div class="mt-2">
-                <small class="text-muted">正在加载富文本编辑器...</small>
+                <small class="text-muted">正在加载Markdown编辑器...</small>
             </div>
         `;
 
@@ -419,7 +384,7 @@ function fallbackToSimpleEditor() {
         helpDiv.className = 'form-text mt-2';
         helpDiv.innerHTML = `
             <i class="fas fa-exclamation-triangle text-warning"></i>
-            富文本编辑器加载失败，已降级为简单文本模式。您仍可以使用HTML标签进行格式化。
+            Markdown编辑器加载失败，已降级为简单文本模式。您仍可以使用Markdown语法进行格式化。
         `;
 
         textarea.parentNode.appendChild(helpDiv);
