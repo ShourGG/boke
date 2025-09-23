@@ -421,14 +421,41 @@ $(document).ready(function() {
             try {
                 // Initialize flowChart if available
                 if (typeof $.fn.flowChart !== 'undefined') {
-                    $("#post-content-view .flowchart").flowChart();
+                    $("#post-content-view .flowchart").each(function() {
+                        var $this = $(this);
+                        var flowText = $this.text().trim();
+
+                        // Check if flowchart text is valid
+                        if (flowText && flowText.length > 0) {
+                            try {
+                                $this.flowChart();
+                                console.log('FlowChart initialized successfully');
+                            } catch (flowError) {
+                                console.error('FlowChart syntax error:', flowError);
+                                console.log('FlowChart text:', flowText);
+                                // Show error message in the div
+                                $this.html('<div style="color: red; padding: 10px; border: 1px solid red;">流程图语法错误: ' + flowError.message + '</div>');
+                            }
+                        } else {
+                            console.warn('Empty flowchart content');
+                        }
+                    });
                 } else {
                     console.warn('flowChart plugin not available');
                 }
 
                 // Initialize sequenceDiagram if available
                 if (typeof $.fn.sequenceDiagram !== 'undefined') {
-                    $("#post-content-view .sequence-diagram").sequenceDiagram({theme: "simple"});
+                    $("#post-content-view .sequence-diagram").each(function() {
+                        var $this = $(this);
+                        try {
+                            $this.sequenceDiagram({theme: "simple"});
+                            console.log('SequenceDiagram initialized successfully');
+                        } catch (seqError) {
+                            console.error('SequenceDiagram error:', seqError);
+                            $this.html('<div style="color: red; padding: 10px; border: 1px solid red;">时序图语法错误: ' + seqError.message + '</div>');
+                        }
+                    });
                 } else {
                     console.warn('sequenceDiagram plugin not available');
                 }
