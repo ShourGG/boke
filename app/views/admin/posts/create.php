@@ -45,41 +45,23 @@
             
             <!-- 文章内容 -->
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">文章内容</h5>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="editorMode" id="markdownMode" value="markdown" checked>
-                        <label class="btn btn-outline-primary" for="markdownMode">
-                            <i class="fab fa-markdown"></i> Markdown
-                        </label>
-                        <input type="radio" class="btn-check" name="editorMode" id="richMode" value="rich">
-                        <label class="btn btn-outline-primary" for="richMode">
-                            <i class="fas fa-edit"></i> 富文本
-                        </label>
-                    </div>
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fab fa-markdown"></i> 文章内容
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="content" class="form-label">正文内容 <span class="text-danger">*</span></label>
-
-                        <!-- Markdown编辑器 -->
-                        <div id="markdownEditor" class="editor-container">
-                            <div id="editormd">
-                                <textarea id="content" name="content" required></textarea>
-                            </div>
-                        </div>
-
-                        <!-- 富文本编辑器 -->
-                        <div id="richEditor" class="editor-container d-none">
-                            <div id="quillEditor" style="height: 400px;"></div>
-                            <textarea id="richContent" name="rich_content" style="display: none;"></textarea>
-                        </div>
+                        <label for="content" class="form-label">
+                            正文内容 <span class="text-danger">*</span>
+                            <small class="text-muted">(支持Markdown语法)</small>
+                        </label>
+                        <div id="simple-markdown-editor" data-content=""></div>
+                        <textarea id="content" name="content" style="display: none;" required></textarea>
 
                         <div class="form-text mt-2">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Markdown模式：</strong>支持完整Markdown语法、代码高亮、数学公式、流程图等
-                            <br>
-                            <strong>富文本模式：</strong>所见即所得编辑，支持图片上传、表格、链接等
+                            支持Markdown语法：**粗体**、*斜体*、`代码`、[链接](url)、![图片](url)、表格、列表等
                         </div>
                     </div>
                 </div>
@@ -229,6 +211,10 @@
     </div>
 </form>
 
+<!-- 简单编辑器资源 -->
+<link rel="stylesheet" href="/css/simple-editor.css">
+<script src="/js/simple-editor.js"></script>
+
 <script>
 // 自动生成slug
 document.getElementById('title').addEventListener('input', function() {
@@ -284,321 +270,87 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
     }
 });
 
-// 编辑器初始化
-let markdownEditor;
-let quillEditor;
+// 简单编辑器初始化
+let simpleEditor;
 
 // 初始化编辑器
 document.addEventListener('DOMContentLoaded', function() {
-    initializeEditors();
-
-    // 编辑器模式切换
-    document.querySelectorAll('input[name="editorMode"]').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            switchEditorMode(this.value);
-        });
-    });
+    initializeSimpleEditor();
 });
 
-// 初始化编辑器
-function initializeEditors() {
-    // 初始化Markdown编辑器 (Editor.md)
-    initMarkdownEditor();
-
-    // 初始化富文本编辑器 (Quill)
-    initRichEditor();
-}
-
-// 初始化Markdown编辑器
-function initMarkdownEditor() {
-    // 动态加载Editor.md
-    if (typeof editormd === 'undefined') {
-        loadEditorMd();
-    } else {
-        createMarkdownEditor();
-    }
-}
-
-// 加载Editor.md资源
-function loadEditorMd() {
-    // 加载CSS
-    const editormdCSS = document.createElement('link');
-    editormdCSS.rel = 'stylesheet';
-    editormdCSS.href = 'https://unpkg.com/editor.md@1.5.0/css/editormd.min.css';
-    document.head.appendChild(editormdCSS);
-
-    // 加载依赖库
-    const jqueryScript = document.createElement('script');
-    jqueryScript.src = 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js';
-    jqueryScript.onload = function() {
-        // jQuery加载完成后加载Editor.md
-        const editormdJS = document.createElement('script');
-        editormdJS.src = 'https://unpkg.com/editor.md@1.5.0/editormd.min.js';
-        editormdJS.onload = function() {
-            // 确保editormd全局可用
-            setTimeout(function() {
-                if (typeof editormd !== 'undefined') {
-                    createMarkdownEditor();
-                } else {
-                    console.error('Editor.md failed to load');
-                    // 降级到简单textarea
-                    fallbackToTextarea();
-                }
-            }, 100);
-        };
-        editormdJS.onerror = function() {
-            console.error('Failed to load Editor.md');
-            fallbackToTextarea();
-        };
-        document.head.appendChild(editormdJS);
-    };
-    jqueryScript.onerror = function() {
-        console.error('Failed to load jQuery');
-        fallbackToTextarea();
-    };
-    document.head.appendChild(jqueryScript);
-}
-
-// 创建Markdown编辑器
-function createMarkdownEditor() {
+// 初始化简单编辑器
+function initializeSimpleEditor() {
     try {
-        markdownEditor = editormd("editormd", {
-            width: "100%",
-            height: 500,
-            syncScrolling: "single",
-            path: "https://unpkg.com/editor.md@1.5.0/lib/",
-            placeholder: "请输入文章内容，支持Markdown语法...",
-            saveHTMLToTextarea: true,
-            searchReplace: true,
-            watch: true,
-            htmlDecode: "style,script,iframe|on*",
+        simpleEditor = new SimpleMarkdownEditor('simple-markdown-editor', {
+            height: '400px',
+            placeholder: '请输入文章内容，支持Markdown语法...',
             toolbar: true,
-            previewCodeHighlight: true,
-            emoji: true,
-            taskList: true,
-            tocm: true,
-            tex: true,
-            flowChart: true,
-            sequenceDiagram: true,
-            dialogLockScreen: false,
-            dialogShowMask: false,
-            dialogDraggable: false,
-            dialogMaskOpacity: 0.4,
-            dialogMaskBgColor: "#000",
-            imageUpload: true,
-            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-            imageUploadURL: "/admin/upload/image",
-            onload: function() {
-                console.log('Markdown编辑器加载完成');
-            }
+            preview: true
         });
+
+        console.log('简单编辑器初始化成功');
     } catch (error) {
-        console.error('创建Markdown编辑器失败:', error);
-        fallbackToTextarea();
+        console.error('编辑器初始化失败:', error);
+        // 降级到普通textarea
+        fallbackToSimpleTextarea();
     }
 }
 
 // 降级到简单textarea
-function fallbackToTextarea() {
-    const markdownContainer = document.getElementById('markdownEditor');
-    const editormdDiv = document.getElementById('editormd');
+function fallbackToSimpleTextarea() {
+    const editorContainer = document.getElementById('simple-markdown-editor');
 
-    // 隐藏编辑器模式切换按钮
-    const modeButtons = document.querySelector('.btn-group');
-    if (modeButtons) {
-        modeButtons.style.display = 'none';
-    }
+    if (editorContainer) {
+        editorContainer.innerHTML = `
+            <div class="simple-fallback">
+                <textarea id="fallback-content" class="form-control" rows="20"
+                          placeholder="请输入文章内容，支持Markdown语法..."
+                          style="font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 14px;"></textarea>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        编辑器加载失败，已降级为简单文本模式。仍支持Markdown语法。
+                    </small>
+                </div>
+            </div>
+        `;
 
-    // 创建简单的textarea
-    editormdDiv.innerHTML = `
-        <textarea id="content" name="content" class="form-control" rows="20"
-                  placeholder="请输入文章内容，支持Markdown语法..." required></textarea>
-        <div class="mt-2">
-            <small class="text-muted">
-                <i class="fas fa-info-circle"></i>
-                编辑器加载失败，已降级为简单文本模式。仍支持Markdown语法。
-            </small>
-        </div>
-    `;
+        // 绑定内容同步
+        const fallbackTextarea = document.getElementById('fallback-content');
+        const hiddenTextarea = document.getElementById('content');
 
-    console.log('已降级到简单textarea模式');
-}
-
-// 隐藏富文本选项
-function hideRichTextOption() {
-    const richModeButton = document.getElementById('richMode');
-    const richModeLabel = document.querySelector('label[for="richMode"]');
-
-    if (richModeButton && richModeLabel) {
-        richModeButton.style.display = 'none';
-        richModeLabel.style.display = 'none';
-
-        // 确保Markdown模式被选中
-        const markdownMode = document.getElementById('markdownMode');
-        if (markdownMode) {
-            markdownMode.checked = true;
+        if (fallbackTextarea && hiddenTextarea) {
+            fallbackTextarea.addEventListener('input', function() {
+                hiddenTextarea.value = this.value;
+            });
         }
 
-        console.log('富文本编辑器不可用，已隐藏选项');
-    }
-}
-
-// 初始化富文本编辑器
-function initRichEditor() {
-    // 动态加载Quill
-    if (typeof Quill === 'undefined') {
-        loadQuill();
-    } else {
-        createRichEditor();
-    }
-}
-
-// 加载Quill资源
-function loadQuill() {
-    // 加载CSS
-    const quillCSS = document.createElement('link');
-    quillCSS.rel = 'stylesheet';
-    quillCSS.href = 'https://unpkg.com/quill@1.3.7/dist/quill.snow.css';
-    document.head.appendChild(quillCSS);
-
-    // 加载JS
-    const quillJS = document.createElement('script');
-    quillJS.src = 'https://unpkg.com/quill@1.3.7/dist/quill.min.js';
-    quillJS.onload = function() {
-        // 确保Quill全局可用
-        setTimeout(function() {
-            if (typeof Quill !== 'undefined') {
-                createRichEditor();
-            } else {
-                console.error('Quill failed to load');
-                // 富文本编辑器加载失败，隐藏富文本选项
-                hideRichTextOption();
-            }
-        }, 100);
-    };
-    quillJS.onerror = function() {
-        console.error('Failed to load Quill');
-        hideRichTextOption();
-    };
-    document.head.appendChild(quillJS);
-}
-
-// 创建富文本编辑器
-function createRichEditor() {
-    try {
-        quillEditor = new Quill('#quillEditor', {
-            theme: 'snow',
-            placeholder: '请输入文章内容...',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    [{ 'font': [] }],
-                    [{ 'size': ['small', false, 'large', 'huge'] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'script': 'sub'}, { 'script': 'super' }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'indent': '-1'}, { 'indent': '+1' }],
-                    [{ 'direction': 'rtl' }],
-                    [{ 'align': [] }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image', 'video'],
-                    ['clean']
-                ]
-            }
-        });
-
-        // 监听内容变化
-        quillEditor.on('text-change', function() {
-            document.getElementById('richContent').value = quillEditor.root.innerHTML;
-        });
-
-        console.log('富文本编辑器创建成功');
-    } catch (error) {
-        console.error('创建富文本编辑器失败:', error);
-        hideRichTextOption();
-    }
-}
-
-// 切换编辑器模式
-function switchEditorMode(mode) {
-    const markdownContainer = document.getElementById('markdownEditor');
-    const richContainer = document.getElementById('richEditor');
-
-    if (mode === 'markdown') {
-        markdownContainer.classList.remove('d-none');
-        richContainer.classList.add('d-none');
-
-        // 如果有富文本内容，尝试转换为Markdown
-        if (quillEditor && quillEditor.getText().trim()) {
-            const richText = quillEditor.getText();
-            if (markdownEditor) {
-                markdownEditor.setValue(richText);
-            }
-        }
-    } else {
-        markdownContainer.classList.add('d-none');
-        richContainer.classList.remove('d-none');
-
-        // 如果有Markdown内容，设置到富文本编辑器
-        if (markdownEditor && markdownEditor.getValue().trim()) {
-            const markdownText = markdownEditor.getValue();
-            if (quillEditor) {
-                quillEditor.setText(markdownText);
-            }
-        }
+        console.log('已降级到简单textarea模式');
     }
 }
 
 // 表单提交前处理
 document.getElementById('postForm').addEventListener('submit', function(e) {
-    const mode = document.querySelector('input[name="editorMode"]:checked').value;
-
-    if (mode === 'markdown' && markdownEditor) {
-        // Markdown模式：确保内容同步到textarea
-        document.getElementById('content').value = markdownEditor.getValue();
-    } else if (mode === 'rich' && quillEditor) {
-        // 富文本模式：将HTML内容设置到content字段
-        document.getElementById('content').value = quillEditor.root.innerHTML;
+    // 同步编辑器内容到隐藏的textarea
+    if (simpleEditor) {
+        try {
+            const content = simpleEditor.getValue();
+            document.getElementById('content').value = content;
+        } catch (error) {
+            console.error('获取编辑器内容失败:', error);
+        }
+    } else {
+        // 降级模式下，从fallback textarea获取内容
+        const fallbackTextarea = document.getElementById('fallback-content');
+        if (fallbackTextarea) {
+            document.getElementById('content').value = fallbackTextarea.value;
+        }
     }
 });
+
+
+
+
 </script>
 
-<!-- 编辑器样式 -->
-<style>
-.editor-container {
-    border: 1px solid #dee2e6;
-    border-radius: 0.375rem;
-    overflow: hidden;
-}
 
-.btn-group .btn-check:checked + .btn {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: #fff;
-}
-
-/* Markdown编辑器样式调整 */
-.editormd {
-    border: none !important;
-}
-
-.editormd .editormd-toolbar {
-    background: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-}
-
-/* 富文本编辑器样式调整 */
-.ql-toolbar {
-    border-top: none !important;
-    border-left: none !important;
-    border-right: none !important;
-    background: #f8f9fa;
-}
-
-.ql-container {
-    border-bottom: none !important;
-    border-left: none !important;
-    border-right: none !important;
-}
-</style>

@@ -51,18 +51,10 @@
             
             <!-- 文章内容 -->
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">文章内容</h5>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="editorMode" id="markdownMode" value="markdown" checked>
-                        <label class="btn btn-outline-primary" for="markdownMode">
-                            <i class="fab fa-markdown"></i> Markdown
-                        </label>
-                        <input type="radio" class="btn-check" name="editorMode" id="richMode" value="rich">
-                        <label class="btn btn-outline-primary" for="richMode">
-                            <i class="fas fa-edit"></i> 富文本
-                        </label>
-                    </div>
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fab fa-markdown"></i> 文章内容
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
