@@ -324,50 +324,104 @@ function loadEditorMd() {
     // 加载CSS
     const editormdCSS = document.createElement('link');
     editormdCSS.rel = 'stylesheet';
-    editormdCSS.href = 'https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.min.css';
+    editormdCSS.href = 'https://unpkg.com/editor.md@1.5.0/css/editormd.min.css';
     document.head.appendChild(editormdCSS);
 
-    // 加载JS
-    const editormdJS = document.createElement('script');
-    editormdJS.src = 'https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js';
-    editormdJS.onload = function() {
-        createMarkdownEditor();
+    // 加载依赖库
+    const jqueryScript = document.createElement('script');
+    jqueryScript.src = 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js';
+    jqueryScript.onload = function() {
+        // jQuery加载完成后加载Editor.md
+        const editormdJS = document.createElement('script');
+        editormdJS.src = 'https://unpkg.com/editor.md@1.5.0/editormd.min.js';
+        editormdJS.onload = function() {
+            // 确保editormd全局可用
+            setTimeout(function() {
+                if (typeof editormd !== 'undefined') {
+                    createMarkdownEditor();
+                } else {
+                    console.error('Editor.md failed to load');
+                    // 降级到简单textarea
+                    fallbackToTextarea();
+                }
+            }, 100);
+        };
+        editormdJS.onerror = function() {
+            console.error('Failed to load Editor.md');
+            fallbackToTextarea();
+        };
+        document.head.appendChild(editormdJS);
     };
-    document.head.appendChild(editormdJS);
+    jqueryScript.onerror = function() {
+        console.error('Failed to load jQuery');
+        fallbackToTextarea();
+    };
+    document.head.appendChild(jqueryScript);
 }
 
 // 创建Markdown编辑器
 function createMarkdownEditor() {
-    markdownEditor = editormd("editormd", {
-        width: "100%",
-        height: 500,
-        syncScrolling: "single",
-        path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
-        placeholder: "请输入文章内容，支持Markdown语法...",
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        watch: true,
-        htmlDecode: "style,script,iframe|on*",
-        toolbar: true,
-        previewCodeHighlight: true,
-        emoji: true,
-        taskList: true,
-        tocm: true,
-        tex: true,
-        flowChart: true,
-        sequenceDiagram: true,
-        dialogLockScreen: false,
-        dialogShowMask: false,
-        dialogDraggable: false,
-        dialogMaskOpacity: 0.4,
-        dialogMaskBgColor: "#000",
-        imageUpload: true,
-        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-        imageUploadURL: "/admin/upload/image",
-        onload: function() {
-            console.log('Markdown编辑器加载完成');
-        }
-    });
+    try {
+        markdownEditor = editormd("editormd", {
+            width: "100%",
+            height: 500,
+            syncScrolling: "single",
+            path: "https://unpkg.com/editor.md@1.5.0/lib/",
+            placeholder: "请输入文章内容，支持Markdown语法...",
+            saveHTMLToTextarea: true,
+            searchReplace: true,
+            watch: true,
+            htmlDecode: "style,script,iframe|on*",
+            toolbar: true,
+            previewCodeHighlight: true,
+            emoji: true,
+            taskList: true,
+            tocm: true,
+            tex: true,
+            flowChart: true,
+            sequenceDiagram: true,
+            dialogLockScreen: false,
+            dialogShowMask: false,
+            dialogDraggable: false,
+            dialogMaskOpacity: 0.4,
+            dialogMaskBgColor: "#000",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "/admin/upload/image",
+            onload: function() {
+                console.log('Markdown编辑器加载完成');
+            }
+        });
+    } catch (error) {
+        console.error('创建Markdown编辑器失败:', error);
+        fallbackToTextarea();
+    }
+}
+
+// 降级到简单textarea
+function fallbackToTextarea() {
+    const markdownContainer = document.getElementById('markdownEditor');
+    const editormdDiv = document.getElementById('editormd');
+
+    // 隐藏编辑器模式切换按钮
+    const modeButtons = document.querySelector('.btn-group');
+    if (modeButtons) {
+        modeButtons.style.display = 'none';
+    }
+
+    // 创建简单的textarea
+    editormdDiv.innerHTML = `
+        <textarea id="content" name="content" class="form-control" rows="20"
+                  placeholder="请输入文章内容，支持Markdown语法..." required></textarea>
+        <div class="mt-2">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                编辑器加载失败，已降级为简单文本模式。仍支持Markdown语法。
+            </small>
+        </div>
+    `;
+
+    console.log('已降级到简单textarea模式');
 }
 
 // 初始化富文本编辑器
