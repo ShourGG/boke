@@ -370,6 +370,7 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
 <script src="<?= SITE_URL ?>/public/editor.md/lib/raphael.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/underscore.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/flowchart.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/jquery.flowchart.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/sequence-diagram.min.js"></script>
 
 <!-- KaTeX for math formulas - Use Editor.md compatible version -->
@@ -395,6 +396,11 @@ $(document).ready(function() {
         editormd.$katex = katex;
         editormd.kaTeXLoaded = true;
 
+        // Ensure jQuery flowChart plugin is available
+        if (typeof $.fn.flowChart === 'undefined') {
+            console.warn('flowChart plugin not loaded, disabling flowChart feature');
+        }
+
         // Convert markdown to HTML using Editor.md
         editormd.markdownToHTML("post-content-view", {
             markdown: markdownContent,
@@ -402,13 +408,34 @@ $(document).ready(function() {
             emoji: true,
             taskList: true,
             tex: true,  // Math formulas with KaTeX
-            flowChart: true,  // Flow charts
+            flowChart: typeof $.fn.flowChart !== 'undefined',  // Only enable if plugin loaded
             sequenceDiagram: true,  // Sequence diagrams
             tocm: true,  // Table of contents
             autoLoadKaTeX: false,  // Don't auto-load since we already loaded it
             // Improve code block rendering
             previewCodeHighlight: true,
         });
+
+        // Manual initialization for flowChart and sequenceDiagram after rendering
+        setTimeout(function() {
+            try {
+                // Initialize flowChart if available
+                if (typeof $.fn.flowChart !== 'undefined') {
+                    $("#post-content-view .flowchart").flowChart();
+                } else {
+                    console.warn('flowChart plugin not available');
+                }
+
+                // Initialize sequenceDiagram if available
+                if (typeof $.fn.sequenceDiagram !== 'undefined') {
+                    $("#post-content-view .sequence-diagram").sequenceDiagram({theme: "simple"});
+                } else {
+                    console.warn('sequenceDiagram plugin not available');
+                }
+            } catch (e) {
+                console.error('Error initializing diagrams:', e);
+            }
+        }, 100);
     }
 });
 </script>
