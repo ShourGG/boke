@@ -58,26 +58,15 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="content" class="form-label">正文内容 <span class="text-danger">*</span></label>
-
-                        <!-- Markdown编辑器 -->
-                        <div id="markdownEditor" class="editor-container">
-                            <div id="editormd">
-                                <textarea id="content" name="content" required><?= htmlspecialchars($post['content']) ?></textarea>
-                            </div>
-                        </div>
-
-                        <!-- 富文本编辑器 -->
-                        <div id="richEditor" class="editor-container d-none">
-                            <div id="quillEditor" style="height: 400px;"></div>
-                            <textarea id="richContent" name="rich_content" style="display: none;"></textarea>
-                        </div>
+                        <label for="content" class="form-label">
+                            正文内容 <span class="text-danger">*</span>
+                            <small class="text-muted">(富文本编辑器)</small>
+                        </label>
+                        <textarea id="content" name="content" required><?= htmlspecialchars($post['content']) ?></textarea>
 
                         <div class="form-text mt-2">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Markdown模式：</strong>支持完整Markdown语法、代码高亮、数学公式、流程图等
-                            <br>
-                            <strong>富文本模式：</strong>所见即所得编辑，支持图片上传、表格、链接等
+                            支持富文本编辑：粗体、斜体、颜色、链接、图片、表格、代码块等，所见即所得
                         </div>
                     </div>
                 </div>
