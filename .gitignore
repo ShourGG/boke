@@ -3,8 +3,7 @@
 # Configuration files (contains sensitive data)
 config/config.php
 
-# Installation and test files (should not be in production)
-install.php
+# Test files (should not be in production)
 test.php
 
 # Upload directory (user uploaded files)
@@ -44,8 +43,8 @@ desktop.ini
 vendor/
 composer.lock
 
-# Database dumps
-*.sql
+# Database dumps (exclude schema file)
+# *.sql
 *.db
 *.sqlite
 
