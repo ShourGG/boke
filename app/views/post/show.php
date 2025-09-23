@@ -365,6 +365,17 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
 <script src="<?= SITE_URL ?>/public/editor.md/lib/jquery.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/marked.min.js"></script>
 <script src="<?= SITE_URL ?>/public/editor.md/lib/prettify.min.js"></script>
+
+<!-- Additional libraries for advanced features -->
+<script src="<?= SITE_URL ?>/public/editor.md/lib/raphael.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/underscore.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/flowchart.min.js"></script>
+<script src="<?= SITE_URL ?>/public/editor.md/lib/sequence-diagram.min.js"></script>
+
+<!-- KaTeX for math formulas -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+
 <script src="<?= SITE_URL ?>/public/editor.md/editormd.min.js"></script>
 
 <script>
@@ -380,7 +391,7 @@ $(document).ready(function() {
             htmlDecode: "style,script,iframe",  // Filter dangerous tags
             emoji: true,
             taskList: true,
-            tex: true,  // Math formulas
+            tex: true,  // Math formulas with KaTeX
             flowChart: true,  // Flow charts
             sequenceDiagram: true,  // Sequence diagrams
             tocm: true,  // Table of contents
@@ -389,6 +400,13 @@ $(document).ready(function() {
             codeFold: false,
             // Improve code block rendering
             previewCodeHighlight: true,
+            // Configure paths for libraries
+            path: "<?= SITE_URL ?>/public/editor.md/lib/",
+            // KaTeX configuration
+            katexConfig: {
+                throwOnError: false,  // Don't throw errors on invalid LaTeX
+                displayMode: false,   // Inline mode by default
+            },
         });
     }
 });
