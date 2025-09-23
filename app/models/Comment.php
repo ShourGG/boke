@@ -219,10 +219,11 @@ class Comment extends BaseModel
      */
     private function isDuplicateComment($data)
     {
-        $sql = "SELECT COUNT(*) FROM `{$this->table}` 
+        $sql = "SELECT COUNT(*) as count FROM `{$this->table}`
                 WHERE author_email = ? AND content = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
-        
-        return $this->db->fetchColumn($sql, [$data['author_email'], $data['content']]) > 0;
+
+        $result = $this->db->fetch($sql, [$data['author_email'], $data['content']]);
+        return ($result['count'] ?? 0) > 0;
     }
     
     /**
@@ -291,8 +292,9 @@ class Comment extends BaseModel
      */
     public function getPendingCount()
     {
-        $sql = "SELECT COUNT(*) FROM `{$this->table}` WHERE status = 'pending'";
-        return $this->db->fetchColumn($sql);
+        $sql = "SELECT COUNT(*) as count FROM `{$this->table}` WHERE status = 'pending'";
+        $result = $this->db->fetch($sql);
+        return $result['count'] ?? 0;
     }
     
     /**

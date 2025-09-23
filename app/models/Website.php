@@ -135,14 +135,7 @@ class Website extends BaseModel
         return $this->db->fetchAll($sql);
     }
     
-    /**
-     * Increment click count
-     */
-    public function incrementClicks($id)
-    {
-        $sql = "UPDATE `{$this->table}` SET `click_count` = `click_count` + 1 WHERE `id` = ?";
-        return $this->db->execute($sql, [$id]);
-    }
+
     
     /**
      * Get website by ID with category
@@ -318,10 +311,10 @@ class Website extends BaseModel
             $params = [$searchTerm, $searchTerm, $searchTerm];
         }
 
-        $sql = "SELECT w.*, c.name as category_name,
+        $sql = "SELECT w.*, wc.name as category_name,
                        COALESCE(w.click_count, 0) as click_count
                 FROM `{$this->table}` w
-                LEFT JOIN categories c ON w.category_id = c.id
+                LEFT JOIN website_categories wc ON w.category_id = wc.id
                 WHERE {$whereClause}
                 ORDER BY w.created_at DESC
                 LIMIT {$perPage} OFFSET {$offset}";
@@ -431,10 +424,10 @@ class Website extends BaseModel
             $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
         }
 
-        $sql = "SELECT w.*, c.name as category_name,
+        $sql = "SELECT w.*, wc.name as category_name,
                        COALESCE(w.click_count, 0) as click_count
                 FROM `{$this->table}` w
-                LEFT JOIN categories c ON w.category_id = c.id
+                LEFT JOIN website_categories wc ON w.category_id = wc.id
                 WHERE {$whereClause}
                 ORDER BY w.created_at DESC
                 LIMIT {$perPage} OFFSET {$offset}";
