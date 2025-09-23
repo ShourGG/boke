@@ -17,6 +17,7 @@ class Router
         $this->addRoute('category/{slug}', 'CategoryController@show');
         $this->addRoute('tag/{slug}', 'TagController@show');
         $this->addRoute('websites', 'WebsiteController@index');
+        $this->addRoute('websites/submit', 'WebsiteController@submit');
         $this->addRoute('website/{id}', 'WebsiteController@show');
         $this->addRoute('search', 'SearchController@index');
         
