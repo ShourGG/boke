@@ -8,44 +8,75 @@
 <!-- Hero Section -->
 <div class="hero-section text-white p-5 rounded-4 mb-5 position-relative overflow-hidden">
     <div class="hero-bg-animation"></div>
+    <div class="hero-particles"></div>
     <div class="row align-items-center position-relative">
         <div class="col-lg-8">
             <div class="hero-content">
+                <div class="hero-badge mb-3">
+                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                        <i class="fas fa-rocket me-2"></i>现代化博客系统
+                    </span>
+                </div>
                 <h1 class="display-4 fw-bold mb-4 hero-title">
                     <i class="fas fa-fish text-warning me-3 bounce-animation"></i>
-                    欢迎来到 <?= SITE_NAME ?>
+                    欢迎来到 <span class="text-gradient"><?= SITE_NAME ?></span>
                 </h1>
                 <p class="lead mb-4 hero-subtitle"><?= SITE_DESCRIPTION ?></p>
+
+                <!-- 实时统计 -->
                 <div class="hero-stats mb-4">
-                    <div class="row text-center">
+                    <div class="row text-center g-3">
                         <div class="col-4">
                             <div class="stat-item">
-                                <h3 class="stat-number"><?= $posts['total'] ?? 0 ?></h3>
+                                <div class="stat-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h3 class="stat-number" data-count="<?= $posts['total'] ?? 0 ?>">0</h3>
                                 <p class="stat-label">篇文章</p>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="stat-item">
-                                <h3 class="stat-number"><?= $websiteCount ?? 0 ?></h3>
+                                <div class="stat-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <h3 class="stat-number" data-count="<?= $websiteCount ?? 0 ?>">0</h3>
                                 <p class="stat-label">个网站</p>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="stat-item">
-                                <h3 class="stat-number"><?= $totalViews ?? 0 ?></h3>
+                                <div class="stat-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h3 class="stat-number" data-count="<?= $totalViews ?? 0 ?>">0</h3>
                                 <p class="stat-label">次访问</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- 搜索框 -->
+                <div class="hero-search mb-4">
+                    <form action="<?= SITE_URL ?>/search" method="GET" class="search-form">
+                        <div class="input-group input-group-lg">
+                            <input type="text" name="q" class="form-control search-input"
+                                   placeholder="搜索文章、网站..." autocomplete="off">
+                            <button class="btn btn-warning" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="hero-buttons d-flex flex-wrap gap-3">
-                    <a href="<?= SITE_URL ?>/websites" class="btn btn-warning btn-lg px-4 py-3 rounded-pill">
+                    <a href="<?= SITE_URL ?>/websites" class="btn btn-warning btn-lg px-4 py-3 rounded-pill hero-btn">
                         <i class="fas fa-globe me-2"></i> 浏览网站收录
                     </a>
-                    <a href="#posts" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill">
+                    <a href="#posts" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill hero-btn">
                         <i class="fas fa-arrow-down me-2"></i> 阅读文章
                     </a>
-                    <a href="<?= SITE_URL ?>/admin" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill">
+                    <a href="<?= SITE_URL ?>/admin" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill hero-btn">
                         <i class="fas fa-cog me-2"></i> 管理后台
                     </a>
                 </div>
@@ -53,12 +84,17 @@
         </div>
         <div class="col-lg-4 text-center">
             <div class="hero-icon-container">
-                <i class="fas fa-blog hero-main-icon text-warning"></i>
+                <div class="hero-main-icon-wrapper">
+                    <i class="fas fa-blog hero-main-icon text-warning"></i>
+                    <div class="icon-glow"></div>
+                </div>
                 <div class="floating-icons">
                     <i class="fas fa-pen-fancy floating-icon icon-1"></i>
                     <i class="fas fa-heart floating-icon icon-2"></i>
                     <i class="fas fa-star floating-icon icon-3"></i>
                     <i class="fas fa-code floating-icon icon-4"></i>
+                    <i class="fas fa-coffee floating-icon icon-5"></i>
+                    <i class="fas fa-lightbulb floating-icon icon-6"></i>
                 </div>
             </div>
         </div>
@@ -332,6 +368,9 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
     overflow: hidden;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
 }
 
 .hero-bg-animation {
@@ -342,6 +381,29 @@
     bottom: 0;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
     animation: float 20s ease-in-out infinite;
+}
+
+.hero-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    animation: particles 15s ease-in-out infinite;
+}
+
+.hero-badge {
+    animation: slideInUp 1s ease-out 0.1s both;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .hero-title {
@@ -364,10 +426,29 @@
     animation: bounce 2s infinite;
 }
 
+.hero-main-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
 .hero-main-icon {
     font-size: 8rem;
-    opacity: 0.8;
+    opacity: 0.9;
     animation: pulse 3s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+}
+
+.icon-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glow 2s ease-in-out infinite alternate;
 }
 
 .floating-icons {
@@ -375,41 +456,148 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
 }
 
 .floating-icon {
     position: absolute;
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.8rem;
+    color: rgba(255, 255, 255, 0.7);
     animation: float 4s ease-in-out infinite;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.icon-1 { top: 20%; left: 20%; animation-delay: 0s; }
-.icon-2 { top: 20%; right: 20%; animation-delay: 1s; }
-.icon-3 { bottom: 20%; left: 20%; animation-delay: 2s; }
-.icon-4 { bottom: 20%; right: 20%; animation-delay: 3s; }
+.floating-icon:hover {
+    color: #ffd700;
+    transform: scale(1.2);
+}
+
+.icon-1 { top: 10%; left: 15%; animation-delay: 0s; }
+.icon-2 { top: 10%; right: 15%; animation-delay: 1s; }
+.icon-3 { bottom: 10%; left: 15%; animation-delay: 2s; }
+.icon-4 { bottom: 10%; right: 15%; animation-delay: 3s; }
+.icon-5 { top: 50%; left: 5%; animation-delay: 4s; }
+.icon-6 { top: 50%; right: 5%; animation-delay: 5s; }
 
 .stat-item {
-    padding: 1rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    margin: 0.5rem 0;
+    padding: 1.5rem 1rem;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin-bottom: 0.5rem;
 }
 
 .stat-number {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
-    margin: 0;
+    margin: 0.5rem 0;
     color: #ffd700;
+    text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
 }
 
 .stat-label {
     margin: 0;
     font-size: 0.9rem;
     opacity: 0.9;
+    font-weight: 500;
+}
+
+/* 搜索框样式 */
+.hero-search {
+    animation: slideInUp 1s ease-out 0.5s both;
+}
+
+.search-form {
+    max-width: 500px;
+}
+
+.search-input {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px 0 0 25px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    background: white;
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #666;
+    opacity: 0.8;
+}
+
+.search-form .btn {
+    border-radius: 0 25px 25px 0;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #ffd700;
+    background: #ffd700;
+    transition: all 0.3s ease;
+}
+
+.search-form .btn:hover {
+    background: #ffed4e;
+    border-color: #ffed4e;
+    transform: scale(1.05);
+}
+
+/* 按钮增强 */
+.hero-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.hero-btn:hover::before {
+    left: 100%;
+}
+
+.hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 /* Section Headers */
@@ -634,12 +822,46 @@
 
 @keyframes pulse {
     0%, 100% {
-        opacity: 0.8;
+        opacity: 0.9;
         transform: scale(1);
     }
     50% {
         opacity: 1;
         transform: scale(1.05);
+    }
+}
+
+@keyframes glow {
+    0% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+@keyframes particles {
+    0%, 100% {
+        opacity: 0.5;
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-10px) rotate(180deg);
+    }
+}
+
+/* 数字计数动画 */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -675,3 +897,132 @@
     }
 }
 </style>
+
+<script>
+// 数字计数动画
+function animateCounter(element, target, duration = 2000) {
+    const start = 0;
+    const increment = target / (duration / 16);
+    let current = start;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        element.textContent = Math.floor(current).toLocaleString();
+    }, 16);
+}
+
+// 页面加载完成后启动计数动画
+document.addEventListener('DOMContentLoaded', function() {
+    // 启动数字计数动画
+    const statNumbers = document.querySelectorAll('.stat-number[data-count]');
+
+    // 使用 Intersection Observer 来检测元素是否进入视口
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const target = parseInt(element.getAttribute('data-count'));
+                animateCounter(element, target);
+                observer.unobserve(element); // 只执行一次
+            }
+        });
+    }, { threshold: 0.5 });
+
+    statNumbers.forEach(element => {
+        observer.observe(element);
+    });
+
+    // 搜索建议功能
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        let searchTimeout;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    // 这里可以添加AJAX搜索建议
+                    console.log('搜索建议:', query);
+                }, 300);
+            }
+        });
+
+        // 搜索框聚焦效果
+        searchInput.addEventListener('focus', function() {
+            this.parentElement.classList.add('search-focused');
+        });
+
+        searchInput.addEventListener('blur', function() {
+            this.parentElement.classList.remove('search-focused');
+        });
+    }
+
+    // 平滑滚动到文章区域
+    const scrollToPostsBtn = document.querySelector('a[href="#posts"]');
+    if (scrollToPostsBtn) {
+        scrollToPostsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const postsSection = document.getElementById('posts');
+            if (postsSection) {
+                postsSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    }
+
+    // 浮动图标点击效果
+    const floatingIcons = document.querySelectorAll('.floating-icon');
+    floatingIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+            // 创建点击波纹效果
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 215, 0, 0.6);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+                width: 20px;
+                height: 20px;
+                left: 50%;
+                top: 50%;
+                margin-left: -10px;
+                margin-top: -10px;
+            `;
+
+            this.style.position = 'relative';
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+});
+
+// 添加波纹动画CSS
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    .search-focused {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+    }
+`;
+document.head.appendChild(rippleStyle);
+</script>
