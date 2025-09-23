@@ -90,18 +90,25 @@ class AdminPostController extends BaseController
      */
     private function handleCreate()
     {
+        $status = $this->getPost('status', 'draft');
+
         $data = [
             'title' => trim($this->getPost('title')),
             'slug' => $this->generateSlug($this->getPost('title')),
             'excerpt' => trim($this->getPost('excerpt')),
             'content' => $this->getPost('content'),
             'category_id' => intval($this->getPost('category_id')),
-            'status' => $this->getPost('status', 'draft'),
+            'status' => $status,
             'is_featured' => $this->getPost('featured') ? 1 : 0,
             'meta_title' => trim($this->getPost('meta_title')),
             'meta_description' => trim($this->getPost('meta_description')),
             'meta_keywords' => trim($this->getPost('meta_keywords'))
         ];
+
+        // 如果是发布状态，设置发布时间
+        if ($status === 'published') {
+            $data['published_at'] = date('Y-m-d H:i:s');
+        }
         
         // 验证数据
         $errors = $this->validatePostData($data);
@@ -114,13 +121,13 @@ class AdminPostController extends BaseController
         
         try {
             $postId = $this->postModel->create($data);
-            
-            // 处理标签
-            $tags = $this->getPost('tags', []);
-            if (!empty($tags)) {
-                $this->postModel->syncTags($postId, $tags);
-            }
-            
+
+            // TODO: 处理标签功能待实现
+            // $tags = $this->getPost('tags', []);
+            // if (!empty($tags)) {
+            //     $this->postModel->syncTags($postId, $tags);
+            // }
+
             $this->setFlash('success', '文章添加成功！');
             $this->redirect('admin/posts');
         } catch (Exception $e) {
@@ -166,18 +173,26 @@ class AdminPostController extends BaseController
      */
     private function handleEdit($id)
     {
+        $status = $this->getPost('status');
+        $currentPost = $this->postModel->find($id);
+
         $data = [
             'title' => trim($this->getPost('title')),
             'slug' => $this->generateSlug($this->getPost('title'), $id),
             'excerpt' => trim($this->getPost('excerpt')),
             'content' => $this->getPost('content'),
             'category_id' => intval($this->getPost('category_id')),
-            'status' => $this->getPost('status'),
+            'status' => $status,
             'is_featured' => $this->getPost('featured') ? 1 : 0,
             'meta_title' => trim($this->getPost('meta_title')),
             'meta_description' => trim($this->getPost('meta_description')),
             'meta_keywords' => trim($this->getPost('meta_keywords'))
         ];
+
+        // 如果从非发布状态改为发布状态，设置发布时间
+        if ($status === 'published' && $currentPost['status'] !== 'published') {
+            $data['published_at'] = date('Y-m-d H:i:s');
+        }
         
         // 验证数据
         $errors = $this->validatePostData($data, $id);
@@ -190,11 +205,11 @@ class AdminPostController extends BaseController
         
         try {
             $this->postModel->update($id, $data);
-            
-            // 处理标签
-            $tags = $this->getPost('tags', []);
-            $this->postModel->syncTags($id, $tags);
-            
+
+            // TODO: 处理标签功能待实现
+            // $tags = $this->getPost('tags', []);
+            // $this->postModel->syncTags($id, $tags);
+
             $this->setFlash('success', '文章更新成功！');
             $this->redirect('admin/posts');
         } catch (Exception $e) {
