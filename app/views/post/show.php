@@ -618,7 +618,35 @@ $(document).ready(function() {
 
                 // Add click event
                 $copyBtn.click(function() {
-                    var codeText = $code.text();
+                    // Get the original text content while preserving formatting
+                    var codeText;
+
+                    // Try different methods to get properly formatted text
+                    if ($code[0].innerText) {
+                        // innerText preserves line breaks and formatting
+                        codeText = $code[0].innerText;
+                    } else if ($code[0].textContent) {
+                        // textContent as fallback
+                        codeText = $code[0].textContent;
+                    } else {
+                        // Last resort: convert HTML to text manually
+                        var htmlContent = $code.html();
+                        codeText = htmlContent
+                            .replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/div>/gi, '\n')
+                            .replace(/<\/p>/gi, '\n')
+                            .replace(/<[^>]*>/g, '')
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&quot;/g, '"')
+                            .replace(/&#39;/g, "'");
+                    }
+
+                    // Clean up extra whitespace but preserve intentional formatting
+                    codeText = codeText.replace(/^\s+|\s+$/g, ''); // trim start/end
+
+                    console.log('Copying code:', codeText.substring(0, 100) + '...');
 
                     // Use modern clipboard API if available
                     if (navigator.clipboard && window.isSecureContext) {
