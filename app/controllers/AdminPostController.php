@@ -37,7 +37,7 @@ class AdminPostController extends BaseController
         $totalPages = ceil($totalCount / $perPage);
         
         // 获取分类列表
-        $categories = $this->categoryModel->getAll();
+        $categories = $this->categoryModel->findAll([], 'sort_order ASC, name ASC');
         
         // 获取统计数据
         $stats = [
@@ -75,8 +75,8 @@ class AdminPostController extends BaseController
             return;
         }
         
-        $categories = $this->categoryModel->getAll();
-        $tags = $this->tagModel->getAll();
+        $categories = $this->categoryModel->findAll([], 'sort_order ASC, name ASC');
+        $tags = $this->tagModel->findAll([], 'name ASC');
         
         $this->render('admin/posts/create', [
             'title' => '添加文章',
@@ -149,8 +149,8 @@ class AdminPostController extends BaseController
             return;
         }
         
-        $categories = $this->categoryModel->getAll();
-        $tags = $this->tagModel->getAll();
+        $categories = $this->categoryModel->findAll([], 'sort_order ASC, name ASC');
+        $tags = $this->tagModel->findAll([], 'name ASC');
         $postTags = $this->postModel->getTags($id);
         
         $this->render('admin/posts/edit', [
