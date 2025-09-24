@@ -1,0 +1,54 @@
+/* 深色主题样式 */
+
+[data-theme="dark"] {
+  --md-background: #121212;
+  --md-surface: #1E1E1E;
+  --md-text-primary: #E0E0E0;
+  --md-text-secondary: #BDBDBD;
+  --md-divider: #424242;
+}
+
+[data-theme="dark"] .card {
+  background-color: var(--md-surface);
+  color: var(--md-text-primary);
+}
+
+[data-theme="dark"] .form-input {
+  background: var(--md-surface);
+  color: var(--md-text-primary);
+  border-color: var(--md-divider);
+}
+
+[data-theme="dark"] .app-bar {
+  background-color: #1976D2;
+}
+
+/* 深色模式下的链接颜色 */
+[data-theme="dark"] a {
+  color: #64B5F6;
+}
+
+[data-theme="dark"] .btn-outlined {
+  color: var(--md-primary-light);
+  border-color: var(--md-primary-light);
+}
+
+/* 深色模式下的文本颜色 */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--md-text-primary);
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div {
+  color: var(--md-text-primary);
+}
+
+[data-theme="dark"] small {
+  color: var(--md-text-secondary);
+}
