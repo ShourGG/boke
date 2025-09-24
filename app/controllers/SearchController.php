@@ -122,7 +122,8 @@ class SearchController extends BaseController
      */
     private function searchPosts($query, $page, $perPage)
     {
-        return $this->postModel->search($query, $page, $perPage);
+        $result = $this->postModel->search($query, $page, $perPage);
+        return $result['data'] ?? [];
     }
 
     /**
@@ -130,7 +131,8 @@ class SearchController extends BaseController
      */
     private function searchWebsites($query, $page, $perPage)
     {
-        return $this->websiteModel->search($query, $page, $perPage);
+        $result = $this->websiteModel->search($query, $page, $perPage);
+        return $result['data'] ?? [];
     }
     
     /**
