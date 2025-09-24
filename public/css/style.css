@@ -507,10 +507,21 @@ footer a:hover {
 
 /* Banner容器 */
 .banner {
-    height: 100%;
+    height: 100vh;
     position: relative;
     overflow: hidden;
     cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner .full-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .banner .mask {
@@ -518,6 +529,9 @@ footer a:hover {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .banner[parallax="true"] {
@@ -557,6 +571,11 @@ footer a:hover {
 .navbar.scrolling-navbar {
     background-color: transparent !important;
     transition: background-color 0.5s ease-in-out, padding 0.5s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .navbar.scrolling-navbar.top-nav-collapse {
@@ -643,6 +662,13 @@ footer a:hover {
     60% {
         transform: translateX(-50%) translateY(-5px);
     }
+}
+
+/* 主内容区域 */
+#board {
+    margin-top: -1rem;
+    position: relative;
+    z-index: 10;
 }
 
 /* 响应式设计 */

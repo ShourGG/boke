@@ -12,6 +12,9 @@
     <!-- Font Awesome 图标 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
+    <!-- 主要样式文件 -->
+    <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/style.css">
+
     <!-- Fluid主题样式 -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/material-styles.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/dark-theme.css">
