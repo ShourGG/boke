@@ -98,8 +98,7 @@ class Website extends BaseModel
         
         // Get records
         $sql = "SELECT w.*, w.`title` as name, wc.name as category_name, wc.slug as category_slug,
-                       wc.icon as category_icon, wc.color as category_color,
-                       COALESCE(w.rating, 0) as rating, COALESCE(w.views, 0) as views
+                       wc.icon as category_icon, wc.color as category_color
                 FROM `{$this->table}` w
                 LEFT JOIN `website_categories` wc ON w.category_id = wc.id
                 WHERE w.`status` = 'approved'

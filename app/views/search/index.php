@@ -88,7 +88,7 @@
                                                         <i class="fas fa-calendar"></i> <?= date('Y-m-d', strtotime($post['created_at'])) ?>
                                                     </small>
                                                     <small class="text-muted">
-                                                        <i class="fas fa-eye"></i> <?= $post['views'] ?>
+                                                        <i class="fas fa-eye"></i> <?= $post['views'] ?? 0 ?>
                                                     </small>
                                                 </div>
                                             </div>
@@ -130,7 +130,7 @@
                                                         <?= htmlspecialchars($website['category_name']) ?>
                                                     </span>
                                                     <small class="text-muted">
-                                                        <i class="fas fa-star"></i> <?= $website['rating'] ?>
+                                                        <i class="fas fa-star"></i> <?= $website['rating'] ?? '0.0' ?>
                                                     </small>
                                                 </div>
                                             </div>
@@ -165,7 +165,7 @@
                                             </div>
                                             <div class="text-muted small">
                                                 <i class="fas fa-calendar"></i> <?= date('Y-m-d', strtotime($post['created_at'])) ?>
-                                                <i class="fas fa-eye ml-2"></i> <?= $post['views'] ?>
+                                                <i class="fas fa-eye ml-2"></i> <?= $post['views'] ?? 0 ?>
                                             </div>
                                         </div>
                                     </div>
@@ -193,8 +193,8 @@
                                                 <?= htmlspecialchars($website['category_name']) ?>
                                             </span>
                                             <div class="text-muted small">
-                                                <i class="fas fa-star"></i> <?= $website['rating'] ?>
-                                                <i class="fas fa-eye ml-2"></i> <?= $website['views'] ?>
+                                                <i class="fas fa-star"></i> <?= $website['rating'] ?? '0.0' ?>
+                                                <i class="fas fa-eye ml-2"></i> <?= $website['views'] ?? 0 ?>
                                             </div>
                                         </div>
                                     </div>
