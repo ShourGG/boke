@@ -20,30 +20,42 @@
         <div class="stat-card primary position-relative">
             <div class="stat-number"><?= $stats['total_posts'] ?></div>
             <div class="stat-label">总文章数</div>
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i> +12%
+            </div>
             <i class="fas fa-file-alt stat-icon"></i>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card success position-relative">
             <div class="stat-number"><?= $stats['published_posts'] ?></div>
             <div class="stat-label">已发布文章</div>
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i> +8%
+            </div>
             <i class="fas fa-check-circle stat-icon"></i>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card warning position-relative">
             <div class="stat-number"><?= $stats['draft_posts'] ?></div>
             <div class="stat-label">草稿文章</div>
+            <div class="stat-trend down">
+                <i class="fas fa-arrow-down"></i> -5%
+            </div>
             <i class="fas fa-edit stat-icon"></i>
         </div>
     </div>
-    
+
     <div class="col-md-3 col-sm-6 mb-3">
         <div class="stat-card info position-relative">
             <div class="stat-number"><?= $stats['total_comments'] ?></div>
             <div class="stat-label">评论总数</div>
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i> +15%
+            </div>
             <i class="fas fa-comments stat-icon"></i>
         </div>
     </div>

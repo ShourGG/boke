@@ -200,15 +200,15 @@
                                 <td>
                                     <?php
                                     $statusClass = [
-                                        'draft' => 'warning',
-                                        'published' => 'success'
+                                        'draft' => 'draft',
+                                        'published' => 'published'
                                     ];
                                     $statusText = [
                                         'draft' => '草稿',
                                         'published' => '已发布'
                                     ];
                                     ?>
-                                    <span class="badge bg-<?= $statusClass[$post['status']] ?>">
+                                    <span class="status-badge <?= $statusClass[$post['status']] ?>">
                                         <?= $statusText[$post['status']] ?>
                                     </span>
                                 </td>

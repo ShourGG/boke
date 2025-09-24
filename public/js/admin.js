@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme system first
     initThemeSystem();
 
+    // Initialize UI enhancements
+    initTableEnhancements();
+    initCardAnimations();
+    initFormEnhancements();
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -448,4 +453,82 @@ function handleSystemThemeChange(e) {
         const newTheme = e.matches ? 'dark' : 'light';
         applyTheme(newTheme);
     }
+}
+
+/**
+ * Initialize table enhancements
+ */
+function initTableEnhancements() {
+    // Add loading states for table actions
+    const tableButtons = document.querySelectorAll('.table .btn');
+    tableButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (this.classList.contains('btn-outline-danger')) {
+                // Add confirmation for delete actions
+                if (!confirm('确定要删除这个项目吗？此操作不可撤销。')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+
+            // Add loading state
+            const originalContent = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            this.disabled = true;
+
+            // Restore button after 2 seconds (or when page reloads)
+            setTimeout(() => {
+                this.innerHTML = originalContent;
+                this.disabled = false;
+            }, 2000);
+        });
+    });
+
+    // Enhanced table row hover effects
+    const tableRows = document.querySelectorAll('.table tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-1px)';
+        });
+
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+/**
+ * Initialize card animations
+ */
+function initCardAnimations() {
+    // Add staggered animation for stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate-fade-in');
+    });
+
+    // Add hover sound effect simulation (visual feedback)
+    const cards = document.querySelectorAll('.card, .stat-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        });
+    });
+}
+
+/**
+ * Enhanced form validation
+ */
+function initFormEnhancements() {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+                submitBtn.disabled = true;
+            }
+        });
+    });
 }

@@ -201,9 +201,9 @@
                                 <td>
                                     <?php
                                     $statusClass = [
-                                        'pending' => 'warning',
-                                        'approved' => 'success',
-                                        'rejected' => 'danger'
+                                        'pending' => 'pending',
+                                        'approved' => 'approved',
+                                        'rejected' => 'rejected'
                                     ];
                                     $statusText = [
                                         'pending' => '待审核',
@@ -211,7 +211,7 @@
                                         'rejected' => '已拒绝'
                                     ];
                                     ?>
-                                    <span class="badge bg-<?= $statusClass[$website['status']] ?>">
+                                    <span class="status-badge <?= $statusClass[$website['status']] ?>">
                                         <?= $statusText[$website['status']] ?>
                                     </span>
                                 </td>
