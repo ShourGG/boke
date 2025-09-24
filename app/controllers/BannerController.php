@@ -44,11 +44,16 @@ class BannerController extends BaseController
             try {
                 $data = $_POST;
 
+                // Debug: Log received POST data
+                error_log("BannerController::update - Received POST data: " . print_r($data, true));
+                error_log("BannerController::update - Received FILES data: " . print_r($_FILES, true));
+
                 // Handle file upload if provided
                 if (isset($_FILES['banner_image_file']) && $_FILES['banner_image_file']['error'] === UPLOAD_ERR_OK) {
                     $uploadedUrl = $this->bannerSettings->uploadBannerImage($_FILES['banner_image_file']);
                     if ($uploadedUrl) {
                         $data['banner_image'] = $uploadedUrl;
+                        error_log("BannerController::update - File uploaded successfully: " . $uploadedUrl);
                     } else {
                         throw new Exception('Failed to upload banner image.');
                     }
@@ -56,12 +61,15 @@ class BannerController extends BaseController
 
                 $result = $this->bannerSettings->updateSettings($data);
 
+                error_log("BannerController::update - Update result: " . ($result ? 'SUCCESS' : 'FAILED'));
+
                 if ($result) {
                     $this->setFlash('success', 'Banner设置已成功更新！');
                 } else {
                     $this->setFlash('error', 'Banner设置更新失败，请重试。');
                 }
             } catch (Exception $e) {
+                error_log("BannerController::update - Exception: " . $e->getMessage());
                 $this->setFlash('error', 'Error: ' . $e->getMessage());
             }
         }

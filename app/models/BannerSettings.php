@@ -55,6 +55,9 @@ class BannerSettings
     public function updateSettings($data)
     {
         try {
+            // Debug: Log received data
+            error_log("BannerSettings::updateSettings - Received data: " . print_r($data, true));
+
             // Validate data
             $bannerImage = filter_var($data['banner_image'] ?? '', FILTER_SANITIZE_URL);
             $bannerTitle = htmlspecialchars($data['banner_title'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -62,42 +65,56 @@ class BannerSettings
             $bannerEnabled = isset($data['banner_enabled']) ? 1 : 0;
             $parallaxEnabled = isset($data['parallax_enabled']) ? 1 : 0;
             $overlayOpacity = floatval($data['overlay_opacity'] ?? 0.30);
-            
+
             // Ensure opacity is within valid range
             $overlayOpacity = max(0, min(1, $overlayOpacity));
-            
+
+            // Debug: Log processed data
+            error_log("BannerSettings::updateSettings - Processed data: " . json_encode([
+                'banner_image' => $bannerImage,
+                'banner_title' => $bannerTitle,
+                'banner_subtitle' => $bannerSubtitle,
+                'banner_enabled' => $bannerEnabled,
+                'parallax_enabled' => $parallaxEnabled,
+                'overlay_opacity' => $overlayOpacity
+            ]));
+
             // Check if settings exist
             $stmt = $this->db->prepare("SELECT id FROM banner_settings LIMIT 1");
             $stmt->execute();
             $exists = $stmt->fetch();
-            
+
             if ($exists) {
                 // Update existing settings
+                error_log("BannerSettings::updateSettings - Updating existing record with ID: " . $exists['id']);
                 $stmt = $this->db->prepare("
-                    UPDATE banner_settings 
-                    SET banner_image = ?, banner_title = ?, banner_subtitle = ?, 
+                    UPDATE banner_settings
+                    SET banner_image = ?, banner_title = ?, banner_subtitle = ?,
                         banner_enabled = ?, parallax_enabled = ?, overlay_opacity = ?,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 ");
                 $result = $stmt->execute([
-                    $bannerImage, $bannerTitle, $bannerSubtitle, 
+                    $bannerImage, $bannerTitle, $bannerSubtitle,
                     $bannerEnabled, $parallaxEnabled, $overlayOpacity,
                     $exists['id']
                 ]);
+                error_log("BannerSettings::updateSettings - Update result: " . ($result ? 'SUCCESS' : 'FAILED'));
             } else {
                 // Insert new settings
+                error_log("BannerSettings::updateSettings - Inserting new record");
                 $stmt = $this->db->prepare("
-                    INSERT INTO banner_settings 
+                    INSERT INTO banner_settings
                     (banner_image, banner_title, banner_subtitle, banner_enabled, parallax_enabled, overlay_opacity)
                     VALUES (?, ?, ?, ?, ?, ?)
                 ");
                 $result = $stmt->execute([
-                    $bannerImage, $bannerTitle, $bannerSubtitle, 
+                    $bannerImage, $bannerTitle, $bannerSubtitle,
                     $bannerEnabled, $parallaxEnabled, $overlayOpacity
                 ]);
+                error_log("BannerSettings::updateSettings - Insert result: " . ($result ? 'SUCCESS' : 'FAILED'));
             }
-            
+
             return $result;
         } catch (PDOException $e) {
             error_log("Banner settings update error: " . $e->getMessage());
