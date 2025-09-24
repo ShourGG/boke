@@ -552,7 +552,25 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
 
 <!-- 本地Editor.md资源 -->
 <link rel="stylesheet" href="/public/editor.md/css/editormd.min.css">
+<!-- jQuery冲突处理 -->
+<script>
+// 保存现有的Bootstrap引用
+if (typeof window.bootstrap !== 'undefined') {
+    window._bootstrap = window.bootstrap;
+}
+</script>
 <script src="/public/editor.md/lib/jquery.min.js"></script>
+<script>
+// 恢复Bootstrap引用，避免jQuery覆盖
+if (typeof window._bootstrap !== 'undefined') {
+    window.bootstrap = window._bootstrap;
+    delete window._bootstrap;
+}
+// 为Editor.md设置jQuery引用
+if (typeof window.jQuery !== 'undefined') {
+    window.editormdJQuery = window.jQuery;
+}
+</script>
 <script src="/public/editor.md/editormd.min.js"></script>
 
 <!-- 编辑器样式 -->

@@ -176,6 +176,8 @@
         </div>
     </footer>
 
+    <!-- Bootstrap冲突修复 (必须在Bootstrap之前加载) -->
+    <script src="<?= SITE_URL ?>/public/js/bootstrap-fix.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Main JavaScript -->
