@@ -30,6 +30,9 @@
     <!-- 字体和卡片设计修复 (最后加载以确保优先级) -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/typography-fix.css">
 
+    <!-- 图片灯箱样式 -->
+    <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/lightbox.css">
+
     <!-- SEO Meta Tags -->
     <meta property="og:title" content="<?= isset($title) ? htmlspecialchars($title) : SITE_NAME ?>">
     <meta property="og:description" content="<?= isset($description) ? htmlspecialchars($description) : SITE_DESCRIPTION ?>">
@@ -177,6 +180,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Main JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/main.js"></script>
+    <!-- 图片灯箱功能 -->
+    <script src="<?= SITE_URL ?>/public/js/lightbox.js"></script>
     <!-- Fluid主题JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/theme-toggle.js"></script>
 </body>
