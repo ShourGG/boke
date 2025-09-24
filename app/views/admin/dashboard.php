@@ -110,6 +110,11 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="<?= SITE_URL ?>/admin/banner" class="btn btn-secondary w-100">
+                            <i class="fas fa-image"></i> Banner设置
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
                         <a href="<?= SITE_URL ?>/admin/websites/create" class="btn btn-success w-100">
                             <i class="fas fa-globe"></i> 添加网站
                         </a>
@@ -119,6 +124,8 @@
                             <i class="fas fa-list"></i> 管理文章
                         </a>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3 col-sm-6 mb-3">
                         <a href="<?= SITE_URL ?>/admin/settings" class="btn btn-warning w-100">
                             <i class="fas fa-cogs"></i> 系统设置

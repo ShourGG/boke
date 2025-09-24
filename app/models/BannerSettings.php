@@ -26,7 +26,7 @@ class BannerSettings
             // Return default settings if none exist
             if (!$result) {
                 return [
-                    'banner_image' => 'https://rmt.ladydaily.com/fetch/fluid/storage/banner.png',
+                    'banner_image' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
                     'banner_title' => '',
                     'banner_subtitle' => SITE_DESCRIPTION,
                     'banner_enabled' => 1,
@@ -39,7 +39,7 @@ class BannerSettings
         } catch (PDOException $e) {
             error_log("Banner settings fetch error: " . $e->getMessage());
             return [
-                'banner_image' => 'https://rmt.ladydaily.com/fetch/fluid/storage/banner.png',
+                'banner_image' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
                 'banner_title' => '',
                 'banner_subtitle' => SITE_DESCRIPTION,
                 'banner_enabled' => 1,
