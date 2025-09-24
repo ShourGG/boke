@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $data['title'] ?></title>
+    <title><?= $title ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/admin.css">
@@ -57,14 +57,13 @@
                 </div>
 
                 <!-- Flash Messages -->
-                <?php if (isset($_SESSION['flash'])): ?>
-                    <?php foreach ($_SESSION['flash'] as $type => $message): ?>
+                <?php if (isset($flash) && !empty($flash)): ?>
+                    <?php foreach ($flash as $type => $message): ?>
                         <div class="alert alert-<?= $type === 'error' ? 'danger' : $type ?> alert-dismissible fade show">
                             <?= htmlspecialchars($message) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     <?php endforeach; ?>
-                    <?php unset($_SESSION['flash']); ?>
                 <?php endif; ?>
 
                 <!-- Banner设置表单 -->
@@ -81,8 +80,8 @@
                                     <!-- Banner启用状态 -->
                                     <div class="mb-3">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="banner_enabled" name="banner_enabled" 
-                                                   <?= $data['settings']['banner_enabled'] ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="checkbox" id="banner_enabled" name="banner_enabled"
+                                                   <?= $settings['banner_enabled'] ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="banner_enabled">
                                                 启用Banner
                                             </label>
@@ -93,8 +92,8 @@
                                     <!-- Banner图片 -->
                                     <div class="mb-3">
                                         <label for="banner_image" class="form-label">Banner背景图片URL</label>
-                                        <input type="url" class="form-control" id="banner_image" name="banner_image" 
-                                               value="<?= htmlspecialchars($data['settings']['banner_image']) ?>"
+                                        <input type="url" class="form-control" id="banner_image" name="banner_image"
+                                               value="<?= htmlspecialchars($settings['banner_image']) ?>"
                                                placeholder="https://example.com/banner.jpg">
                                         <small class="form-text text-muted">推荐尺寸：1920x1080px，支持JPG、PNG、WebP格式</small>
                                     </div>
@@ -110,8 +109,8 @@
                                     <!-- Banner标题 -->
                                     <div class="mb-3">
                                         <label for="banner_title" class="form-label">Banner标题</label>
-                                        <input type="text" class="form-control" id="banner_title" name="banner_title" 
-                                               value="<?= htmlspecialchars($data['settings']['banner_title']) ?>"
+                                        <input type="text" class="form-control" id="banner_title" name="banner_title"
+                                               value="<?= htmlspecialchars($settings['banner_title']) ?>"
                                                placeholder="留空则不显示标题">
                                     </div>
 
@@ -119,17 +118,17 @@
                                     <div class="mb-3">
                                         <label for="banner_subtitle" class="form-label">Banner副标题</label>
                                         <textarea class="form-control" id="banner_subtitle" name="banner_subtitle" rows="2"
-                                                  placeholder="留空则使用网站描述"><?= htmlspecialchars($data['settings']['banner_subtitle']) ?></textarea>
+                                                  placeholder="留空则使用网站描述"><?= htmlspecialchars($settings['banner_subtitle']) ?></textarea>
                                     </div>
 
                                     <!-- 遮罩透明度 -->
                                     <div class="mb-3">
                                         <label for="overlay_opacity" class="form-label">遮罩透明度</label>
-                                        <input type="range" class="form-range" id="overlay_opacity" name="overlay_opacity" 
-                                               min="0" max="1" step="0.05" value="<?= $data['settings']['overlay_opacity'] ?>">
+                                        <input type="range" class="form-range" id="overlay_opacity" name="overlay_opacity"
+                                               min="0" max="1" step="0.05" value="<?= $settings['overlay_opacity'] ?>">
                                         <div class="d-flex justify-content-between">
                                             <small>透明</small>
-                                            <small id="opacity_value"><?= round($data['settings']['overlay_opacity'] * 100) ?>%</small>
+                                            <small id="opacity_value"><?= round($settings['overlay_opacity'] * 100) ?>%</small>
                                             <small>不透明</small>
                                         </div>
                                     </div>
@@ -137,8 +136,8 @@
                                     <!-- 视差效果 -->
                                     <div class="mb-3">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="parallax_enabled" name="parallax_enabled" 
-                                                   <?= $data['settings']['parallax_enabled'] ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="checkbox" id="parallax_enabled" name="parallax_enabled"
+                                                   <?= $settings['parallax_enabled'] ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="parallax_enabled">
                                                 启用视差滚动效果
                                             </label>
@@ -169,16 +168,16 @@
                             </div>
                             <div class="card-body">
                                 <div class="banner-preview" style="height: 200px; position: relative; overflow: hidden; border-radius: 8px;">
-                                    <div style="background: url('<?= htmlspecialchars($data['settings']['banner_image']) ?>') no-repeat center center; 
+                                    <div style="background: url('<?= htmlspecialchars($settings['banner_image']) ?>') no-repeat center center;
                                                 background-size: cover; width: 100%; height: 100%; position: absolute;">
-                                        <div style="position: absolute; width: 100%; height: 100%; 
-                                                    background-color: rgba(0, 0, 0, <?= $data['settings']['overlay_opacity'] ?>);
+                                        <div style="position: absolute; width: 100%; height: 100%;
+                                                    background-color: rgba(0, 0, 0, <?= $settings['overlay_opacity'] ?>);
                                                     display: flex; align-items: center; justify-content: center;">
                                             <div class="text-center text-white">
-                                                <?php if ($data['settings']['banner_title']): ?>
-                                                    <h6><?= htmlspecialchars($data['settings']['banner_title']) ?></h6>
+                                                <?php if ($settings['banner_title']): ?>
+                                                    <h6><?= htmlspecialchars($settings['banner_title']) ?></h6>
                                                 <?php endif; ?>
-                                                <small><?= htmlspecialchars($data['settings']['banner_subtitle'] ?: SITE_DESCRIPTION) ?></small>
+                                                <small><?= htmlspecialchars($settings['banner_subtitle'] ?: SITE_DESCRIPTION) ?></small>
                                             </div>
                                         </div>
                                     </div>

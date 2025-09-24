@@ -6,12 +6,13 @@ require_once 'app/models/BannerSettings.php';
  * Banner Management Controller
  * Handles banner configuration in admin panel
  */
-class BannerController
+class BannerController extends BaseController
 {
     private $bannerSettings;
-    
+
     public function __construct()
     {
+        parent::__construct();
         $this->bannerSettings = new BannerSettings();
     }
     
@@ -21,19 +22,14 @@ class BannerController
     public function index()
     {
         // Check admin authentication
-        if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
-            header('Location: ' . SITE_URL . '/admin/login');
-            exit;
-        }
-        
+        $this->requireAuth();
+
         $settings = $this->bannerSettings->getSettings();
-        
-        $data = [
-            'title' => 'Banner设置 - ' . SITE_NAME,
-            'settings' => $settings
-        ];
-        
-        include 'app/views/admin/banner/index.php';
+
+        $this->data['title'] = 'Banner设置 - ' . SITE_NAME;
+        $this->data['settings'] = $settings;
+
+        $this->render('admin/banner/index', $this->data);
     }
     
     /**
@@ -42,15 +38,12 @@ class BannerController
     public function update()
     {
         // Check admin authentication
-        if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
-            header('Location: ' . SITE_URL . '/admin/login');
-            exit;
-        }
-        
+        $this->requireAuth();
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = $_POST;
-                
+
                 // Handle file upload if provided
                 if (isset($_FILES['banner_image_file']) && $_FILES['banner_image_file']['error'] === UPLOAD_ERR_OK) {
                     $uploadedUrl = $this->bannerSettings->uploadBannerImage($_FILES['banner_image_file']);
@@ -60,21 +53,20 @@ class BannerController
                         throw new Exception('Failed to upload banner image.');
                     }
                 }
-                
+
                 $result = $this->bannerSettings->updateSettings($data);
-                
+
                 if ($result) {
-                    $_SESSION['flash']['success'] = 'Banner设置已成功更新！';
+                    $this->setFlash('success', 'Banner设置已成功更新！');
                 } else {
-                    $_SESSION['flash']['error'] = 'Banner设置更新失败，请重试。';
+                    $this->setFlash('error', 'Banner设置更新失败，请重试。');
                 }
             } catch (Exception $e) {
-                $_SESSION['flash']['error'] = 'Error: ' . $e->getMessage();
+                $this->setFlash('error', 'Error: ' . $e->getMessage());
             }
         }
-        
-        header('Location: ' . SITE_URL . '/admin/banner');
-        exit;
+
+        $this->redirect('/admin/banner');
     }
     
     /**
@@ -94,23 +86,20 @@ class BannerController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $settings = $_POST;
-            
+
             // Sanitize settings for preview
             $settings['banner_image'] = filter_var($settings['banner_image'] ?? '', FILTER_SANITIZE_URL);
             $settings['banner_title'] = htmlspecialchars($settings['banner_title'] ?? '', ENT_QUOTES, 'UTF-8');
             $settings['banner_subtitle'] = htmlspecialchars($settings['banner_subtitle'] ?? '', ENT_QUOTES, 'UTF-8');
             $settings['overlay_opacity'] = floatval($settings['overlay_opacity'] ?? 0.30);
-            
-            $data = [
-                'title' => 'Banner预览 - ' . SITE_NAME,
-                'settings' => $settings,
-                'preview_mode' => true
-            ];
-            
-            include 'app/views/admin/banner/preview.php';
+
+            $this->data['title'] = 'Banner预览 - ' . SITE_NAME;
+            $this->data['settings'] = $settings;
+            $this->data['preview_mode'] = true;
+
+            $this->render('admin/banner/preview', $this->data);
         } else {
-            header('Location: ' . SITE_URL . '/admin/banner');
-            exit;
+            $this->redirect('/admin/banner');
         }
     }
 }
