@@ -79,8 +79,8 @@ class BannerSettings
                 'overlay_opacity' => $overlayOpacity
             ]));
 
-            // Check if settings exist
-            $stmt = $this->db->prepare("SELECT id FROM banner_settings LIMIT 1");
+            // Check if settings exist (use same logic as getSettings - get latest record)
+            $stmt = $this->db->prepare("SELECT id FROM banner_settings ORDER BY id DESC LIMIT 1");
             $stmt->execute();
             $exists = $stmt->fetch();
 
