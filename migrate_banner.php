@@ -7,7 +7,11 @@
 echo "<!DOCTYPE html><html><head><title>Banner Migration</title></head><body>";
 echo "<h2>Banner Settings Migration</h2>";
 
+// Load configuration
 require_once 'config/config.php';
+
+// Load core classes
+require_once 'app/core/Database.php';
 
 try {
     $pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASS);

@@ -7,7 +7,13 @@
 echo "<!DOCTYPE html><html><head><title>Banner Debug</title></head><body>";
 echo "<h2>Banner Settings Debug</h2>";
 
+// Load configuration
 require_once 'config/config.php';
+
+// Load core classes
+require_once 'app/core/Database.php';
+
+// Load models
 require_once 'app/models/BannerSettings.php';
 
 try {
