@@ -74,9 +74,15 @@
                             <i class="fas fa-external-link-alt"></i> 查看网站
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" type="button" title="切换主题">
+                            <i class="fas fa-moon"></i>
+                            <span class="theme-text d-none d-md-inline">深色</span>
+                        </button>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i> 
+                            <i class="fas fa-user"></i>
                             <?= isset($_SESSION['admin_display_name']) ? htmlspecialchars($_SESSION['admin_display_name']) : '管理员' ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

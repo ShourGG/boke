@@ -5,6 +5,9 @@
 
 // Global admin functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme system first
+    initThemeSystem();
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -39,10 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Batch actions functionality
     initBatchActions();
-    
+
     // Form validation
     initFormValidation();
-    
+
     // Auto-save drafts (if applicable)
     initAutoSave();
 });
@@ -327,4 +330,122 @@ function loadSavedFormData(formId) {
  */
 function clearSavedFormData(formId) {
     localStorage.removeItem('autoSave_' + formId);
+}
+
+/**
+ * Theme System - Dark Mode Support
+ */
+function initThemeSystem() {
+    // Apply saved theme or detect system preference
+    const savedTheme = getThemePreference();
+    applyTheme(savedTheme);
+
+    // Initialize theme toggle button if it exists
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+        updateThemeToggleIcon(savedTheme);
+    }
+
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
+    }
+}
+
+/**
+ * Get user's theme preference
+ */
+function getThemePreference() {
+    // Check localStorage first
+    const savedTheme = localStorage.getItem('admin_theme');
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+        return savedTheme;
+    }
+
+    // Check system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+
+    return 'light';
+}
+
+/**
+ * Apply theme to the document
+ */
+function applyTheme(theme) {
+    const html = document.documentElement;
+
+    // Add transition class to prevent flashing
+    html.classList.add('theme-changing');
+
+    // Apply theme
+    if (theme === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+    } else {
+        html.removeAttribute('data-theme');
+    }
+
+    // Remove transition class after a short delay
+    setTimeout(() => {
+        html.classList.remove('theme-changing');
+    }, 50);
+
+    // Save preference
+    localStorage.setItem('admin_theme', theme);
+
+    // Update toggle button
+    updateThemeToggleIcon(theme);
+}
+
+/**
+ * Toggle between light and dark themes
+ */
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+}
+
+/**
+ * Update theme toggle button icon and text
+ */
+function updateThemeToggleIcon(theme) {
+    const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) return;
+
+    const icon = themeToggle.querySelector('i');
+    const text = themeToggle.querySelector('.theme-text');
+
+    if (theme === 'dark') {
+        if (icon) {
+            icon.className = 'fas fa-sun';
+        }
+        if (text) {
+            text.textContent = '浅色';
+        }
+        themeToggle.setAttribute('title', '切换到浅色模式');
+    } else {
+        if (icon) {
+            icon.className = 'fas fa-moon';
+        }
+        if (text) {
+            text.textContent = '深色';
+        }
+        themeToggle.setAttribute('title', '切换到深色模式');
+    }
+}
+
+/**
+ * Handle system theme changes
+ */
+function handleSystemThemeChange(e) {
+    // Only auto-switch if user hasn't manually set a preference
+    const savedTheme = localStorage.getItem('admin_theme');
+    if (!savedTheme) {
+        const newTheme = e.matches ? 'dark' : 'light';
+        applyTheme(newTheme);
+    }
 }

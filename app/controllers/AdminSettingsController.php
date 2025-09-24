@@ -51,6 +51,7 @@ class AdminSettingsController extends BaseController
             'comment_moderation' => $this->getPost('comment_moderation') ? 1 : 0,
             'enable_registration' => $this->getPost('enable_registration') ? 1 : 0,
             'maintenance_mode' => $this->getPost('maintenance_mode') ? 1 : 0,
+            'admin_theme_preference' => trim($this->getPost('admin_theme_preference', 'system')),
             'google_analytics' => trim($this->getPost('google_analytics')),
             'footer_text' => trim($this->getPost('footer_text'))
         ];
@@ -91,6 +92,7 @@ class AdminSettingsController extends BaseController
             'comment_moderation' => 1,
             'enable_registration' => 0,
             'maintenance_mode' => 0,
+            'admin_theme_preference' => 'system',
             'google_analytics' => '',
             'footer_text' => '© 2024 Koi Blog. All rights reserved.'
         ];

@@ -135,6 +135,35 @@
                 </div>
             </div>
             
+            <!-- 界面设置 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">界面设置</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="admin_theme_preference" class="form-label">
+                            <i class="fas fa-palette"></i> 管理后台主题偏好
+                        </label>
+                        <select class="form-control" id="admin_theme_preference" name="admin_theme_preference">
+                            <option value="system" <?= ($settings['admin_theme_preference'] ?? 'system') === 'system' ? 'selected' : '' ?>>
+                                跟随系统设置
+                            </option>
+                            <option value="light" <?= ($settings['admin_theme_preference'] ?? 'system') === 'light' ? 'selected' : '' ?>>
+                                浅色模式
+                            </option>
+                            <option value="dark" <?= ($settings['admin_theme_preference'] ?? 'system') === 'dark' ? 'selected' : '' ?>>
+                                深色模式
+                            </option>
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            设置管理后台的默认主题。用户仍可通过导航栏的主题切换按钮临时更改主题。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 高级设置 -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -143,11 +172,11 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="google_analytics" class="form-label">Google Analytics 跟踪ID</label>
-                        <input type="text" class="form-control" id="google_analytics" name="google_analytics" 
-                               value="<?= htmlspecialchars($settings['google_analytics']) ?>" 
+                        <input type="text" class="form-control" id="google_analytics" name="google_analytics"
+                               value="<?= htmlspecialchars($settings['google_analytics']) ?>"
                                placeholder="G-XXXXXXXXXX">
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="footer_text" class="form-label">页脚文字</label>
                         <textarea class="form-control" id="footer_text" name="footer_text" rows="2"><?= htmlspecialchars($settings['footer_text']) ?></textarea>

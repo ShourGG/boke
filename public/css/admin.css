@@ -1,35 +1,88 @@
 /**
  * Admin Panel Styles
- * Modern and clean admin interface design
+ * Modern and clean admin interface design with dark mode support
  */
+
+/* CSS Variables for Theme Support */
+:root {
+    /* Light theme (default) */
+    --admin-bg-primary: #f8f9fa;
+    --admin-bg-secondary: #ffffff;
+    --admin-bg-tertiary: #e9ecef;
+    --admin-text-primary: #2c3e50;
+    --admin-text-secondary: #6c757d;
+    --admin-text-muted: #adb5bd;
+    --admin-border-color: #dee2e6;
+    --admin-shadow-light: 0 2px 15px rgba(0,0,0,0.08);
+    --admin-shadow-medium: 0 5px 25px rgba(0,0,0,0.15);
+    --admin-primary-color: #3498db;
+    --admin-primary-hover: #2980b9;
+    --admin-success-color: #27ae60;
+    --admin-warning-color: #f39c12;
+    --admin-danger-color: #e74c3c;
+    --admin-info-color: #1abc9c;
+    --admin-card-bg: #ffffff;
+    --admin-navbar-bg: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --admin-table-header-bg: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    --admin-table-hover-bg: #f8f9fa;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+    --admin-bg-primary: #1a1a1a;
+    --admin-bg-secondary: #2d2d2d;
+    --admin-bg-tertiary: #404040;
+    --admin-text-primary: #e0e0e0;
+    --admin-text-secondary: #a0a0a0;
+    --admin-text-muted: #6c757d;
+    --admin-border-color: #404040;
+    --admin-shadow-light: 0 2px 15px rgba(0,0,0,0.3);
+    --admin-shadow-medium: 0 5px 25px rgba(0,0,0,0.4);
+    --admin-primary-color: #4a9eff;
+    --admin-primary-hover: #357abd;
+    --admin-success-color: #2ecc71;
+    --admin-warning-color: #f1c40f;
+    --admin-danger-color: #e67e22;
+    --admin-info-color: #17a2b8;
+    --admin-card-bg: #2d2d2d;
+    --admin-navbar-bg: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    --admin-table-header-bg: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --admin-table-hover-bg: rgba(255, 255, 255, 0.05);
+}
 
 /* Global Admin Styles */
 .admin-body {
-    background-color: #f8f9fa;
+    background-color: var(--admin-bg-primary);
+    color: var(--admin-text-primary);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Navigation */
 .navbar-dark {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--admin-navbar-bg) !important;
+    box-shadow: var(--admin-shadow-light);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .navbar-brand {
     font-weight: bold;
     font-size: 1.3rem;
+    color: white !important;
 }
 
 .navbar-nav .nav-link {
     transition: all 0.3s ease;
     border-radius: 5px;
     margin: 0 2px;
+    color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
     background-color: rgba(255,255,255,0.1);
     transform: translateY(-1px);
+    color: white !important;
 }
 
 /* Main Content */
@@ -37,6 +90,8 @@
     margin-top: 76px; /* Account for fixed navbar */
     min-height: calc(100vh - 76px);
     padding: 2rem 0;
+    background-color: var(--admin-bg-primary);
+    transition: background-color 0.3s ease;
 }
 
 /* Login Page */
@@ -76,19 +131,20 @@
 
 /* Cards */
 .card {
-    border: none;
+    border: 1px solid var(--admin-border-color);
     border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--admin-shadow-light);
+    background-color: var(--admin-card-bg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    box-shadow: var(--admin-shadow-medium);
 }
 
 .card-header {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    background: linear-gradient(135deg, var(--admin-primary-color) 0%, var(--admin-primary-hover) 100%);
     color: white;
     border: none;
     border-radius: 10px 10px 0 0 !important;
@@ -98,6 +154,13 @@
 .card-header h5 {
     margin: 0;
     font-weight: 500;
+    color: white;
+}
+
+.card-body {
+    background-color: var(--admin-card-bg);
+    color: var(--admin-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Statistics Cards */
@@ -161,20 +224,29 @@
 /* Forms */
 .form-control {
     border-radius: 8px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--admin-border-color);
     padding: 0.75rem 1rem;
+    background-color: var(--admin-card-bg);
+    color: var(--admin-text-primary);
     transition: all 0.3s ease;
 }
 
 .form-control:focus {
-    border-color: #3498db;
+    border-color: var(--admin-primary-color);
     box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    background-color: var(--admin-card-bg);
+    color: var(--admin-text-primary);
+}
+
+.form-control::placeholder {
+    color: var(--admin-text-muted);
 }
 
 .form-label {
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--admin-text-primary);
     margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
 }
 
 /* Buttons */
@@ -227,14 +299,16 @@
 
 /* Tables */
 .table {
-    background: white;
+    background: var(--admin-card-bg);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    box-shadow: var(--admin-shadow-light);
+    color: var(--admin-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    background: var(--admin-table-header-bg);
     color: white;
     border: none;
     font-weight: 500;
@@ -244,11 +318,18 @@
 .table tbody td {
     padding: 1rem;
     vertical-align: middle;
-    border-color: #f8f9fa;
+    border-color: var(--admin-border-color);
+    background-color: var(--admin-card-bg);
+    color: var(--admin-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--admin-table-hover-bg);
+}
+
+.table tbody tr:hover td {
+    background-color: var(--admin-table-hover-bg);
 }
 
 /* Badges */
@@ -398,4 +479,48 @@
 
 .border-radius-lg {
     border-radius: 15px;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.theme-toggle i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover i {
+    transform: rotate(180deg);
+}
+
+/* Theme transition for smooth switching */
+.theme-transition {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease !important;
+}
+
+/* Disable transitions during theme change to prevent flashing */
+.theme-changing * {
+    transition: none !important;
 }
