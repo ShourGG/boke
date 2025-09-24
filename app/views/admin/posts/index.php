@@ -282,36 +282,93 @@
     </div>
 </div>
 
-<script>
-// 全选功能
-document.getElementById('selectAll').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.post-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-});
+<!-- Floating Batch Action Button -->
+<button id="batchActionBtn" class="btn btn-primary" onclick="showBatchActionModal()">
+    <i class="fas fa-tasks me-2"></i>批量操作
+</button>
 
-// 批量操作
-function batchAction(action) {
+<!-- Batch Action Modal -->
+<div class="modal fade" id="batchActionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">批量操作</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">选择操作</label>
+                    <select class="form-control" id="batchActionSelect">
+                        <option value="">请选择操作</option>
+                        <option value="publish">批量发布</option>
+                        <option value="draft">设为草稿</option>
+                        <option value="delete">批量删除</option>
+                    </select>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    已选择 <span id="selectedCount">0</span> 个项目
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="executeBatchAction()">执行操作</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced batch operations with modal
+function showBatchActionModal() {
+    const selectedCount = document.querySelectorAll('.post-checkbox:checked').length;
+    document.getElementById('selectedCount').textContent = selectedCount;
+
+    const modal = new bootstrap.Modal(document.getElementById('batchActionModal'));
+    modal.show();
+}
+
+function executeBatchAction() {
     const selectedIds = [];
     document.querySelectorAll('.post-checkbox:checked').forEach(checkbox => {
         selectedIds.push(checkbox.value);
     });
-    
+
+    const action = document.getElementById('batchActionSelect').value;
+
     if (selectedIds.length === 0) {
-        alert('请选择要操作的文章');
+        if (typeof showNotification === 'function') {
+            showNotification('请选择要操作的文章', 'warning');
+        } else {
+            alert('请选择要操作的文章');
+        }
         return;
     }
-    
-    const actionText = {
+
+    if (!action) {
+        if (typeof showNotification === 'function') {
+            showNotification('请选择要执行的操作', 'warning');
+        } else {
+            alert('请选择要执行的操作');
+        }
+        return;
+    }
+
+    // Confirm action
+    const actionNames = {
         'publish': '发布',
         'draft': '设为草稿',
-        'feature': '设为推荐',
-        'unfeature': '取消推荐',
         'delete': '删除'
     };
-    
-    if (confirm(`确定要${actionText[action]}选中的 ${selectedIds.length} 篇文章吗？`)) {
+
+    if (confirm(`确定要${actionNames[action]}选中的${selectedIds.length}篇文章吗？`)) {
+        // Show loading state
+        const executeBtn = document.querySelector('#batchActionModal .btn-primary');
+        const originalText = executeBtn.innerHTML;
+        executeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>处理中...';
+        executeBtn.disabled = true;
+
+        // Execute batch action
         fetch('/admin/posts/batch-action', {
             method: 'POST',
             headers: {
@@ -324,36 +381,84 @@ function batchAction(action) {
         })
         .then(response => response.json())
         .then(data => {
+            // Hide modal
+            bootstrap.Modal.getInstance(document.getElementById('batchActionModal')).hide();
+
             if (data.success) {
-                alert(data.message);
-                location.reload();
+                if (typeof showNotification === 'function') {
+                    showNotification(`成功${actionNames[action]}了${selectedIds.length}篇文章`, 'success');
+                } else {
+                    alert(data.message);
+                }
+
+                // Clear selections and reload
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
             } else {
-                alert('操作失败：' + data.error);
+                if (typeof showNotification === 'function') {
+                    showNotification('操作失败：' + data.error, 'danger');
+                } else {
+                    alert('操作失败：' + data.error);
+                }
             }
         })
         .catch(error => {
-            alert('操作失败：' + error.message);
+            if (typeof showNotification === 'function') {
+                showNotification('操作失败：' + error.message, 'danger');
+            } else {
+                alert('操作失败：' + error.message);
+            }
+        })
+        .finally(() => {
+            // Reset button
+            executeBtn.innerHTML = originalText;
+            executeBtn.disabled = false;
         });
     }
 }
 
-// 删除单篇文章
+// Delete individual post with enhanced UX
 function deletePost(id) {
-    if (confirm('确定要删除这篇文章吗？')) {
+    if (confirm('确定要删除这篇文章吗？此操作不可撤销。')) {
+        const row = document.querySelector(`input[value="${id}"]`).closest('tr');
+        if (row) {
+            row.classList.add('animate-shake');
+        }
+
         fetch(`/admin/posts/delete/${id}`, {
             method: 'POST'
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
-                location.reload();
+                if (row) {
+                    row.classList.add('animate-fade-out');
+                    setTimeout(() => {
+                        row.remove();
+                    }, 300);
+                }
+
+                if (typeof showNotification === 'function') {
+                    showNotification('文章已删除', 'success');
+                } else {
+                    alert(data.message);
+                    location.reload();
+                }
             } else {
-                alert('删除失败：' + data.error);
+                if (typeof showNotification === 'function') {
+                    showNotification('删除失败：' + data.error, 'danger');
+                } else {
+                    alert('删除失败：' + data.error);
+                }
             }
         })
         .catch(error => {
-            alert('删除失败：' + error.message);
+            if (typeof showNotification === 'function') {
+                showNotification('删除失败：' + error.message, 'danger');
+            } else {
+                alert('删除失败：' + error.message);
+            }
         });
     }
 }

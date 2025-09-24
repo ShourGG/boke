@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initCardAnimations();
     initFormEnhancements();
 
+    // Initialize advanced features
+    initAdvancedFeatures();
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -531,4 +534,275 @@ function initFormEnhancements() {
             }
         });
     });
+}
+
+/**
+ * Initialize advanced UI features
+ */
+function initAdvancedFeatures() {
+    initDragAndDrop();
+    initBatchOperations();
+    initAdvancedAnimations();
+    initTooltipEnhancements();
+}
+
+/**
+ * Initialize drag and drop functionality for table rows
+ */
+function initDragAndDrop() {
+    const tableRows = document.querySelectorAll('.table tbody tr');
+
+    tableRows.forEach(row => {
+        row.draggable = true;
+        row.addEventListener('dragstart', handleDragStart);
+        row.addEventListener('dragover', handleDragOver);
+        row.addEventListener('drop', handleDrop);
+        row.addEventListener('dragend', handleDragEnd);
+    });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.style.opacity = '0.5';
+    this.classList.add('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+
+    if (this !== draggedElement) {
+        const tbody = this.parentNode;
+        const draggedIndex = Array.from(tbody.children).indexOf(draggedElement);
+        const targetIndex = Array.from(tbody.children).indexOf(this);
+
+        if (draggedIndex < targetIndex) {
+            tbody.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            tbody.insertBefore(draggedElement, this);
+        }
+
+        // Add success animation
+        draggedElement.classList.add('animate-bounce-in');
+        setTimeout(() => {
+            draggedElement.classList.remove('animate-bounce-in');
+        }, 800);
+
+        // Show success message
+        showNotification('排序已更新', 'success');
+    }
+
+    this.classList.remove('drag-over');
+}
+
+function handleDragEnd(e) {
+    this.style.opacity = '';
+    this.classList.remove('dragging');
+
+    // Remove drag-over class from all rows
+    document.querySelectorAll('.drag-over').forEach(row => {
+        row.classList.remove('drag-over');
+    });
+}
+
+/**
+ * Initialize batch operations
+ */
+function initBatchOperations() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const itemCheckboxes = document.querySelectorAll('.post-checkbox, .website-checkbox');
+    const batchActionBtn = document.getElementById('batchActionBtn');
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+                updateRowSelection(checkbox);
+            });
+            updateBatchActionButton();
+        });
+    }
+
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateRowSelection(this);
+            updateSelectAllState();
+            updateBatchActionButton();
+        });
+    });
+}
+
+function updateRowSelection(checkbox) {
+    const row = checkbox.closest('tr');
+    if (checkbox.checked) {
+        row.classList.add('selected');
+        row.classList.add('animate-pulse');
+        setTimeout(() => row.classList.remove('animate-pulse'), 600);
+    } else {
+        row.classList.remove('selected');
+    }
+}
+
+function updateSelectAllState() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const itemCheckboxes = document.querySelectorAll('.post-checkbox, .website-checkbox');
+    const checkedCount = document.querySelectorAll('.post-checkbox:checked, .website-checkbox:checked').length;
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < itemCheckboxes.length;
+        selectAllCheckbox.checked = checkedCount === itemCheckboxes.length;
+    }
+}
+
+function updateBatchActionButton() {
+    const checkedCount = document.querySelectorAll('.post-checkbox:checked, .website-checkbox:checked').length;
+    const batchActionBtn = document.getElementById('batchActionBtn');
+
+    if (batchActionBtn) {
+        if (checkedCount > 0) {
+            batchActionBtn.style.display = 'inline-block';
+            batchActionBtn.textContent = `批量操作 (${checkedCount})`;
+            batchActionBtn.classList.add('animate-slide-in-up');
+        } else {
+            batchActionBtn.style.display = 'none';
+            batchActionBtn.classList.remove('animate-slide-in-up');
+        }
+    }
+}
+
+/**
+ * Initialize advanced animations
+ */
+function initAdvancedAnimations() {
+    // Staggered animation for cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.classList.add('animate-fade-in');
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-slide-in-up');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for scroll animations
+    document.querySelectorAll('.table, .stat-card').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+/**
+ * Enhanced tooltip system
+ */
+function initTooltipEnhancements() {
+    // Add dynamic tooltips for status badges
+    const statusBadges = document.querySelectorAll('.status-badge');
+    statusBadges.forEach(badge => {
+        const status = badge.textContent.trim();
+        let tooltipText = '';
+
+        switch(status) {
+            case '已发布':
+            case '已通过':
+                tooltipText = '内容已审核通过并公开显示';
+                break;
+            case '草稿':
+            case '待审核':
+                tooltipText = '内容正在等待审核或编辑中';
+                break;
+            case '已拒绝':
+                tooltipText = '内容未通过审核，需要修改';
+                break;
+        }
+
+        if (tooltipText) {
+            badge.setAttribute('data-bs-toggle', 'tooltip');
+            badge.setAttribute('data-bs-placement', 'top');
+            badge.setAttribute('title', tooltipText);
+        }
+    });
+
+    // Initialize new tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+/**
+ * Show notification system
+ */
+function showNotification(message, type = 'info', duration = 3000) {
+    // Create notification container if it doesn't exist
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+        `;
+        document.body.appendChild(container);
+    }
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show animate-slide-in-right`;
+    notification.style.cssText = `
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: none;
+        border-radius: 8px;
+    `;
+
+    notification.innerHTML = `
+        <i class="fas fa-${getIconForType(type)} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    container.appendChild(notification);
+
+    // Auto remove after duration
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            notification.classList.add('animate-slide-out-right');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, duration);
+}
+
+function getIconForType(type) {
+    const icons = {
+        'success': 'check-circle',
+        'danger': 'exclamation-triangle',
+        'warning': 'exclamation-circle',
+        'info': 'info-circle'
+    };
+    return icons[type] || 'info-circle';
 }
