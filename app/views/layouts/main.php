@@ -7,6 +7,10 @@
     <meta name="description" content="<?= isset($description) ? htmlspecialchars($description) : SITE_DESCRIPTION ?>">
     <meta name="keywords" content="<?= isset($keywords) ? htmlspecialchars($keywords) : SITE_KEYWORDS ?>">
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐟</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐟</text></svg>">
+
     <!-- Bootstrap CSS (Fluid主题依赖) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 图标 -->
@@ -19,6 +23,9 @@
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/material-styles.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/dark-theme.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/animation.css">
+
+    <!-- UI增强样式 -->
+    <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/ui-enhancements.css">
 
     <!-- SEO Meta Tags -->
     <meta property="og:title" content="<?= isset($title) ? htmlspecialchars($title) : SITE_NAME ?>">

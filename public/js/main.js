@@ -291,7 +291,7 @@ function initializeFluidBanner() {
             });
         });
 
-        // Also add touchstart for mobile devices
+        // Also add touchstart for mobile devices (passive for better performance)
         scrollDownBar.addEventListener('touchstart', function(e) {
             e.preventDefault();
             console.log('Scroll button touched!');
@@ -301,7 +301,7 @@ function initializeFluidBanner() {
                 top: bannerHeight,
                 behavior: 'smooth'
             });
-        });
+        }, { passive: false });
 
         console.log('Scroll button event listeners added successfully');
     } else {
