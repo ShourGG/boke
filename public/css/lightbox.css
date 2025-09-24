@@ -143,6 +143,16 @@
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* ===== 图标样式 ===== */
+.lightbox-icon {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 300;
+    font-size: 1.2em;
+    line-height: 1;
+    display: inline-block;
+    user-select: none;
+}
+
 /* ===== 加载指示器 ===== */
 .lightbox-loader {
     position: absolute;

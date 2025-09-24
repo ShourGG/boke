@@ -36,17 +36,17 @@ class ImageLightbox {
                     <div class="lightbox-loader" id="lightbox-loader"></div>
                     <img class="lightbox-image" id="lightbox-image" alt="Lightbox Image">
                     <button class="lightbox-close" id="lightbox-close" aria-label="关闭灯箱">
-                        <i class="fas fa-times"></i>
+                        <span class="lightbox-icon">✕</span>
                     </button>
                     <div class="lightbox-controls">
                         <button class="lightbox-btn" id="lightbox-zoom-out" aria-label="缩小">
-                            <i class="fas fa-search-minus"></i>
+                            <span class="lightbox-icon">−</span>
                         </button>
                         <button class="lightbox-btn" id="lightbox-reset" aria-label="重置">
-                            <i class="fas fa-expand-arrows-alt"></i>
+                            <span class="lightbox-icon">⌂</span>
                         </button>
                         <button class="lightbox-btn" id="lightbox-zoom-in" aria-label="放大">
-                            <i class="fas fa-search-plus"></i>
+                            <span class="lightbox-icon">+</span>
                         </button>
                     </div>
                     <div class="lightbox-info" id="lightbox-info"></div>
@@ -254,24 +254,31 @@ class ImageLightbox {
     
     startDrag(e) {
         if (this.currentScale <= 1) return;
-        
+
         this.isDragging = true;
         this.startX = e.clientX - this.translateX;
         this.startY = e.clientY - this.translateY;
         this.overlay.style.cursor = 'grabbing';
+        this.image.style.transition = 'none'; // 禁用过渡动画以提高拖拽流畅度
+        e.preventDefault();
     }
-    
+
     drag(e) {
         if (!this.isDragging) return;
-        
+
         e.preventDefault();
-        this.translateX = e.clientX - this.startX;
-        this.translateY = e.clientY - this.startY;
-        this.updateTransform();
+
+        // 使用requestAnimationFrame优化拖拽性能
+        requestAnimationFrame(() => {
+            this.translateX = e.clientX - this.startX;
+            this.translateY = e.clientY - this.startY;
+            this.updateTransform();
+        });
     }
-    
+
     endDrag() {
         this.isDragging = false;
+        this.image.style.transition = 'transform 0.2s ease'; // 恢复过渡动画
         if (this.currentScale > 1) {
             this.overlay.style.cursor = 'grab';
         }
@@ -284,21 +291,28 @@ class ImageLightbox {
             const touch = e.touches[0];
             this.startX = touch.clientX - this.translateX;
             this.startY = touch.clientY - this.translateY;
+            this.image.style.transition = 'none'; // 禁用过渡动画
+            e.preventDefault();
         }
     }
-    
+
     moveTouch(e) {
         if (!this.isDragging || e.touches.length !== 1) return;
-        
+
         e.preventDefault();
-        const touch = e.touches[0];
-        this.translateX = touch.clientX - this.startX;
-        this.translateY = touch.clientY - this.startY;
-        this.updateTransform();
+
+        // 使用requestAnimationFrame优化触摸拖拽性能
+        requestAnimationFrame(() => {
+            const touch = e.touches[0];
+            this.translateX = touch.clientX - this.startX;
+            this.translateY = touch.clientY - this.startY;
+            this.updateTransform();
+        });
     }
-    
+
     endTouch() {
         this.isDragging = false;
+        this.image.style.transition = 'transform 0.2s ease'; // 恢复过渡动画
     }
 }
 
