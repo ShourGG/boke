@@ -122,17 +122,15 @@ class SearchController extends BaseController
      */
     private function searchPosts($query, $page, $perPage)
     {
-        $offset = ($page - 1) * $perPage;
-        return $this->postModel->search($query, $offset, $perPage);
+        return $this->postModel->search($query, $page, $perPage);
     }
-    
+
     /**
      * 搜索网站
      */
     private function searchWebsites($query, $page, $perPage)
     {
-        $offset = ($page - 1) * $perPage;
-        return $this->websiteModel->search($query, $offset, $perPage);
+        return $this->websiteModel->search($query, $page, $perPage);
     }
     
     /**
