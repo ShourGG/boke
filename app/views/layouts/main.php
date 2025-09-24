@@ -82,13 +82,28 @@
             </nav>
 
             <!-- Fluid主题Banner -->
+            <?php
+            // 获取Banner设置
+            require_once 'app/models/BannerSettings.php';
+            $bannerSettings = new BannerSettings();
+            $bannerConfig = $bannerSettings->getSettings();
+
+            if ($bannerConfig['banner_enabled']):
+            ?>
             <div id="banner" class="banner"
-                 style="background: url('https://rmt.ladydaily.com/fetch/fluid/storage/banner.png') no-repeat center center; background-size: cover;">
+                 <?= $bannerConfig['parallax_enabled'] ? 'parallax="true"' : '' ?>
+                 style="background: url('<?= htmlspecialchars($bannerConfig['banner_image']) ?>') no-repeat center center; background-size: cover;">
                 <div class="full-bg-img">
-                    <div class="mask d-flex align-items-center justify-content-center" style="background-color: rgba(0, 0, 0, 0.3);">
+                    <div class="mask d-flex align-items-center justify-content-center"
+                         style="background-color: rgba(0, 0, 0, <?= $bannerConfig['overlay_opacity'] ?>);">
                         <div class="banner-text text-center fade-in-up">
+                            <?php if ($bannerConfig['banner_title']): ?>
+                                <div class="h1 mb-3">
+                                    <?= htmlspecialchars($bannerConfig['banner_title']) ?>
+                                </div>
+                            <?php endif; ?>
                             <div class="h2">
-                                <span id="subtitle"><?= isset($subtitle) ? $subtitle : SITE_DESCRIPTION ?></span>
+                                <span id="subtitle"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
                             </div>
                         </div>
 
@@ -99,6 +114,7 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
     </header>
 

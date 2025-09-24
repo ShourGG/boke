@@ -565,6 +565,15 @@ footer a:hover {
     font-size: 1.5rem;
     animation: bounce 2s infinite;
     cursor: pointer;
+    z-index: 1001;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.scroll-down-bar:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(-50%) scale(1.1);
 }
 
 /* 导航栏透明效果 */

@@ -82,6 +82,12 @@ class Router
         $this->addRoute('admin/websites/delete/{id}', 'AdminWebsiteController@delete');
         $this->addRoute('admin/websites/batch-action', 'AdminWebsiteController@batchAction');
 
+        // Admin Banner Management
+        $this->addRoute('admin/banner', 'BannerController@index');
+        $this->addRoute('admin/banner/update', 'BannerController@update');
+        $this->addRoute('admin/banner/preview', 'BannerController@preview');
+        $this->addRoute('admin/banner/settings', 'BannerController@getSettings');
+
         // Admin Settings
         $this->addRoute('admin/settings', 'AdminSettingsController@index');
         $this->addRoute('admin/settings/cache/clear', 'AdminSettingsController@clearCache');
