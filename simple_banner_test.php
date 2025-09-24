@@ -44,8 +44,8 @@ try {
             echo "<li>Opacity: " . $overlayOpacity . "</li>";
             echo "</ul>";
             
-            // Check if record exists
-            $stmt = $pdo->prepare("SELECT id FROM banner_settings LIMIT 1");
+            // Check if record exists (use same logic as display - get latest record)
+            $stmt = $pdo->prepare("SELECT id FROM banner_settings ORDER BY id DESC LIMIT 1");
             $stmt->execute();
             $exists = $stmt->fetch();
             
