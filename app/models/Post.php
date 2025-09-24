@@ -115,8 +115,8 @@ class Post extends BaseModel
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug
                 FROM `{$this->table}` p
                 LEFT JOIN `categories` c ON p.category_id = c.id
-                WHERE p.status = 'published'
-                AND (p.title LIKE ? OR p.content LIKE ? OR p.excerpt LIKE ?)
+                WHERE p.`status` = 'published'
+                AND (p.`title` LIKE ? OR p.`content` LIKE ? OR p.`excerpt` LIKE ?)
                 ORDER BY p.published_at DESC
                 LIMIT {$perPage} OFFSET {$offset}";
         
@@ -132,6 +132,37 @@ class Post extends BaseModel
             'to' => min($offset + $perPage, $total),
             'query' => $query
         ];
+    }
+
+    /**
+     * Get search count
+     */
+    public function getSearchCount($query)
+    {
+        $searchTerm = '%' . $query . '%';
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}`
+                WHERE `status` = 'published'
+                AND (`title` LIKE ? OR `content` LIKE ? OR `excerpt` LIKE ?)";
+
+        $result = $this->db->fetch($sql, [$searchTerm, $searchTerm, $searchTerm]);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get search suggestions
+     */
+    public function getSearchSuggestions($query, $limit = 5)
+    {
+        $searchTerm = '%' . $query . '%';
+        $sql = "SELECT p.`title`, p.`slug`, c.name as category_name
+                FROM `{$this->table}` p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.`status` = 'published'
+                AND p.`title` LIKE ?
+                ORDER BY p.published_at DESC
+                LIMIT {$limit}";
+
+        return $this->db->fetchAll($sql, [$searchTerm]);
     }
     
     /**

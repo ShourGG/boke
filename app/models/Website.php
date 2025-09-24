@@ -101,8 +101,8 @@ class Website extends BaseModel
                        wc.icon as category_icon, wc.color as category_color
                 FROM `{$this->table}` w
                 LEFT JOIN `website_categories` wc ON w.category_id = wc.id
-                WHERE w.status = 'approved'
-                AND (w.title LIKE ? OR w.description LIKE ? OR w.tags LIKE ?)
+                WHERE w.`status` = 'approved'
+                AND (w.`title` LIKE ? OR w.`description` LIKE ? OR w.`tags` LIKE ?)
                 ORDER BY w.is_featured DESC, w.created_at DESC
                 LIMIT {$perPage} OFFSET {$offset}";
         
@@ -325,20 +325,32 @@ class Website extends BaseModel
     /**
      * Get search count for pagination
      */
-    public function getSearchCount($search = '')
+    public function getSearchCount($query)
     {
-        $whereClause = "1=1";
-        $params = [];
+        $searchTerm = '%' . $query . '%';
+        $sql = "SELECT COUNT(*) as total FROM `{$this->table}`
+                WHERE `status` = 'approved'
+                AND (`title` LIKE ? OR `description` LIKE ? OR `tags` LIKE ?)";
 
-        if (!empty($search)) {
-            $whereClause .= " AND (title LIKE ? OR url LIKE ? OR description LIKE ?)";
-            $searchTerm = "%{$search}%";
-            $params = [$searchTerm, $searchTerm, $searchTerm];
-        }
-
-        $sql = "SELECT COUNT(*) as total FROM `{$this->table}` WHERE {$whereClause}";
-        $result = $this->db->fetch($sql, $params);
+        $result = $this->db->fetch($sql, [$searchTerm, $searchTerm, $searchTerm]);
         return $result['total'] ?? 0;
+    }
+
+    /**
+     * Get search suggestions
+     */
+    public function getSearchSuggestions($query, $limit = 5)
+    {
+        $searchTerm = '%' . $query . '%';
+        $sql = "SELECT w.`title` as name, w.`id`, wc.name as category_name
+                FROM `{$this->table}` w
+                LEFT JOIN website_categories wc ON w.category_id = wc.id
+                WHERE w.`status` = 'approved'
+                AND w.`title` LIKE ?
+                ORDER BY w.is_featured DESC, w.created_at DESC
+                LIMIT {$limit}";
+
+        return $this->db->fetchAll($sql, [$searchTerm]);
     }
 
     /**

@@ -1,5 +1,3 @@
-<?php $this->layout('layouts/main', ['title' => $title]) ?>
-
 <div class="container mt-4">
     <!-- 搜索表单 -->
     <div class="row justify-content-center mb-4">
