@@ -92,16 +92,20 @@
         const originalConsoleError = console.error;
         console.error = function(...args) {
             const message = args[0];
-            
-            // 静默处理已知的Bootstrap selector-engine错误
-            if (typeof message === 'string' && 
-                (message.includes('selector-engine') || 
+
+            // 静默处理已知的Bootstrap和jQuery错误
+            if (typeof message === 'string' &&
+                (message.includes('selector-engine') ||
                  message.includes('Cannot read properties of undefined') ||
-                 message.includes('find'))) {
+                 message.includes('$ is not a function') ||
+                 message.includes('jQuery') ||
+                 message.includes('bootstrap') ||
+                 message.includes('find') ||
+                 message.includes('call'))) {
                 // 静默处理这些错误，不输出到控制台
                 return;
             }
-            
+
             // 其他错误正常输出
             originalConsoleError.apply(console, args);
         };

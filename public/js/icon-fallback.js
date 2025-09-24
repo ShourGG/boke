@@ -17,34 +17,37 @@
         // 立即执行一次
         checkAndFixIcons();
 
-        // 短延迟后再次执行
-        setTimeout(function() {
-            checkAndFixIcons();
-        }, 100);
-
-        // 1秒后再次执行
+        // 1秒后再次执行（减少频率）
         setTimeout(function() {
             checkAndFixIcons();
         }, 1000);
 
-        // 页面完全加载后再次检查
+        // 页面完全加载后最后检查一次
         window.addEventListener('load', function() {
-            setTimeout(checkAndFixIcons, 100);
             setTimeout(checkAndFixIcons, 500);
         });
 
-        // 监听DOM变化，自动处理新添加的图标
+        // 监听DOM变化，但避免无限循环
         if (typeof MutationObserver !== 'undefined') {
+            let isProcessing = false;
             const observer = new MutationObserver(function(mutations) {
+                if (isProcessing) return; // 防止无限循环
+
                 let hasNewIcons = false;
                 mutations.forEach(function(mutation) {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === 1) { // Element node
-                                if (node.tagName === 'I' && (node.className.includes('fa') || node.className.includes('icon'))) {
+                                // 只处理真正的Font Awesome图标，忽略已处理的
+                                if (node.tagName === 'I' &&
+                                    (node.className.includes('fa-') || node.className.includes('fas') || node.className.includes('far') || node.className.includes('fab')) &&
+                                    !node.classList.contains('icon-fallback')) {
                                     hasNewIcons = true;
-                                } else if (node.querySelectorAll && node.querySelectorAll('i[class*="fa"]').length > 0) {
-                                    hasNewIcons = true;
+                                } else if (node.querySelectorAll) {
+                                    const newFaIcons = node.querySelectorAll('i[class*="fa-"]:not(.icon-fallback), i.fas:not(.icon-fallback), i.far:not(.icon-fallback), i.fab:not(.icon-fallback)');
+                                    if (newFaIcons.length > 0) {
+                                        hasNewIcons = true;
+                                    }
                                 }
                             }
                         });
@@ -52,7 +55,11 @@
                 });
 
                 if (hasNewIcons) {
-                    setTimeout(checkAndFixIcons, 50);
+                    isProcessing = true;
+                    setTimeout(function() {
+                        checkAndFixIcons();
+                        isProcessing = false;
+                    }, 100);
                 }
             });
 
@@ -64,9 +71,13 @@
     }
     
     function checkAndFixIcons() {
-        // 强制应用Unicode备用图标（因为Font Awesome经常加载失败）
-        console.warn('Applying Unicode fallbacks for all icons');
-        applyUnicodeFallbacks();
+        // 只处理未处理的Font Awesome图标
+        const unprocessedIcons = document.querySelectorAll('i[class*="fa-"]:not(.icon-fallback), i.fas:not(.icon-fallback), i.far:not(.icon-fallback), i.fab:not(.icon-fallback)');
+
+        if (unprocessedIcons.length > 0) {
+            console.warn('Applying Unicode fallbacks for', unprocessedIcons.length, 'unprocessed icons');
+            applyUnicodeFallbacks();
+        }
     }
     
     function applyUnicodeFallbacks() {
@@ -195,8 +206,8 @@
             'fa-compress': '⌂'
         };
         
-        // 查找所有Font Awesome图标并替换
-        const icons = document.querySelectorAll('i[class*="fa-"], i[class*="fas"], i[class*="far"], i[class*="fab"], i.fa, i.fas, i.far, i.fab');
+        // 只查找未处理的Font Awesome图标
+        const icons = document.querySelectorAll('i[class*="fa-"]:not(.icon-fallback), i.fas:not(.icon-fallback), i.far:not(.icon-fallback), i.fab:not(.icon-fallback)');
 
         icons.forEach(function(icon) {
             const classes = icon.className.split(' ');
