@@ -237,7 +237,83 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize Fluid Banner
+    initializeFluidBanner();
+
     // Make functions globally available
     window.showToast = showToast;
     window.copyToClipboard = copyToClipboard;
 });
+
+/**
+ * Fluid主题Banner功能
+ */
+function initializeFluidBanner() {
+    const navbar = document.querySelector('.navbar.scrolling-navbar');
+    const banner = document.querySelector('#banner');
+    const scrollDownBar = document.querySelector('.scroll-down-bar');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const animatedIcon = document.querySelector('.animated-icon');
+
+    if (!navbar || !banner) return;
+
+    // 导航栏滚动效果
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // 添加/移除导航栏背景
+        if (scrollTop > 50) {
+            navbar.classList.add('top-nav-collapse');
+        } else {
+            navbar.classList.remove('top-nav-collapse');
+        }
+
+        lastScrollTop = scrollTop;
+    });
+
+    // 滚动箭头点击事件
+    if (scrollDownBar) {
+        scrollDownBar.addEventListener('click', function() {
+            const bannerHeight = banner.offsetHeight;
+            window.scrollTo({
+                top: bannerHeight,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // 移动端导航栏切换动画
+    if (navbarToggler && animatedIcon) {
+        navbarToggler.addEventListener('click', function() {
+            animatedIcon.classList.toggle('open');
+        });
+    }
+
+    // Banner视差效果（可选）
+    if (banner.hasAttribute('parallax')) {
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = scrolled * 0.5;
+            banner.style.transform = `translateY(${parallax}px)`;
+        });
+    }
+
+    // 打字机效果（如果需要）
+    const subtitle = document.querySelector('#subtitle');
+    if (subtitle && subtitle.hasAttribute('data-typed-text')) {
+        const text = subtitle.getAttribute('data-typed-text');
+        subtitle.textContent = '';
+        typeWriter(subtitle, text, 0);
+    }
+}
+
+/**
+ * 打字机效果
+ */
+function typeWriter(element, text, index) {
+    if (index < text.length) {
+        element.textContent += text.charAt(index);
+        setTimeout(() => typeWriter(element, text, index + 1), 100);
+    }
+}

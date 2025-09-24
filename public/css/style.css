@@ -16,6 +16,12 @@
     --shadow-light: 0 2px 10px rgba(0,0,0,0.08);
     --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
     --border-radius: 8px;
+
+    /* Fluid主题Banner变量 */
+    --navbar-text-color: #fff;
+    --subtitle-color: #fff;
+    --link-hover-color: #007bff;
+    --navbar-bg-color: rgba(255, 255, 255, 0.95);
 }
 
 body {
@@ -487,6 +493,173 @@ footer a:hover {
     justify-content: center;
     align-items: center;
     z-index: 9999;
+}
+
+/* ========================================
+   Fluid主题Banner样式
+   ======================================== */
+
+/* 头部区域 */
+.header-inner {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Banner容器 */
+.banner {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
+
+.banner .mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.banner[parallax="true"] {
+    will-change: transform;
+    -webkit-transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    transition: transform 0.05s ease-out;
+}
+
+/* Banner文字 */
+.banner-text {
+    color: var(--subtitle-color);
+    max-width: calc(960px - 6rem);
+    width: 80%;
+    overflow-wrap: break-word;
+}
+
+.banner-text .h2 {
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+}
+
+/* 滚动箭头 */
+.scroll-down-bar {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--subtitle-color);
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+}
+
+/* 导航栏透明效果 */
+.navbar.scrolling-navbar {
+    background-color: transparent !important;
+    transition: background-color 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+
+.navbar.scrolling-navbar.top-nav-collapse {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* 导航栏动画图标 */
+.animated-icon {
+    width: 30px;
+    height: 20px;
+    position: relative;
+    margin: 0;
+    transform: rotate(0deg);
+    transition: 0.5s ease-in-out;
+    cursor: pointer;
+}
+
+.animated-icon span {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+    background: #ffffff;
+}
+
+.animated-icon span:nth-child(1) {
+    top: 0;
+}
+
+.animated-icon span:nth-child(2) {
+    top: 10px;
+}
+
+.animated-icon span:nth-child(3) {
+    top: 20px;
+}
+
+.animated-icon.open span:nth-child(1) {
+    top: 11px;
+    transform: rotate(135deg);
+}
+
+.animated-icon.open span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+.animated-icon.open span:nth-child(3) {
+    top: 11px;
+    transform: rotate(-135deg);
+}
+
+/* 淡入动画 */
+.fade-in-up {
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 弹跳动画 */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 767px) {
+    .banner-text .h2 {
+        font-size: 2rem;
+    }
+
+    .banner-text {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .banner-text .h2 {
+        font-size: 1.5rem;
+    }
 }
 
 .spinner-border-sm {

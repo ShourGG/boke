@@ -28,48 +28,76 @@
     <?php endif; ?>
 </head>
 <body data-theme="light">
-    <!-- Fluid主题导航栏 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="<?= SITE_URL ?>">
-                <i class="fas fa-fish"></i> <?= SITE_NAME ?>
-            </a>
+    <!-- Fluid主题头部区域 -->
+    <header>
+        <div class="header-inner" style="height: 100vh;">
+            <!-- Fluid主题导航栏 -->
+            <nav class="navbar navbar-expand-lg scrolling-navbar">
+                <div class="container">
+                    <a class="navbar-brand" href="<?= SITE_URL ?>">
+                        <i class="fas fa-fish"></i> <?= SITE_NAME ?>
+                    </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <div class="animated-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE_URL ?>">
-                            <i class="fas fa-home"></i> 首页
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE_URL ?>/websites">
-                            <i class="fas fa-globe"></i> 网站收录
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE_URL ?>/search">
-                            <i class="fas fa-search"></i> 搜索
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= SITE_URL ?>/admin">
-                            <i class="fas fa-cog"></i> 管理
-                        </a>
-                    </li>
-                </ul>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE_URL ?>">
+                                    <i class="fas fa-home"></i> 首页
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE_URL ?>/websites">
+                                    <i class="fas fa-globe"></i> 网站收录
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE_URL ?>/search">
+                                    <i class="fas fa-search"></i> 搜索
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= SITE_URL ?>/admin">
+                                    <i class="fas fa-cog"></i> 管理
+                                </a>
+                            </li>
+                        </ul>
 
-                <!-- 主题切换按钮 -->
-                <button id="theme-toggle" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-moon"></i> 深色模式
-                </button>
+                        <!-- 主题切换按钮 -->
+                        <button id="theme-toggle" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-moon"></i> 深色模式
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Fluid主题Banner -->
+            <div id="banner" class="banner"
+                 style="background: url('https://rmt.ladydaily.com/fetch/fluid/storage/banner.png') no-repeat center center; background-size: cover;">
+                <div class="full-bg-img">
+                    <div class="mask d-flex align-items-center justify-content-center" style="background-color: rgba(0, 0, 0, 0.3);">
+                        <div class="banner-text text-center fade-in-up">
+                            <div class="h2">
+                                <span id="subtitle"><?= isset($subtitle) ? $subtitle : SITE_DESCRIPTION ?></span>
+                            </div>
+                        </div>
+
+                        <!-- 滚动箭头 -->
+                        <div class="scroll-down-bar">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Flash Messages -->
     <?php
