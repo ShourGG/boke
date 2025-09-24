@@ -14,35 +14,59 @@
     }
     
     function initIconFallback() {
-        // 检查Font Awesome是否加载成功
+        // 立即执行一次
+        checkAndFixIcons();
+
+        // 短延迟后再次执行
+        setTimeout(function() {
+            checkAndFixIcons();
+        }, 100);
+
+        // 1秒后再次执行
         setTimeout(function() {
             checkAndFixIcons();
         }, 1000);
-        
+
         // 页面完全加载后再次检查
         window.addEventListener('load', function() {
+            setTimeout(checkAndFixIcons, 100);
             setTimeout(checkAndFixIcons, 500);
         });
+
+        // 监听DOM变化，自动处理新添加的图标
+        if (typeof MutationObserver !== 'undefined') {
+            const observer = new MutationObserver(function(mutations) {
+                let hasNewIcons = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.tagName === 'I' && (node.className.includes('fa') || node.className.includes('icon'))) {
+                                    hasNewIcons = true;
+                                } else if (node.querySelectorAll && node.querySelectorAll('i[class*="fa"]').length > 0) {
+                                    hasNewIcons = true;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                if (hasNewIcons) {
+                    setTimeout(checkAndFixIcons, 50);
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
     }
     
     function checkAndFixIcons() {
-        // 检查Font Awesome是否正确加载
-        const testIcon = document.createElement('i');
-        testIcon.className = 'fas fa-home';
-        testIcon.style.position = 'absolute';
-        testIcon.style.left = '-9999px';
-        document.body.appendChild(testIcon);
-        
-        const computedStyle = window.getComputedStyle(testIcon, ':before');
-        const fontFamily = computedStyle.getPropertyValue('font-family');
-        
-        document.body.removeChild(testIcon);
-        
-        // 如果Font Awesome没有正确加载，使用Unicode备用图标
-        if (!fontFamily || !fontFamily.includes('Font Awesome')) {
-            console.warn('Font Awesome not loaded, using Unicode fallbacks');
-            applyUnicodeFallbacks();
-        }
+        // 强制应用Unicode备用图标（因为Font Awesome经常加载失败）
+        console.warn('Applying Unicode fallbacks for all icons');
+        applyUnicodeFallbacks();
     }
     
     function applyUnicodeFallbacks() {
@@ -63,6 +87,11 @@
             'fa-times': '✕',
             'fa-close': '✕',
             'fa-check': '✓',
+
+            // 博客导航专用图标
+            'fa-blog': '📝',
+            'fa-rss': '📡',
+            'fa-newspaper': '📰',
             'fa-arrow-left': '←',
             'fa-arrow-right': '→',
             'fa-arrow-up': '↑',
@@ -167,12 +196,12 @@
         };
         
         // 查找所有Font Awesome图标并替换
-        const icons = document.querySelectorAll('i[class*="fa-"], i[class*="fas"], i[class*="far"], i[class*="fab"]');
-        
+        const icons = document.querySelectorAll('i[class*="fa-"], i[class*="fas"], i[class*="far"], i[class*="fab"], i.fa, i.fas, i.far, i.fab');
+
         icons.forEach(function(icon) {
             const classes = icon.className.split(' ');
             let replacement = null;
-            
+
             // 查找匹配的图标
             for (let i = 0; i < classes.length; i++) {
                 const className = classes[i];
@@ -181,8 +210,55 @@
                     break;
                 }
             }
-            
-            // 如果找到替换图标
+
+            // 如果没找到特定图标，使用通用替换
+            if (!replacement) {
+                // 根据常见模式提供默认图标
+                const classString = icon.className.toLowerCase();
+                if (classString.includes('home')) replacement = '🏠';
+                else if (classString.includes('user')) replacement = '👤';
+                else if (classString.includes('search')) replacement = '🔍';
+                else if (classString.includes('edit') || classString.includes('pen')) replacement = '✏️';
+                else if (classString.includes('trash') || classString.includes('delete')) replacement = '🗑️';
+                else if (classString.includes('plus') || classString.includes('add')) replacement = '+';
+                else if (classString.includes('minus') || classString.includes('subtract')) replacement = '−';
+                else if (classString.includes('times') || classString.includes('close') || classString.includes('x')) replacement = '✕';
+                else if (classString.includes('check') || classString.includes('ok')) replacement = '✓';
+                else if (classString.includes('cog') || classString.includes('setting')) replacement = '⚙️';
+                else if (classString.includes('list') || classString.includes('menu') || classString.includes('bars')) replacement = '☰';
+                else if (classString.includes('eye')) replacement = '👁️';
+                else if (classString.includes('heart')) replacement = '❤️';
+                else if (classString.includes('star')) replacement = '⭐';
+                else if (classString.includes('comment')) replacement = '💬';
+                else if (classString.includes('calendar')) replacement = '📅';
+                else if (classString.includes('clock') || classString.includes('time')) replacement = '🕐';
+                else if (classString.includes('mail') || classString.includes('envelope')) replacement = '✉️';
+                else if (classString.includes('phone')) replacement = '📞';
+                else if (classString.includes('globe') || classString.includes('world')) replacement = '🌐';
+                else if (classString.includes('lock')) replacement = '🔒';
+                else if (classString.includes('key')) replacement = '🔑';
+                else if (classString.includes('bell')) replacement = '🔔';
+                else if (classString.includes('tag')) replacement = '🏷️';
+                else if (classString.includes('bookmark')) replacement = '🔖';
+                else if (classString.includes('file')) replacement = '📄';
+                else if (classString.includes('folder')) replacement = '📁';
+                else if (classString.includes('image') || classString.includes('picture')) replacement = '🖼️';
+                else if (classString.includes('video')) replacement = '🎥';
+                else if (classString.includes('music') || classString.includes('audio')) replacement = '🎵';
+                else if (classString.includes('download')) replacement = '⬇️';
+                else if (classString.includes('upload')) replacement = '⬆️';
+                else if (classString.includes('share')) replacement = '📤';
+                else if (classString.includes('link')) replacement = '🔗';
+                else if (classString.includes('info')) replacement = 'ℹ️';
+                else if (classString.includes('warning') || classString.includes('alert')) replacement = '⚠️';
+                else if (classString.includes('error') || classString.includes('exclamation')) replacement = '❗';
+                else if (classString.includes('question')) replacement = '❓';
+                else if (classString.includes('success')) replacement = '✅';
+                else if (classString.includes('spinner') || classString.includes('loading')) replacement = '⟳';
+                else replacement = '●'; // 默认圆点图标
+            }
+
+            // 应用替换图标
             if (replacement) {
                 icon.innerHTML = replacement;
                 icon.style.fontFamily = 'inherit';
@@ -192,8 +268,11 @@
                 icon.style.display = 'inline-block';
                 icon.style.textAlign = 'center';
                 icon.style.lineHeight = '1';
-                
-                // 添加标识类
+                icon.style.width = 'auto';
+                icon.style.height = 'auto';
+
+                // 移除Font Awesome类，添加标识类
+                icon.className = icon.className.replace(/fa[srb]?/g, '').replace(/fa-[\w-]+/g, '').trim();
                 icon.classList.add('icon-fallback');
             }
         });
