@@ -272,15 +272,40 @@ function initializeFluidBanner() {
         lastScrollTop = scrollTop;
     });
 
-    // 滚动箭头点击事件
+    // 滚动箭头点击事件 (Enhanced with debugging)
     if (scrollDownBar) {
-        scrollDownBar.addEventListener('click', function() {
+        console.log('Scroll down bar found, adding event listener');
+
+        // Add multiple event listeners for better compatibility
+        scrollDownBar.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Scroll button clicked!');
+
+            const bannerHeight = banner.offsetHeight;
+            console.log('Banner height:', bannerHeight);
+
+            window.scrollTo({
+                top: bannerHeight,
+                behavior: 'smooth'
+            });
+        });
+
+        // Also add touchstart for mobile devices
+        scrollDownBar.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            console.log('Scroll button touched!');
+
             const bannerHeight = banner.offsetHeight;
             window.scrollTo({
                 top: bannerHeight,
                 behavior: 'smooth'
             });
         });
+
+        console.log('Scroll button event listeners added successfully');
+    } else {
+        console.error('Scroll down bar not found!');
     }
 
     // 移动端导航栏切换动画
