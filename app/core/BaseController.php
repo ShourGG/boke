@@ -8,6 +8,26 @@ class BaseController
     protected $params = [];
     protected $method = 'GET';
     protected $data = [];
+
+    /**
+     * Base constructor
+     * Initialize common functionality for all controllers
+     */
+    public function __construct()
+    {
+        // Start session if not already started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Set default timezone
+        if (!ini_get('date.timezone')) {
+            date_default_timezone_set('Asia/Shanghai');
+        }
+
+        // Initialize flash messages in data
+        $this->data['flash'] = $this->getFlash();
+    }
     
     /**
      * Set route parameters
