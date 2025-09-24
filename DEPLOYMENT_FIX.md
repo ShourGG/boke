@@ -15,13 +15,14 @@
 # 在服务器上执行
 cd /www/wwwroot/38.12.4.139/
 git pull origin master
+# 如果有冲突，强制更新
+git reset --hard origin/master
 ```
 
-### 方案2：手动更新BaseController.php
-如果服务器无法使用git，请手动更新以下文件：
+### 🚨 如果git不可用，请手动修复以下文件：
 
+#### 修复1：BaseController.php构造函数
 **文件路径**：`/www/wwwroot/38.12.4.139/app/core/BaseController.php`
-
 **在第10行后添加以下构造函数**：
 ```php
     /**
@@ -34,19 +35,60 @@ git pull origin master
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        
+
         // Set default timezone
         if (!ini_get('date.timezone')) {
             date_default_timezone_set('Asia/Shanghai');
         }
-        
+
         // Initialize flash messages in data
         $this->data['flash'] = $this->getFlash();
     }
 ```
 
-### 方案3：临时快速修复
-如果需要立即恢复服务，可以临时移除SearchController中的`parent::__construct()`调用：
+#### 修复2：分页参数验证
+**文件1**：`/www/wwwroot/38.12.4.139/app/controllers/HomeController.php`
+**修改第24行**：
+```php
+// 原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+```
+
+**文件2**：`/www/wwwroot/38.12.4.139/app/controllers/WebsiteController.php`
+**修改第22行**：
+```php
+// 原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+```
+
+**文件3**：`/www/wwwroot/38.12.4.139/app/controllers/CategoryController.php`
+**修改第38行和第110行**：
+```php
+// 第38行，原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+
+// 第110行，原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+```
+
+**文件4**：`/www/wwwroot/38.12.4.139/app/controllers/TagController.php`
+**修改第38行和第129行**：
+```php
+// 第38行，原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+
+// 第129行，原来：$page = (int)$this->getGet('page', 1);
+// 改为：
+$page = max(1, intval($this->getGet('page', 1)));
+```
+
+#### 方案3：临时快速修复（不推荐）
+如果需要立即恢复服务，可以临时移除构造函数调用：
 
 **文件**：`/www/wwwroot/38.12.4.139/app/controllers/SearchController.php`
 **修改第13行**：
@@ -61,6 +103,8 @@ git pull origin master
 // 临时注释掉这行
 // parent::__construct();
 ```
+
+**⚠️ 注意**：方案3只能临时解决构造函数问题，但不能解决分页SQL错误！
 
 ## ✅ 验证修复
 修复后访问以下URL验证：
