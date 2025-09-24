@@ -190,12 +190,52 @@ class BaseController
      */
     protected function requireAuth()
     {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['admin_id'])) {
-            $this->redirect('admin/login');
-        }
+        require_once 'AuthMiddleware.php';
+        AuthMiddleware::requireAuth();
+    }
+
+    /**
+     * Check if user has specific permission
+     */
+    protected function requirePermission($permission, $errorMessage = '您没有权限执行此操作')
+    {
+        require_once 'AuthMiddleware.php';
+        AuthMiddleware::requirePermission($permission, $errorMessage);
+    }
+
+    /**
+     * Get current authenticated user
+     */
+    protected function getCurrentUser()
+    {
+        require_once 'AuthMiddleware.php';
+        return AuthMiddleware::getCurrentUser();
+    }
+
+    /**
+     * Protect against CSRF attacks
+     */
+    protected function requireCSRF()
+    {
+        require_once 'CSRFProtection.php';
+        return CSRFProtection::protect();
+    }
+
+    /**
+     * Generate CSRF token field for forms
+     */
+    protected function getCSRFField()
+    {
+        require_once 'CSRFProtection.php';
+        return CSRFProtection::getTokenField();
+    }
+
+    /**
+     * Generate CSRF token meta tag for AJAX
+     */
+    protected function getCSRFMeta()
+    {
+        require_once 'CSRFProtection.php';
+        return CSRFProtection::getTokenMeta();
     }
 }

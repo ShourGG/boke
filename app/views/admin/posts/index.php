@@ -368,12 +368,9 @@ function executeBatchAction() {
         executeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>处理中...';
         executeBtn.disabled = true;
 
-        // Execute batch action
-        fetch('/admin/posts/batch-action', {
+        // Execute batch action using secure AJAX
+        secureAjax('/admin/posts/batch-action', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 action: action,
                 ids: selectedIds
@@ -426,7 +423,7 @@ function deletePost(id) {
             row.classList.add('animate-shake');
         }
 
-        fetch(`/admin/posts/delete/${id}`, {
+        secureAjax(`/admin/posts/delete/${id}`, {
             method: 'POST'
         })
         .then(response => response.json())

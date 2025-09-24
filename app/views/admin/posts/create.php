@@ -15,6 +15,10 @@
 </div>
 
 <form method="POST" enctype="multipart/form-data" id="postForm">
+    <?php
+    require_once __DIR__ . '/../../core/CSRFProtection.php';
+    echo CSRFProtection::getTokenField();
+    ?>
     <div class="row">
         <div class="col-lg-8">
             <!-- 基本信息 -->

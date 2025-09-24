@@ -3,6 +3,29 @@
  * Handles admin interface interactions and functionality
  */
 
+// CSRF Protection Helper
+function getCSRFToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : null;
+}
+
+// Enhanced fetch with CSRF protection
+function secureAjax(url, options = {}) {
+    const token = getCSRFToken();
+
+    // Set default options
+    options.headers = options.headers || {};
+    options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+    options.headers['X-Requested-With'] = 'XMLHttpRequest';
+
+    // Add CSRF token
+    if (token) {
+        options.headers['X-CSRF-Token'] = token;
+    }
+
+    return fetch(url, options);
+}
+
 // Global admin functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme system first

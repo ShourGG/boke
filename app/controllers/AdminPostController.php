@@ -90,6 +90,11 @@ class AdminPostController extends BaseController
      */
     private function handleCreate()
     {
+        // CSRF Protection
+        if (!$this->requireCSRF()) {
+            return;
+        }
+
         $status = $this->getPost('status', 'draft');
 
         $data = [
@@ -250,6 +255,11 @@ class AdminPostController extends BaseController
     public function batchAction()
     {
         $this->requireAuth();
+
+        // CSRF Protection
+        if (!$this->requireCSRF()) {
+            return;
+        }
 
         if (!$this->isPost()) {
             $this->jsonError('Invalid request method', 405);

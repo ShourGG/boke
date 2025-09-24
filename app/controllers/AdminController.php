@@ -64,35 +64,58 @@ class AdminController extends BaseController
      */
     private function handleLogin()
     {
+        require_once __DIR__ . '/../core/AuthMiddleware.php';
+
         $username = trim($this->getPost('username'));
         $password = $this->getPost('password');
         $remember = $this->getPost('remember');
-        
+
         if (empty($username) || empty($password)) {
             $this->setFlash('error', '请输入用户名和密码');
             $this->redirect('admin/login');
             return;
         }
-        
+
+        // Check login rate limiting
+        if (!AuthMiddleware::checkLoginAttempts($username)) {
+            $this->setFlash('error', '登录尝试次数过多，请15分钟后再试');
+            $this->redirect('admin/login');
+            return;
+        }
+
         // Attempt authentication
         $admin = $this->adminModel->authenticate($username, $password);
         
         if ($admin) {
-            // Set session
+            // Clear login attempts
+            AuthMiddleware::clearLoginAttempts($username);
+
+            // Set session with security enhancements
             $_SESSION['admin_id'] = $admin['id'];
             $_SESSION['admin_username'] = $admin['username'];
             $_SESSION['admin_display_name'] = $admin['display_name'] ?: $admin['username'];
-            
+            $_SESSION['last_activity'] = time();
+
+            // Regenerate session ID for security
+            session_regenerate_id(true);
+
             // Set remember me cookie if requested
             if ($remember) {
                 $token = bin2hex(random_bytes(32));
-                setcookie('admin_remember', $token, time() + (30 * 24 * 60 * 60), '/'); // 30 days
+                setcookie('admin_remember', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
                 // In production, you should store this token in database
             }
-            
+
             $this->setFlash('success', '登录成功！欢迎回来，' . $admin['display_name']);
-            $this->redirect('admin');
+
+            // Redirect to intended URL or admin dashboard
+            $redirectTo = $_SESSION['intended_url'] ?? '/admin';
+            unset($_SESSION['intended_url']);
+            $this->redirect($redirectTo);
         } else {
+            // Record failed login attempt
+            AuthMiddleware::recordFailedLogin($username);
+
             $this->setFlash('error', '用户名或密码错误');
             $this->redirect('admin/login');
         }
@@ -103,16 +126,16 @@ class AdminController extends BaseController
      */
     public function logout()
     {
-        // Clear session
-        unset($_SESSION['admin_id']);
-        unset($_SESSION['admin_username']);
-        unset($_SESSION['admin_display_name']);
-        
+        require_once __DIR__ . '/../core/AuthMiddleware.php';
+
+        // Use AuthMiddleware for secure logout
+        AuthMiddleware::logout();
+
         // Clear remember me cookie
         if (isset($_COOKIE['admin_remember'])) {
-            setcookie('admin_remember', '', time() - 3600, '/');
+            setcookie('admin_remember', '', time() - 3600, '/', '', true, true);
         }
-        
+
         $this->setFlash('success', '已安全退出登录');
         $this->redirect('admin/login');
     }

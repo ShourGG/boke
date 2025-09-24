@@ -7,6 +7,7 @@ class Router
 {
     private $routes = [];
     private $params = [];
+    private $paramValidators = [];
     
     public function __construct()
     {
@@ -15,7 +16,7 @@ class Router
         $this->addRoute('home', 'HomeController@index');
 
         // Post routes
-        $this->addRoute('post/{id}', 'PostController@show');
+        $this->addRoute('post/{slug}', 'PostController@show');
 
         // Category routes
         $this->addRoute('categories', 'CategoryController@index');
@@ -85,6 +86,39 @@ class Router
         $this->addRoute('admin/settings', 'AdminSettingsController@index');
         $this->addRoute('admin/settings/cache/clear', 'AdminSettingsController@clearCache');
         $this->addRoute('admin/settings/backup', 'AdminSettingsController@backup');
+
+        // Set parameter validation rules
+        $this->setParameterValidationRules();
+    }
+
+    /**
+     * Set parameter validation rules for routes
+     */
+    private function setParameterValidationRules()
+    {
+        // ID parameters must be positive integers
+        $this->paramValidators['id'] = '/^\d+$/';
+
+        // Slug parameters: lowercase letters, numbers, hyphens
+        $this->paramValidators['slug'] = '/^[a-z0-9\-]+$/';
+
+        // Category slug: same as regular slug
+        $this->paramValidators['category_slug'] = '/^[a-z0-9\-]+$/';
+
+        // Tag slug: same as regular slug
+        $this->paramValidators['tag_slug'] = '/^[a-z0-9\-]+$/';
+
+        // Website ID: positive integer
+        $this->paramValidators['website_id'] = '/^\d+$/';
+
+        // Post ID: positive integer
+        $this->paramValidators['post_id'] = '/^\d+$/';
+
+        // Category ID: positive integer
+        $this->paramValidators['category_id'] = '/^\d+$/';
+
+        // Tag ID: positive integer
+        $this->paramValidators['tag_id'] = '/^\d+$/';
     }
     
     /**
@@ -140,26 +174,66 @@ class Router
     {
         // Reset parameters
         $this->params = [];
-        
+
         // Convert pattern to regex
         $regex = preg_replace('/\{([^}]+)\}/', '([^/]+)', $pattern);
         $regex = '#^' . $regex . '$#';
-        
+
         if (preg_match($regex, $uri, $matches)) {
             // Extract parameter names from pattern
             preg_match_all('/\{([^}]+)\}/', $pattern, $paramNames);
-            
-            // Map parameter values to names
+
+            // Map parameter values to names and validate
             for ($i = 1; $i < count($matches); $i++) {
                 if (isset($paramNames[1][$i - 1])) {
-                    $this->params[$paramNames[1][$i - 1]] = $matches[$i];
+                    $paramName = $paramNames[1][$i - 1];
+                    $paramValue = $matches[$i];
+
+                    // Validate parameter format
+                    if (!$this->validateParameter($paramName, $paramValue)) {
+                        // Log security event for invalid parameter
+                        $this->logSecurityEvent('invalid_parameter', [
+                            'pattern' => $pattern,
+                            'uri' => $uri,
+                            'param_name' => $paramName,
+                            'param_value' => $paramValue,
+                            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                        ]);
+                        return false;
+                    }
+
+                    $this->params[$paramName] = $paramValue;
                 }
             }
-            
+
             return true;
         }
-        
+
         return false;
+    }
+
+    /**
+     * Validate route parameter
+     */
+    private function validateParameter($name, $value)
+    {
+        // Basic security: prevent null bytes and control characters
+        if (strpos($value, "\0") !== false || preg_match('/[\x00-\x1F\x7F]/', $value)) {
+            return false;
+        }
+
+        // Length check: prevent extremely long parameters
+        if (strlen($value) > 255) {
+            return false;
+        }
+
+        // Check specific parameter validation rules
+        if (isset($this->paramValidators[$name])) {
+            return preg_match($this->paramValidators[$name], $value);
+        }
+
+        // Default validation: alphanumeric, hyphens, underscores
+        return preg_match('/^[a-zA-Z0-9\-_]+$/', $value);
     }
     
     /**
@@ -200,6 +274,47 @@ class Router
      * Get route parameters
      */
     public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * Log security events
+     */
+    private function logSecurityEvent($event, $data = [])
+    {
+        $logEntry = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => $event,
+            'data' => $data,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
+            'method' => $_SERVER['REQUEST_METHOD'] ?? '',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+        ];
+
+        // Log to file
+        $logFile = __DIR__ . '/../../logs/router_security.log';
+        $logDir = dirname($logFile);
+
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+
+        file_put_contents($logFile, json_encode($logEntry) . "\n", FILE_APPEND | LOCK_EX);
+    }
+
+    /**
+     * Add custom parameter validator
+     */
+    public function addParameterValidator($paramName, $regex)
+    {
+        $this->paramValidators[$paramName] = $regex;
+    }
+
+    /**
+     * Get all current parameters
+     */
+    public function getAllParams()
     {
         return $this->params;
     }

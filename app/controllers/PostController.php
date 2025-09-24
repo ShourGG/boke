@@ -21,7 +21,7 @@ class PostController extends BaseController
      */
     public function show()
     {
-        $slug = $this->getParam('id'); // Using 'id' param from route but it's actually slug
+        $slug = $this->getParam('slug'); // Get slug parameter from route
         
         if (empty($slug)) {
             $this->show404();
