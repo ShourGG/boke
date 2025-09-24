@@ -1,5 +1,8 @@
 <?php
 
+// 确保Database类被加载
+require_once __DIR__ . '/../core/Database.php';
+
 /**
  * Banner Settings Model
  * Manages banner configuration and display settings

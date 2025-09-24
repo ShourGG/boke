@@ -13,8 +13,9 @@
 
     <!-- Bootstrap CSS (Fluid主题依赖) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 图标 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 (多CDN备用) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css';">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
 
     <!-- 主要样式文件 -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/style.css">
@@ -184,6 +185,8 @@
     <script src="<?= SITE_URL ?>/public/js/main.js"></script>
     <!-- 图片灯箱功能 -->
     <script src="<?= SITE_URL ?>/public/js/lightbox.js"></script>
+    <!-- 图标备用系统 -->
+    <script src="<?= SITE_URL ?>/public/js/icon-fallback.js"></script>
     <!-- Fluid主题JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/theme-toggle.js"></script>
 </body>
