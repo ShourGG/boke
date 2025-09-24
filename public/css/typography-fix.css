@@ -1,0 +1,267 @@
+/**
+ * Typography and Card Design Fix
+ * 修复字体和卡片设计，符合常规Web设计标准
+ */
+
+/* ===== 重置字体为常规设计 ===== */
+:root {
+    /* 常规颜色变量 */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    --bg-body: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --border-light: #dee2e6;
+    --border-color: #e9ecef;
+    
+    /* 常规字体设置 */
+    --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-size-base: 1rem;
+    --line-height-base: 1.5;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+}
+
+/* ===== 基础字体重置 ===== */
+body {
+    font-family: var(--font-family-base) !important;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--text-primary) !important;
+    background-color: var(--bg-body) !important;
+    font-weight: var(--font-weight-normal);
+}
+
+/* ===== 标题字体修复 ===== */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--font-family-base) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    color: var(--text-primary) !important;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+h1, .h1 { font-size: 2.5rem; }
+h2, .h2 { font-size: 2rem; }
+h3, .h3 { font-size: 1.75rem; }
+h4, .h4 { font-size: 1.5rem; }
+h5, .h5 { font-size: 1.25rem; }
+h6, .h6 { font-size: 1rem; }
+
+/* ===== 段落和文本修复 ===== */
+p {
+    color: var(--text-primary) !important;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* ===== 卡片设计修复 ===== */
+.card {
+    background-color: var(--bg-body) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    transition: box-shadow 0.15s ease-in-out !important;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transform: none !important; /* 移除过度的动画效果 */
+}
+
+.card-header {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-medium) !important;
+    padding: 0.75rem 1.25rem;
+    border-radius: calc(0.375rem - 1px) calc(0.375rem - 1px) 0 0 !important;
+}
+
+.card-header h5,
+.card-header .h5 {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-medium) !important;
+    margin: 0;
+}
+
+.card-body {
+    padding: 1.25rem !important;
+    color: var(--text-primary) !important;
+}
+
+.card-title {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    color: var(--text-primary) !important;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    margin-bottom: 1rem;
+}
+
+.card-footer {
+    background-color: var(--bg-secondary) !important;
+    border-top: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    padding: 0.75rem 1.25rem;
+}
+
+/* ===== 链接修复 ===== */
+a {
+    color: #0d6efd !important;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0a58ca !important;
+    text-decoration: underline;
+}
+
+.card-body a {
+    color: #0d6efd !important;
+}
+
+.card-body a:hover {
+    color: #0a58ca !important;
+}
+
+/* ===== 按钮修复 ===== */
+.btn {
+    font-family: var(--font-family-base) !important;
+    font-weight: var(--font-weight-normal) !important;
+    border-radius: 0.375rem !important;
+    padding: 0.375rem 0.75rem;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+.btn-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+.btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-primary {
+    color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+/* ===== 表单元素修复 ===== */
+.form-control {
+    font-family: var(--font-family-base) !important;
+    font-size: var(--font-size-base);
+    color: var(--text-primary) !important;
+    background-color: var(--bg-body) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.375rem !important;
+}
+
+.form-label {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-medium) !important;
+}
+
+/* ===== 导航栏文字修复 ===== */
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: var(--font-weight-normal) !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+/* ===== 面包屑修复 ===== */
+.breadcrumb {
+    background-color: transparent !important;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item {
+    color: var(--text-secondary) !important;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-primary) !important;
+}
+
+/* ===== 列表修复 ===== */
+.list-group-item {
+    background-color: var(--bg-body) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.list-group-item:hover {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* ===== 徽章修复 ===== */
+.badge {
+    font-family: var(--font-family-base) !important;
+    font-weight: var(--font-weight-medium) !important;
+}
+
+/* ===== 响应式字体 ===== */
+@media (max-width: 768px) {
+    body {
+        font-size: 0.9rem;
+    }
+    
+    h1, .h1 { font-size: 2rem; }
+    h2, .h2 { font-size: 1.75rem; }
+    h3, .h3 { font-size: 1.5rem; }
+    h4, .h4 { font-size: 1.25rem; }
+    h5, .h5 { font-size: 1.1rem; }
+    h6, .h6 { font-size: 1rem; }
+}
+
+/* ===== 确保优先级 ===== */
+.card * {
+    font-family: var(--font-family-base) !important;
+}
+
+.card-body * {
+    color: inherit !important;
+}
+
+/* 重置任何可能的自定义字体 */
+* {
+    font-family: var(--font-family-base) !important;
+}

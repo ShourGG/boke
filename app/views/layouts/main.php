@@ -27,6 +27,9 @@
     <!-- UI增强样式 -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/ui-enhancements.css">
 
+    <!-- 字体和卡片设计修复 (最后加载以确保优先级) -->
+    <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/typography-fix.css">
+
     <!-- SEO Meta Tags -->
     <meta property="og:title" content="<?= isset($title) ? htmlspecialchars($title) : SITE_NAME ?>">
     <meta property="og:description" content="<?= isset($description) ? htmlspecialchars($description) : SITE_DESCRIPTION ?>">
