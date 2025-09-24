@@ -21,7 +21,7 @@ class HomeController extends BaseController
      */
     public function index()
     {
-        $page = (int)$this->getGet('page', 1);
+        $page = max(1, intval($this->getGet('page', 1)));
         $perPage = defined('POSTS_PER_PAGE') ? POSTS_PER_PAGE : 10;
 
         // Get published posts with pagination

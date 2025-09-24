@@ -19,7 +19,7 @@ class WebsiteController extends BaseController
      */
     public function index()
     {
-        $page = (int)$this->getGet('page', 1);
+        $page = max(1, intval($this->getGet('page', 1)));
         $perPage = defined('WEBSITES_PER_PAGE') ? WEBSITES_PER_PAGE : 20;
         $categoryId = $this->getGet('category');
         $search = $this->getGet('search');

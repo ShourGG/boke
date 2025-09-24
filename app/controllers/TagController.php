@@ -35,7 +35,7 @@ class TagController extends BaseController
         }
         
         // Get pagination parameters
-        $page = (int)$this->getGet('page', 1);
+        $page = max(1, intval($this->getGet('page', 1)));
         $perPage = defined('POSTS_PER_PAGE') ? POSTS_PER_PAGE : 10;
         
         // Get posts with this tag
@@ -126,8 +126,8 @@ class TagController extends BaseController
         }
         
         $tagId = (int)$this->getGet('tag_id');
-        $page = (int)$this->getGet('page', 1);
-        $perPage = (int)$this->getGet('per_page', 10);
+        $page = max(1, intval($this->getGet('page', 1)));
+        $perPage = max(1, intval($this->getGet('per_page', 10)));
         
         if (!$tagId) {
             $this->jsonError('Tag ID is required', 400);

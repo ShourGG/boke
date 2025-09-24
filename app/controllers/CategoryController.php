@@ -35,7 +35,7 @@ class CategoryController extends BaseController
         }
         
         // Get pagination parameters
-        $page = (int)$this->getGet('page', 1);
+        $page = max(1, intval($this->getGet('page', 1)));
         $perPage = defined('POSTS_PER_PAGE') ? POSTS_PER_PAGE : 10;
         
         // Get posts in this category
@@ -107,8 +107,8 @@ class CategoryController extends BaseController
         }
         
         $categoryId = (int)$this->getGet('category_id');
-        $page = (int)$this->getGet('page', 1);
-        $perPage = (int)$this->getGet('per_page', 10);
+        $page = max(1, intval($this->getGet('page', 1)));
+        $perPage = max(1, intval($this->getGet('per_page', 10)));
         
         if (!$categoryId) {
             $this->jsonError('Category ID is required', 400);
