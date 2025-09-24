@@ -7,12 +7,12 @@
     <meta name="description" content="<?= isset($description) ? htmlspecialchars($description) : SITE_DESCRIPTION ?>">
     <meta name="keywords" content="<?= isset($keywords) ? htmlspecialchars($keywords) : SITE_KEYWORDS ?>">
 
-    <!-- Material Design 图标 -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Roboto 字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS (Fluid主题依赖) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- 自定义样式 -->
+    <!-- Fluid主题样式 -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/material-styles.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/dark-theme.css">
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/animation.css">
@@ -28,25 +28,48 @@
     <?php endif; ?>
 </head>
 <body data-theme="light">
-    <!-- 顶部导航栏 -->
-    <header class="app-bar">
-        <div class="app-bar-title">
-            <a href="<?= SITE_URL ?>" style="color: white; text-decoration: none;">
-                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">pets</span>
-                <?= SITE_NAME ?>
+    <!-- Fluid主题导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="<?= SITE_URL ?>">
+                <i class="fas fa-fish"></i> <?= SITE_NAME ?>
             </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= SITE_URL ?>">
+                            <i class="fas fa-home"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= SITE_URL ?>/websites">
+                            <i class="fas fa-globe"></i> 网站收录
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= SITE_URL ?>/search">
+                            <i class="fas fa-search"></i> 搜索
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= SITE_URL ?>/admin">
+                            <i class="fas fa-cog"></i> 管理
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 主题切换按钮 -->
+                <button id="theme-toggle" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-moon"></i> 深色模式
+                </button>
+            </div>
         </div>
-
-        <nav class="app-bar-nav">
-            <a href="<?= SITE_URL ?>">首页</a>
-            <a href="<?= SITE_URL ?>/websites">网站收录</a>
-            <a href="<?= SITE_URL ?>/search">搜索</a>
-            <a href="<?= SITE_URL ?>/admin">管理</a>
-
-            <!-- 主题切换按钮 -->
-            <a href="#" id="theme-toggle" class="btn btn-outlined" style="color: white; border-color: white; text-transform: none;">深色模式</a>
-        </nav>
-    </header>
+    </nav>
 
     <!-- Flash Messages -->
     <?php
@@ -58,27 +81,44 @@
     </div>
     <?php endforeach; ?>
 
-    <!-- 主内容区域 -->
-    <main class="main-content">
-        <?= $content ?>
+    <!-- Fluid主题主内容区域 -->
+    <main>
+        <div class="container nopadding-x-md">
+            <div id="board">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-10 m-auto">
+                            <?= $content ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- 页脚 -->
-    <footer style="padding: 24px 16px; text-align: center; background: var(--md-surface); color: var(--md-text-secondary); margin-top: 48px; border-top: 1px solid var(--md-divider);">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <p style="margin: 0 0 8px 0; font-weight: 500;"><?= SITE_NAME ?></p>
-            <p style="margin: 0 0 16px 0; font-size: 0.875rem;"><?= SITE_DESCRIPTION ?></p>
-            <p style="margin: 0; font-size: 0.875rem;">
-                &copy; <?= date('Y') ?> <?= SITE_NAME ?>. All rights reserved.
-                <a href="<?= SITE_URL ?>/admin" style="color: var(--md-primary); text-decoration: none; margin-left: 16px;">
-                    <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">settings</span>
-                    管理后台
-                </a>
-            </p>
+    <!-- Fluid主题页脚 -->
+    <footer class="text-center py-4" style="background-color: var(--navbar-bg-color); color: var(--navbar-text-color); margin-top: 2rem;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><?= SITE_NAME ?></h5>
+                    <p><?= SITE_DESCRIPTION ?></p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; <?= date('Y') ?> <?= SITE_NAME ?>. All rights reserved.</p>
+                    <p>
+                        <a href="<?= SITE_URL ?>/admin" style="color: var(--navbar-text-color);">
+                            <i class="fas fa-cog"></i> 管理后台
+                        </a>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Fluid主题JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/theme-toggle.js"></script>
 </body>
 </html>

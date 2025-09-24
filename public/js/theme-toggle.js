@@ -1,28 +1,28 @@
-// 主题切换功能
+// Fluid主题切换功能
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
-    
+
     // 检查本地存储中的主题偏好
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
-    
-    // 更新按钮文本
-    updateThemeButtonText();
-    
+
+    // 更新按钮文本和图标
+    updateThemeButton();
+
     // 主题切换事件
     if (themeToggle) {
         themeToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             const currentTheme = body.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
+
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
-            updateThemeButtonText();
-            
+
+            updateThemeButton();
+
             // 添加切换动画
             body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
             setTimeout(() => {
@@ -30,11 +30,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
     }
-    
-    function updateThemeButtonText() {
+
+    function updateThemeButton() {
         if (themeToggle) {
             const currentTheme = body.getAttribute('data-theme');
-            themeToggle.textContent = currentTheme === 'light' ? '深色模式' : '浅色模式';
+            const icon = themeToggle.querySelector('i');
+
+            if (currentTheme === 'light') {
+                icon.className = 'fas fa-moon';
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> 深色模式';
+            } else {
+                icon.className = 'fas fa-sun';
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> 浅色模式';
+            }
         }
     }
 });

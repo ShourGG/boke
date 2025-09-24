@@ -1,54 +1,82 @@
-/* 深色主题样式 */
+/* Fluid主题深色模式样式 */
 
 [data-theme="dark"] {
-  --md-background: #121212;
-  --md-surface: #1E1E1E;
-  --md-text-primary: #E0E0E0;
-  --md-text-secondary: #BDBDBD;
-  --md-divider: #424242;
+  /* Fluid主题深色模式色彩变量 */
+  --body-bg-color: #181c27;
+  --text-color: #c4c6c9;
+  --sec-text-color: #a7a9ad;
+  --post-text-color: #c4c6c9;
+  --post-heading-color: #c4c6c9;
+  --post-link-color: #c4c6c9;
+  --link-hover-color: #30a9de;
+  --link-hover-bg-color: #364151;
+  --line-color: #435266;
+  --button-bg-color: #2f4154;
+  --button-hover-bg-color: #46647e;
+  --navbar-bg-color: #1f3144;
+  --navbar-text-color: #d0d0d0;
+  --subtitle-color: #d0d0d0;
+  --board-color: #252d38;
+  --scrollbar-color: #687582;
+  --scrollbar-hover-color: #9da8b3;
 }
 
-[data-theme="dark"] .card {
-  background-color: var(--md-surface);
-  color: var(--md-text-primary);
+/* 深色模式下的卡片样式 */
+[data-theme="dark"] .index-card {
+  background-color: var(--board-color);
+  color: var(--text-color);
 }
 
-[data-theme="dark"] .form-input {
-  background: var(--md-surface);
-  color: var(--md-text-primary);
-  border-color: var(--md-divider);
+[data-theme="dark"] #board {
+  background-color: var(--board-color);
 }
 
-[data-theme="dark"] .app-bar {
-  background-color: #1976D2;
+/* 深色模式下的导航栏 */
+[data-theme="dark"] .navbar {
+  background-color: var(--navbar-bg-color);
 }
 
-/* 深色模式下的链接颜色 */
-[data-theme="dark"] a {
-  color: #64B5F6;
+[data-theme="dark"] .navbar-brand {
+  color: var(--navbar-text-color) !important;
 }
 
-[data-theme="dark"] .btn-outlined {
-  color: var(--md-primary-light);
-  border-color: var(--md-primary-light);
+[data-theme="dark"] .navbar-nav a {
+  color: var(--navbar-text-color);
 }
 
 /* 深色模式下的文本颜色 */
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] h6 {
-  color: var(--md-text-primary);
+[data-theme="dark"] .index-header {
+  color: var(--text-color);
 }
 
-[data-theme="dark"] p,
-[data-theme="dark"] span,
-[data-theme="dark"] div {
-  color: var(--md-text-primary);
+[data-theme="dark"] .index-header a {
+  color: var(--text-color);
 }
 
-[data-theme="dark"] small {
-  color: var(--md-text-secondary);
+[data-theme="dark"] .index-excerpt {
+  color: var(--sec-text-color);
+}
+
+[data-theme="dark"] .index-btm {
+  color: var(--sec-text-color);
+}
+
+[data-theme="dark"] .index-btm a {
+  color: var(--sec-text-color);
+}
+
+/* 深色模式下的按钮样式 */
+[data-theme="dark"] .btn-primary {
+  background-color: var(--link-hover-color);
+  border-color: var(--link-hover-color);
+}
+
+[data-theme="dark"] .btn-outline-primary {
+  color: var(--link-hover-color);
+  border-color: var(--link-hover-color);
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+  background-color: var(--link-hover-color);
+  border-color: var(--link-hover-color);
 }
