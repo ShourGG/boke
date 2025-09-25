@@ -17,7 +17,7 @@
 
     // Configuration
     const config = {
-        debug: false,
+        debug: true,  // 启用调试模式
         retryAttempts: 3,
         retryDelay: 100,
         suppressSelectorErrors: true
@@ -187,13 +187,21 @@
             const originalConsoleError = console.error;
             console.error = function(...args) {
                 const message = args[0];
+                const fullMessage = args.join(' ');
 
                 if (typeof message === 'string' && (
                     message.includes('selector-engine') ||
                     message.includes('Cannot read properties of undefined') && message.includes('call') ||
-                    message.includes('find') && args[1] && args[1].includes('selector-engine')
+                    message.includes('find') && args[1] && args[1].includes('selector-engine') ||
+                    fullMessage.includes('selector-engine.js') ||
+                    fullMessage.includes('carousel.js') ||
+                    fullMessage.includes('offcanvas.js') ||
+                    fullMessage.includes('scrollspy.js') ||
+                    fullMessage.includes('tab.js') ||
+                    (message.includes('Uncaught TypeError') && message.includes('reading \'call\''))
                 )) {
                     // Suppress these specific errors
+                    utils.log('Suppressed Bootstrap error: ' + message, 'warn');
                     return;
                 }
 
