@@ -85,9 +85,16 @@
         },
 
         isFontAwesomeLoaded: function() {
-            // Multiple checks to ensure Font Awesome is properly loaded
+            // Check if external Font Awesome status is available
+            if (window.fontAwesomeStatus && typeof window.fontAwesomeStatus.isLoaded === 'function') {
+                const externalStatus = window.fontAwesomeStatus.isLoaded();
+                if (externalStatus) {
+                    utils.log('Font Awesome confirmed loaded by external checker');
+                    return true;
+                }
+            }
 
-            // Check 1: Test if Font Awesome CSS is loaded by checking font-family
+            // Fallback to internal checks
             try {
                 const testElement = document.createElement('i');
                 testElement.className = 'fas fa-home';
@@ -99,7 +106,6 @@
 
                 const computedStyle = window.getComputedStyle(testElement);
                 const fontFamily = computedStyle.getPropertyValue('font-family');
-                const content = computedStyle.getPropertyValue('content');
 
                 document.body.removeChild(testElement);
 
@@ -110,43 +116,27 @@
                     fontFamily.includes('"Font Awesome')
                 );
 
-                // Check if content is set (Font Awesome uses ::before pseudo-elements)
-                const hasContent = content && content !== 'none' && content !== 'normal';
-
-                if (hasFontAwesome || hasContent) {
-                    utils.log('Font Awesome detected via CSS test');
+                if (hasFontAwesome) {
+                    utils.log('Font Awesome detected via internal CSS test');
                     return true;
                 }
             } catch (error) {
                 utils.log('Font Awesome CSS test failed: ' + error.message, 'warn');
             }
 
-            // Check 2: Look for Font Awesome stylesheets
-            const stylesheets = Array.from(document.styleSheets);
-            for (let sheet of stylesheets) {
-                try {
-                    if (sheet.href && (
-                        sheet.href.includes('font-awesome') ||
-                        sheet.href.includes('fontawesome') ||
-                        sheet.href.includes('fa-')
-                    )) {
-                        utils.log('Font Awesome detected via stylesheet URL');
+            // Check for Font Awesome link elements
+            const faLinks = document.querySelectorAll('link[href*="font-awesome"], link[href*="fontawesome"]');
+            if (faLinks.length > 0) {
+                // Check if any of the links have loaded successfully
+                for (let link of faLinks) {
+                    if (link.sheet && link.sheet.cssRules) {
+                        utils.log('Font Awesome detected via loaded stylesheet');
                         return true;
                     }
-                } catch (error) {
-                    // Cross-origin stylesheets may throw errors
-                    continue;
                 }
             }
 
-            // Check 3: Look for Font Awesome link elements
-            const faLinks = document.querySelectorAll('link[href*="font-awesome"], link[href*="fontawesome"]');
-            if (faLinks.length > 0) {
-                utils.log('Font Awesome detected via link elements');
-                return true;
-            }
-
-            utils.log('Font Awesome not detected');
+            utils.log('Font Awesome not detected - fallback needed');
             return false;
         }
     };

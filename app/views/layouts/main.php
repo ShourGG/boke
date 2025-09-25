@@ -13,9 +13,90 @@
 
     <!-- Bootstrap CSS (Fluid主题依赖) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 图标 (多CDN备用) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css';">
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
+    <!-- Font Awesome 图标 (多CDN备用 + 本地备用) -->
+    <link id="fontawesome-primary" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link id="fontawesome-backup" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet" media="none">
+
+    <!-- Font Awesome 加载检测和备用方案 -->
+    <script>
+    (function() {
+        'use strict';
+
+        let fontAwesomeLoaded = false;
+        let checkAttempts = 0;
+        const maxAttempts = 10;
+
+        function checkFontAwesome() {
+            checkAttempts++;
+
+            // 创建测试元素
+            const testElement = document.createElement('i');
+            testElement.className = 'fas fa-home';
+            testElement.style.position = 'absolute';
+            testElement.style.left = '-9999px';
+            testElement.style.visibility = 'hidden';
+            testElement.style.fontSize = '16px';
+            document.body.appendChild(testElement);
+
+            const computedStyle = window.getComputedStyle(testElement);
+            const fontFamily = computedStyle.getPropertyValue('font-family');
+
+            // 检查是否加载成功
+            const isLoaded = fontFamily && (
+                fontFamily.includes('Font Awesome') ||
+                fontFamily.includes('FontAwesome') ||
+                fontFamily.includes('"Font Awesome')
+            );
+
+            document.body.removeChild(testElement);
+
+            if (isLoaded) {
+                fontAwesomeLoaded = true;
+                console.log('Font Awesome loaded successfully');
+                return true;
+            }
+
+            // 如果主CDN失败，尝试备用CDN
+            if (checkAttempts === 3) {
+                console.warn('Primary Font Awesome CDN failed, trying backup');
+                const backup = document.getElementById('fontawesome-backup');
+                if (backup) {
+                    backup.media = 'all';
+                }
+            }
+
+            // 如果所有CDN都失败，启用icon-fallback
+            if (checkAttempts >= maxAttempts) {
+                console.error('All Font Awesome CDNs failed, enabling icon fallback');
+                if (window.iconFallback) {
+                    window.iconFallback.config.debug = true;
+                    window.iconFallback.reset();
+                    window.iconFallback.fixIcons();
+                }
+                return false;
+            }
+
+            // 继续检查
+            setTimeout(checkFontAwesome, 500);
+            return false;
+        }
+
+        // 开始检查
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(checkFontAwesome, 100);
+            });
+        } else {
+            setTimeout(checkFontAwesome, 100);
+        }
+
+        // 导出状态供其他脚本使用
+        window.fontAwesomeStatus = {
+            isLoaded: function() { return fontAwesomeLoaded; },
+            getAttempts: function() { return checkAttempts; }
+        };
+    })();
+    </script>
 
     <!-- 主要样式文件 -->
     <link rel="stylesheet" href="<?= SITE_URL ?>/public/css/style.css">
