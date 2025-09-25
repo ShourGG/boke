@@ -24,7 +24,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const href = this.getAttribute('href');
+
+            // Skip invalid selectors or empty hrefs
+            if (!href || href === '#') {
+                return;
+            }
+
+            let target = null;
+            try {
+                // Try direct querySelector first
+                target = document.querySelector(href);
+            } catch (error) {
+                // If selector is invalid, try to find by ID
+                const id = href.substring(1); // Remove the #
+                target = document.getElementById(id);
+
+                // If still not found, try to escape the ID for CSS selector
+                if (!target) {
+                    try {
+                        const escapedId = CSS.escape(id);
+                        target = document.querySelector('#' + escapedId);
+                    } catch (escapeError) {
+                        console.warn('Invalid anchor link:', href);
+                        return;
+                    }
+                }
+            }
+
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',

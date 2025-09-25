@@ -81,10 +81,35 @@ document.addEventListener('DOMContentLoaded', function() {
     links.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
+
+            // Skip invalid selectors or empty hrefs
+            if (!targetId || targetId === '#') {
+                return;
+            }
+
+            let targetElement = null;
+            try {
+                // Try direct querySelector first
+                targetElement = document.querySelector(targetId);
+            } catch (error) {
+                // If selector is invalid, try to find by ID
+                const id = targetId.substring(1); // Remove the #
+                targetElement = document.getElementById(id);
+
+                // If still not found, try to escape the ID for CSS selector
+                if (!targetElement) {
+                    try {
+                        const escapedId = CSS.escape(id);
+                        targetElement = document.querySelector('#' + escapedId);
+                    } catch (escapeError) {
+                        console.warn('Invalid anchor link in theme-toggle:', targetId);
+                        return;
+                    }
+                }
+            }
+
             if (targetElement) {
                 targetElement.scrollIntoView({
                     behavior: 'smooth'

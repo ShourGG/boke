@@ -74,11 +74,80 @@
             if (utils.isInExcludedContainer(element)) return false;
 
             const classList = element.classList;
-            return classList.contains('fas') ||
-                   classList.contains('far') ||
-                   classList.contains('fab') ||
-                   classList.contains('fal') ||
-                   Array.from(classList).some(cls => cls.startsWith('fa-'));
+            const isFontAwesome = classList.contains('fas') ||
+                                 classList.contains('far') ||
+                                 classList.contains('fab') ||
+                                 classList.contains('fal') ||
+                                 Array.from(classList).some(cls => cls.startsWith('fa-'));
+
+            // Only process if it's a Font Awesome icon AND Font Awesome failed to load
+            return isFontAwesome && !utils.isFontAwesomeLoaded();
+        },
+
+        isFontAwesomeLoaded: function() {
+            // Multiple checks to ensure Font Awesome is properly loaded
+
+            // Check 1: Test if Font Awesome CSS is loaded by checking font-family
+            try {
+                const testElement = document.createElement('i');
+                testElement.className = 'fas fa-home';
+                testElement.style.position = 'absolute';
+                testElement.style.left = '-9999px';
+                testElement.style.visibility = 'hidden';
+                testElement.style.fontSize = '16px';
+                document.body.appendChild(testElement);
+
+                const computedStyle = window.getComputedStyle(testElement);
+                const fontFamily = computedStyle.getPropertyValue('font-family');
+                const content = computedStyle.getPropertyValue('content');
+
+                document.body.removeChild(testElement);
+
+                // Check if Font Awesome font is applied
+                const hasFontAwesome = fontFamily && (
+                    fontFamily.includes('Font Awesome') ||
+                    fontFamily.includes('FontAwesome') ||
+                    fontFamily.includes('"Font Awesome')
+                );
+
+                // Check if content is set (Font Awesome uses ::before pseudo-elements)
+                const hasContent = content && content !== 'none' && content !== 'normal';
+
+                if (hasFontAwesome || hasContent) {
+                    utils.log('Font Awesome detected via CSS test');
+                    return true;
+                }
+            } catch (error) {
+                utils.log('Font Awesome CSS test failed: ' + error.message, 'warn');
+            }
+
+            // Check 2: Look for Font Awesome stylesheets
+            const stylesheets = Array.from(document.styleSheets);
+            for (let sheet of stylesheets) {
+                try {
+                    if (sheet.href && (
+                        sheet.href.includes('font-awesome') ||
+                        sheet.href.includes('fontawesome') ||
+                        sheet.href.includes('fa-')
+                    )) {
+                        utils.log('Font Awesome detected via stylesheet URL');
+                        return true;
+                    }
+                } catch (error) {
+                    // Cross-origin stylesheets may throw errors
+                    continue;
+                }
+            }
+
+            // Check 3: Look for Font Awesome link elements
+            const faLinks = document.querySelectorAll('link[href*="font-awesome"], link[href*="fontawesome"]');
+            if (faLinks.length > 0) {
+                utils.log('Font Awesome detected via link elements');
+                return true;
+            }
+
+            utils.log('Font Awesome not detected');
+            return false;
         }
     };
 
@@ -92,21 +161,31 @@
     function initIconFallback() {
         utils.log('Initializing icon fallback system');
 
-        // Initial check
-        checkAndFixIcons();
-
-        // Delayed check for dynamically loaded content
+        // Wait for Font Awesome to load before checking
         setTimeout(function() {
-            checkAndFixIcons();
-        }, 1000);
+            if (!utils.isFontAwesomeLoaded()) {
+                utils.log('Font Awesome not detected, enabling fallback system');
+                checkAndFixIcons();
+            } else {
+                utils.log('Font Awesome loaded successfully, fallback not needed');
+            }
+        }, 2000);
 
         // Final check after page load
         window.addEventListener('load', function() {
-            setTimeout(checkAndFixIcons, 500);
+            setTimeout(function() {
+                if (!utils.isFontAwesomeLoaded()) {
+                    checkAndFixIcons();
+                }
+            }, 1000);
         });
 
-        // Setup optimized mutation observer
-        setupMutationObserver();
+        // Setup optimized mutation observer only if Font Awesome fails
+        setTimeout(function() {
+            if (!utils.isFontAwesomeLoaded()) {
+                setupMutationObserver();
+            }
+        }, 3000);
 
         utils.log('Icon fallback system initialized');
     }
