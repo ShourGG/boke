@@ -65,9 +65,19 @@
                 }
             }
 
-            // 如果所有CDN都失败，启用icon-fallback
+            // 如果所有CDN都失败，尝试本地备用CSS
+            if (checkAttempts === 7) {
+                console.warn('All Font Awesome CDNs failed, trying local fallback CSS');
+                const localFallback = document.createElement('link');
+                localFallback.rel = 'stylesheet';
+                localFallback.href = '<?= SITE_URL ?>/public/fontawesome/fontawesome-local.css';
+                localFallback.id = 'fontawesome-local';
+                document.head.appendChild(localFallback);
+            }
+
+            // 如果本地CSS也失败，启用icon-fallback
             if (checkAttempts >= maxAttempts) {
-                console.error('All Font Awesome CDNs failed, enabling icon fallback');
+                console.error('All Font Awesome options failed, enabling Unicode fallback');
                 if (window.iconFallback) {
                     window.iconFallback.config.debug = true;
                     window.iconFallback.reset();
