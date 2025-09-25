@@ -144,34 +144,59 @@
             try {
                 // Patch Bootstrap's selector engine to handle errors gracefully
                 if (window.bootstrap && window.bootstrap.SelectorEngine) {
-                    const originalFind = window.bootstrap.SelectorEngine.find;
-                    const originalFindOne = window.bootstrap.SelectorEngine.findOne;
+                    const selectorEngine = window.bootstrap.SelectorEngine;
 
-                    window.bootstrap.SelectorEngine.find = function(selector, element) {
-                        try {
-                            return originalFind.call(this, selector, element);
-                        } catch (error) {
-                            if (config.suppressSelectorErrors) {
-                                utils.log('Selector engine error suppressed: ' + error.message, 'warn');
-                                return [];
-                            }
-                            throw error;
-                        }
+                    // Store original methods
+                    const originalMethods = {
+                        find: selectorEngine.find,
+                        findOne: selectorEngine.findOne,
+                        children: selectorEngine.children,
+                        parents: selectorEngine.parents,
+                        prev: selectorEngine.prev,
+                        next: selectorEngine.next,
+                        focusableChildren: selectorEngine.focusableChildren
                     };
 
-                    window.bootstrap.SelectorEngine.findOne = function(selector, element) {
-                        try {
-                            return originalFindOne.call(this, selector, element);
-                        } catch (error) {
-                            if (config.suppressSelectorErrors) {
-                                utils.log('Selector engine error suppressed: ' + error.message, 'warn');
-                                return null;
+                    // Create safe wrapper function
+                    function createSafeWrapper(methodName, originalMethod, defaultReturn) {
+                        return function(selector, element) {
+                            try {
+                                if (!originalMethod || typeof originalMethod !== 'function') {
+                                    utils.log(`SelectorEngine.${methodName} is not available, returning default`, 'warn');
+                                    return defaultReturn;
+                                }
+                                return originalMethod.call(this, selector, element);
+                            } catch (error) {
+                                if (config.suppressSelectorErrors) {
+                                    utils.log(`Selector engine ${methodName} error suppressed: ${error.message}`, 'warn');
+                                    return defaultReturn;
+                                }
+                                throw error;
                             }
-                            throw error;
-                        }
-                    };
+                        };
+                    }
 
-                    utils.log('Bootstrap selector engine patched successfully');
+                    // Patch all selector engine methods
+                    selectorEngine.find = createSafeWrapper('find', originalMethods.find, []);
+                    selectorEngine.findOne = createSafeWrapper('findOne', originalMethods.findOne, null);
+
+                    if (originalMethods.children) {
+                        selectorEngine.children = createSafeWrapper('children', originalMethods.children, []);
+                    }
+                    if (originalMethods.parents) {
+                        selectorEngine.parents = createSafeWrapper('parents', originalMethods.parents, []);
+                    }
+                    if (originalMethods.prev) {
+                        selectorEngine.prev = createSafeWrapper('prev', originalMethods.prev, []);
+                    }
+                    if (originalMethods.next) {
+                        selectorEngine.next = createSafeWrapper('next', originalMethods.next, []);
+                    }
+                    if (originalMethods.focusableChildren) {
+                        selectorEngine.focusableChildren = createSafeWrapper('focusableChildren', originalMethods.focusableChildren, []);
+                    }
+
+                    utils.log('Bootstrap selector engine comprehensively patched');
                 }
             } catch (error) {
                 utils.log('Failed to patch selector engine: ' + error.message, 'error');
@@ -198,7 +223,13 @@
                     fullMessage.includes('offcanvas.js') ||
                     fullMessage.includes('scrollspy.js') ||
                     fullMessage.includes('tab.js') ||
-                    (message.includes('Uncaught TypeError') && message.includes('reading \'call\''))
+                    fullMessage.includes('collapse.js') ||
+                    fullMessage.includes('dropdown.js') ||
+                    fullMessage.includes('event-handler.js') ||
+                    fullMessage.includes('getMultipleElementsFromSelector') ||
+                    fullMessage.includes('clearMenus') ||
+                    (message.includes('Uncaught TypeError') && message.includes('reading \'call\'')) ||
+                    (message.includes('TypeError') && message.includes('undefined') && message.includes('call'))
                 )) {
                     // Suppress these specific errors
                     utils.log('Suppressed Bootstrap error: ' + message, 'warn');
@@ -209,13 +240,37 @@
                 originalConsoleError.apply(console, args);
             };
 
-            // Suppress unhandled errors from selector engine
+            // Suppress unhandled errors from selector engine and Bootstrap components
             window.addEventListener('error', function(event) {
                 const message = event.message;
+                const filename = event.filename || '';
+
                 if (message && (
                     message.includes('selector-engine') ||
-                    (message.includes('Cannot read properties of undefined') && message.includes('call'))
+                    message.includes('getMultipleElementsFromSelector') ||
+                    message.includes('clearMenus') ||
+                    filename.includes('selector-engine.js') ||
+                    filename.includes('collapse.js') ||
+                    filename.includes('dropdown.js') ||
+                    filename.includes('event-handler.js') ||
+                    (message.includes('Cannot read properties of undefined') && message.includes('call')) ||
+                    (message.includes('TypeError') && message.includes('undefined') && message.includes('call'))
                 )) {
+                    utils.log('Suppressed unhandled Bootstrap error: ' + message, 'warn');
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            // Also handle unhandled promise rejections
+            window.addEventListener('unhandledrejection', function(event) {
+                const reason = event.reason;
+                if (reason && reason.message && (
+                    reason.message.includes('selector-engine') ||
+                    reason.message.includes('Bootstrap') ||
+                    (reason.message.includes('Cannot read properties of undefined') && reason.message.includes('call'))
+                )) {
+                    utils.log('Suppressed unhandled Bootstrap promise rejection: ' + reason.message, 'warn');
                     event.preventDefault();
                     return false;
                 }
