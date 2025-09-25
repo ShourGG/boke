@@ -1,0 +1,208 @@
+/*!
+ * Font Awesome 6 Override for Editor.md Compatibility
+ * 解决Editor.md内置Font Awesome 4.x与Font Awesome 6的冲突
+ * 
+ * 问题：Editor.md的editormd.preview.css包含Font Awesome 4.x的旧版本定义
+ * 解决：使用Font Awesome 6的正确Unicode编码覆盖旧版本
+ * 
+ * Author: 老王 (专治各种CSS冲突)
+ * Date: 2025-01-25
+ */
+
+/* ==========================================================================
+   Font Awesome 6 核心图标覆盖 (Core Icons Override)
+   ========================================================================== */
+
+/* 日历图标 - Calendar */
+.fa-calendar:before,
+.fas.fa-calendar:before {
+    content: "\f073" !important; /* FA6: Calendar */
+}
+
+/* 文件夹图标 - Folder */
+.fa-folder:before,
+.fas.fa-folder:before {
+    content: "\f07b" !important; /* FA6: Folder */
+}
+
+/* 眼睛图标 - Eye */
+.fa-eye:before,
+.fas.fa-eye:before {
+    content: "\f06e" !important; /* FA6: Eye */
+}
+
+/* 评论图标 - Comments */
+.fa-comments:before,
+.fas.fa-comments:before {
+    content: "\f086" !important; /* FA6: Comments */
+}
+
+/* 标签图标 - Tags */
+.fa-tags:before,
+.fas.fa-tags:before {
+    content: "\f02c" !important; /* FA6: Tags */
+}
+
+/* 链接图标 - Link */
+.fa-link:before,
+.fas.fa-link:before {
+    content: "\f0c1" !important; /* FA6: Link */
+}
+
+/* 微博图标 - Weibo */
+.fa-weibo:before,
+.fab.fa-weibo:before {
+    content: "\f18a" !important; /* FA6: Weibo */
+}
+
+/* QQ图标 - QQ */
+.fa-qq:before,
+.fab.fa-qq:before {
+    content: "\f1d6" !important; /* FA6: QQ */
+}
+
+/* ==========================================================================
+   目录(TOC)专用图标覆盖 (TOC Specific Icons)
+   ========================================================================== */
+
+/* 目录中的链接图标 */
+.markdown-toc .fa-link:before,
+.editormd-toc-menu .fa-link:before,
+.toc .fa-link:before {
+    content: "\f0c1" !important; /* FA6: Link */
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* 目录中的列表图标 */
+.markdown-toc .fa-list:before,
+.editormd-toc-menu .fa-list:before,
+.toc .fa-list:before {
+    content: "\f03a" !important; /* FA6: List */
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* ==========================================================================
+   文章元信息图标覆盖 (Post Meta Icons)
+   ========================================================================== */
+
+/* 文章页面的所有Font Awesome图标强制使用FA6 */
+.post-meta .fa:before,
+.post-meta .fas:before,
+.post-meta .far:before,
+.post-meta .fab:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* 社交分享图标 */
+.social-share .fa:before,
+.social-share .fas:before,
+.social-share .fab:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* ==========================================================================
+   Editor.md内容区域图标覆盖 (Editor.md Content Area)
+   ========================================================================== */
+
+/* 强制Editor.md渲染区域使用Font Awesome 6 */
+#post-content-view .fa:before,
+#post-content-view .fas:before,
+#post-content-view .far:before,
+#post-content-view .fab:before,
+.markdown-body .fa:before,
+.markdown-body .fas:before,
+.markdown-body .far:before,
+.markdown-body .fab:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* ==========================================================================
+   通用Font Awesome 6强制应用 (Universal FA6 Enforcement)
+   ========================================================================== */
+
+/* 全局Font Awesome图标强制使用FA6字体 */
+.fa:before,
+.fas:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+.far:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+.fab:before {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* ==========================================================================
+   调试辅助 (Debug Helpers)
+   ========================================================================== */
+
+/* 调试模式：显示所有Font Awesome图标的边框 */
+.debug-fa .fa:before,
+.debug-fa .fas:before,
+.debug-fa .far:before,
+.debug-fa .fab:before {
+    border: 1px solid red !important;
+    background: rgba(255, 0, 0, 0.1) !important;
+}
+
+/* ==========================================================================
+   响应式优化 (Responsive Optimization)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* 移动端图标大小优化 */
+    .fa:before,
+    .fas:before,
+    .far:before,
+    .fab:before {
+        font-size: inherit !important;
+    }
+}
+
+/* ==========================================================================
+   性能优化 (Performance Optimization)
+   ========================================================================== */
+
+/* 减少重绘和回流 */
+.fa,
+.fas,
+.far,
+.fab {
+    will-change: auto !important;
+    transform: translateZ(0) !important;
+}
+
+/*
+ * 使用说明 (Usage Instructions):
+ * 
+ * 1. 在HTML中引入此CSS文件，确保在Editor.md CSS之后加载
+ * 2. 如果需要调试，给容器添加 'debug-fa' 类
+ * 3. 此文件专门解决Editor.md与Font Awesome 6的兼容性问题
+ * 
+ * 老王出品，专治各种CSS冲突！🎯
+ */

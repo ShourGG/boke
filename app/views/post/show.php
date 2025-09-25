@@ -407,6 +407,9 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.js"></script>
 
+<!-- Font Awesome 6 Override for Editor.md Compatibility -->
+<link rel="stylesheet" href="<?= SITE_URL ?>/public/css/fontawesome-override.css">
+
 <script src="<?= SITE_URL ?>/public/editor.md/editormd.min.js"></script>
 
 <script>
