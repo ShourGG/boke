@@ -150,8 +150,45 @@
         }
     }
     
-    // 检测修复效果
+    // 性能优化的检测修复效果 - 使用缓存和现有元素
+    let cachedTestResult = null;
+    let lastTestTime = 0;
+    const TEST_CACHE_DURATION = 1000; // 1秒内使用缓存结果
+
     function checkFixResult() {
+        const now = Date.now();
+
+        // 使用缓存结果，避免频繁DOM操作
+        if (cachedTestResult !== null && (now - lastTestTime) < TEST_CACHE_DURATION) {
+            return cachedTestResult;
+        }
+
+        // 尝试使用页面中已存在的Font Awesome图标
+        const existingIcon = document.querySelector('.fa, .fas, .far, .fab');
+        if (existingIcon) {
+            const styles = window.getComputedStyle(existingIcon, '::before');
+            const content = styles.content;
+            const fontFamily = styles.fontFamily;
+
+            console.log('%c🔍 检测结果 (现有图标) - 内容:', 'color: #2196f3; font-weight: bold;', content);
+            console.log('%c🔍 检测结果 (现有图标) - 字体:', 'color: #2196f3; font-weight: bold;', fontFamily);
+
+            const isSuccess = content && content !== 'normal' && content !== 'none' && content.includes('\\');
+
+            // 缓存结果
+            cachedTestResult = isSuccess;
+            lastTestTime = now;
+
+            if (isSuccess) {
+                console.log('%c🎯 修复成功！Font Awesome 图标正常显示！', 'color: #4caf50; font-size: 16px; font-weight: bold;');
+            } else {
+                console.log('%c⚠️ 修复未完全成功，但已应用强制样式', 'color: #ff9800; font-weight: bold;');
+            }
+
+            return isSuccess;
+        }
+
+        // 如果没有现有图标，创建临时测试元素（降级方案）
         const testIcon = document.createElement('i');
         testIcon.className = 'fas fa-home';
         testIcon.style.position = 'absolute';
@@ -159,93 +196,122 @@
         testIcon.style.visibility = 'hidden';
         document.body.appendChild(testIcon);
 
-        const styles = window.getComputedStyle(testIcon);
+        const styles = window.getComputedStyle(testIcon, '::before');
         const content = styles.content;
         const fontFamily = styles.fontFamily;
 
         document.body.removeChild(testIcon);
 
-        console.log('%c🔍 检测结果 - 内容:', 'color: #2196f3; font-weight: bold;', content);
-        console.log('%c🔍 检测结果 - 字体:', 'color: #2196f3; font-weight: bold;', fontFamily);
+        console.log('%c🔍 检测结果 (临时元素) - 内容:', 'color: #2196f3; font-weight: bold;', content);
+        console.log('%c🔍 检测结果 (临时元素) - 字体:', 'color: #2196f3; font-weight: bold;', fontFamily);
 
-        if (content && content !== 'normal' && content !== 'none' && content.includes('\\')) {
+        const isSuccess = content && content !== 'normal' && content !== 'none' && content.includes('\\');
+
+        // 缓存结果
+        cachedTestResult = isSuccess;
+        lastTestTime = now;
+
+        if (isSuccess) {
             console.log('%c🎯 修复成功！Font Awesome 图标正常显示！', 'color: #4caf50; font-size: 16px; font-weight: bold;');
-            return true;
         } else {
             console.log('%c⚠️ 修复未完全成功，但已应用强制样式', 'color: #ff9800; font-weight: bold;');
-            return false;
         }
+
+        return isSuccess;
     }
     
     // 防止无限循环的计数器
     let fixAttempts = 0;
     const maxFixAttempts = 3;
 
-    // 持续监听修复方法 - 监听DOM变化和用户交互
+    // 性能优化的智能监听修复方法
     function startContinuousMonitoring() {
-        console.log('%c🔄 启动持续监听修复模式...', 'color: #ff9800; font-size: 16px; font-weight: bold;');
+        console.log('%c🔄 启动智能监听修复模式...', 'color: #ff9800; font-size: 16px; font-weight: bold;');
 
-        // 创建MutationObserver监听DOM变化
-        const observer = new MutationObserver(function(mutations) {
-            let needsRefix = false;
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' || mutation.type === 'childList') {
-                    // 检查是否有样式相关的变化
-                    if (mutation.target.classList && (
-                        mutation.target.classList.contains('fa') ||
-                        mutation.target.classList.contains('fas') ||
-                        mutation.target.classList.contains('far') ||
-                        mutation.target.classList.contains('fab')
-                    )) {
-                        needsRefix = true;
+        let lastCheckTime = 0;
+        let isChecking = false;
+        const CHECK_THROTTLE = 2000; // 2秒内最多检查一次
+
+        // 节流检查函数
+        function throttledCheck(eventType = 'unknown') {
+            const now = Date.now();
+            if (isChecking || (now - lastCheckTime) < CHECK_THROTTLE) {
+                return; // 跳过频繁检查
+            }
+
+            isChecking = true;
+            lastCheckTime = now;
+
+            setTimeout(() => {
+                const success = checkFixResult();
+                if (!success) {
+                    console.log(`%c🔄 ${eventType}触发检查，发现图标问题，重新修复...`, 'color: #ff9800; font-weight: bold;');
+                    resetFixState();
+                    forceApplyFontAwesome();
+                }
+                isChecking = false;
+            }, 100);
+        }
+
+        // 精确的MutationObserver - 只监听目录区域
+        const tocContainer = document.querySelector('.editormd-toc-menu, .markdown-toc, #post-content-view');
+        if (tocContainer) {
+            const observer = new MutationObserver(function(mutations) {
+                let needsRefix = false;
+                mutations.forEach(function(mutation) {
+                    // 只关心class属性变化
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const target = mutation.target;
+                        if (target.classList && (
+                            target.classList.contains('fa') ||
+                            target.classList.contains('fas') ||
+                            target.classList.contains('far') ||
+                            target.classList.contains('fab')
+                        )) {
+                            needsRefix = true;
+                        }
                     }
+                });
+
+                if (needsRefix) {
+                    throttledCheck('DOM变化');
                 }
             });
 
-            if (needsRefix) {
-                console.log('%c🔄 检测到图标相关DOM变化，重新修复...', 'color: #ff9800; font-weight: bold;');
-                setTimeout(() => {
-                    resetFixState();
-                    forceApplyFontAwesome();
-                }, 100);
-            }
-        });
+            // 只观察目录容器，减少监听范围
+            observer.observe(tocContainer, {
+                attributes: true,
+                attributeFilter: ['class'],
+                subtree: true
+            });
 
-        // 开始观察整个文档
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['class', 'style']
-        });
+            console.log('%c📍 精确监听已设置：仅监听目录区域', 'color: #2196f3; font-weight: bold;');
+        }
 
-        // 监听用户交互事件
-        const interactionEvents = ['click', 'mouseover', 'focus', 'scroll'];
-        interactionEvents.forEach(eventType => {
-            document.addEventListener(eventType, function() {
-                // 延迟检查，避免频繁触发
-                setTimeout(() => {
-                    const success = checkFixResult();
-                    if (!success) {
-                        console.log(`%c🔄 ${eventType}事件后检测到图标问题，重新修复...`, 'color: #ff9800; font-weight: bold;');
-                        resetFixState();
-                        forceApplyFontAwesome();
-                    }
-                }, 200);
-            }, { passive: true, once: false });
-        });
+        // 优化的用户交互监听 - 只监听关键事件
+        let scrollTimeout;
+        document.addEventListener('scroll', function() {
+            // 滚动节流：停止滚动500ms后才检查
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                throttledCheck('滚动停止');
+            }, 500);
+        }, { passive: true });
 
-        // 定期检查（每5秒）
+        // 点击事件监听 - 只监听目录区域
+        if (tocContainer) {
+            tocContainer.addEventListener('click', function() {
+                setTimeout(() => throttledCheck('目录点击'), 300);
+            }, { passive: true });
+        }
+
+        // 降低定期检查频率（每30秒）
         setInterval(() => {
-            const success = checkFixResult();
-            if (!success) {
-                console.log('%c🔄 定期检查发现图标问题，重新修复...', 'color: #ff9800; font-weight: bold;');
-                resetFixState();
-                forceApplyFontAwesome();
-            }
-        }, 5000);
+            throttledCheck('定期巡检');
+        }, 30000);
 
-        console.log('%c✅ 持续监听修复已启动', 'color: #4caf50; font-weight: bold;');
+        console.log('%c✅ 智能监听修复已启动 (性能优化版)', 'color: #4caf50; font-weight: bold;');
+        console.log('%c⚡ 性能优化：节流检查、精确监听、降低频率', 'color: #9c27b0; font-weight: bold;');
     }
     
     // 监听Editor.md渲染完成
@@ -315,9 +381,11 @@
         }
     });
     
-    // 重置修复状态
+    // 重置修复状态和缓存
     function resetFixState() {
         fixAttempts = 0;
+        cachedTestResult = null; // 重置检测缓存
+        lastTestTime = 0;
         console.log('%c🔄 修复状态已重置', 'color: #2196f3; font-weight: bold;');
     }
 
