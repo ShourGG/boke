@@ -13,9 +13,8 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome (多CDN备用) -->
-    <link id="admin-fontawesome-primary" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link id="admin-fontawesome-backup" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet" media="none">
+    <!-- Font Awesome (本地版本) -->
+    <link href="<?= SITE_URL ?>/public/fontawesome-free-6.5.1-web/css/all.min.css" rel="stylesheet">
     <!-- Admin CSS -->
     <link href="<?= SITE_URL ?>/public/css/admin.css" rel="stylesheet">
 </head>
@@ -144,77 +143,6 @@
     </div>
     <?php endif; ?>
 
-    <!-- Font Awesome 加载检测 (管理后台) -->
-    <script>
-    (function() {
-        'use strict';
-
-        let checkAttempts = 0;
-        const maxAttempts = 10;
-
-        function checkAdminFontAwesome() {
-            checkAttempts++;
-
-            const testElement = document.createElement('i');
-            testElement.className = 'fas fa-home';
-            testElement.style.position = 'absolute';
-            testElement.style.left = '-9999px';
-            testElement.style.visibility = 'hidden';
-            document.body.appendChild(testElement);
-
-            const computedStyle = window.getComputedStyle(testElement);
-            const fontFamily = computedStyle.getPropertyValue('font-family');
-
-            document.body.removeChild(testElement);
-
-            const isLoaded = fontFamily && (
-                fontFamily.includes('Font Awesome') ||
-                fontFamily.includes('FontAwesome')
-            );
-
-            if (isLoaded) {
-                console.log('Admin Font Awesome loaded successfully');
-                return true;
-            }
-
-            // 尝试备用CDN
-            if (checkAttempts === 3) {
-                console.warn('Admin primary Font Awesome CDN failed, trying backup');
-                const backup = document.getElementById('admin-fontawesome-backup');
-                if (backup) {
-                    backup.media = 'all';
-                }
-            }
-
-            // 尝试本地备用CSS
-            if (checkAttempts === 7) {
-                console.warn('Admin Font Awesome CDNs failed, trying local fallback');
-                const localFallback = document.createElement('link');
-                localFallback.rel = 'stylesheet';
-                localFallback.href = '<?= SITE_URL ?>/public/fontawesome/fontawesome-local.css';
-                localFallback.id = 'admin-fontawesome-local';
-                document.head.appendChild(localFallback);
-            }
-
-            if (checkAttempts >= maxAttempts) {
-                console.error('Admin Font Awesome failed to load');
-                return false;
-            }
-
-            setTimeout(checkAdminFontAwesome, 500);
-            return false;
-        }
-
-        // 开始检查
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(checkAdminFontAwesome, 100);
-            });
-        } else {
-            setTimeout(checkAdminFontAwesome, 100);
-        }
-    })();
-    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
