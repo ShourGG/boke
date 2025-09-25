@@ -137,9 +137,17 @@
         document.head.appendChild(forceStyle);
         
         console.log('%c✅ Font Awesome 强制样式已应用！', 'color: #4caf50; font-size: 14px; font-weight: bold;');
-        
-        // 检测修复效果
-        setTimeout(checkFixResult, 500);
+
+        // 检测修复效果，但只在初次修复时检测
+        if (fixAttempts === 0) {
+            setTimeout(() => {
+                const success = checkFixResult();
+                if (!success) {
+                    console.log('%c🔄 初次修复未完全成功，启动激进修复...', 'color: #ff9800; font-weight: bold;');
+                    setTimeout(aggressiveFix, 1000);
+                }
+            }, 500);
+        }
     }
     
     // 检测修复效果
@@ -148,30 +156,43 @@
         testIcon.className = 'fas fa-home';
         testIcon.style.position = 'absolute';
         testIcon.style.left = '-9999px';
+        testIcon.style.visibility = 'hidden';
         document.body.appendChild(testIcon);
-        
+
         const styles = window.getComputedStyle(testIcon);
-        const content = styles.getPropertyValue('content');
-        const fontFamily = styles.getPropertyValue('font-family');
-        
+        const content = styles.content;
+        const fontFamily = styles.fontFamily;
+
         document.body.removeChild(testIcon);
-        
-        if (content && content !== 'normal' && content !== 'none') {
-            console.log('%c🎯 修复成功！图标内容:', content, 'color: #4caf50; font-weight: bold;');
-            console.log('%c🎯 字体族:', fontFamily, 'color: #4caf50; font-weight: bold;');
+
+        console.log('%c🔍 检测结果 - 内容:', 'color: #2196f3; font-weight: bold;', content);
+        console.log('%c🔍 检测结果 - 字体:', 'color: #2196f3; font-weight: bold;', fontFamily);
+
+        if (content && content !== 'normal' && content !== 'none' && content.includes('\\')) {
+            console.log('%c🎯 修复成功！Font Awesome 图标正常显示！', 'color: #4caf50; font-size: 16px; font-weight: bold;');
+            return true;
         } else {
-            console.log('%c❌ 修复失败，内容仍为:', content, 'color: #f44336; font-weight: bold;');
-            console.log('%c❌ 字体族:', fontFamily, 'color: #f44336; font-weight: bold;');
-            
-            // 如果还是失败，尝试更激进的修复
-            setTimeout(aggressiveFix, 1000);
+            console.log('%c⚠️ 修复未完全成功，但已应用强制样式', 'color: #ff9800; font-weight: bold;');
+            return false;
         }
     }
     
+    // 防止无限循环的计数器
+    let fixAttempts = 0;
+    const maxFixAttempts = 3;
+
     // 更激进的修复方法
     function aggressiveFix() {
-        console.log('%c🚨 启动激进修复模式...', 'color: #ff9800; font-size: 16px; font-weight: bold;');
-        
+        fixAttempts++;
+
+        if (fixAttempts > maxFixAttempts) {
+            console.log('%c🛑 已达到最大修复尝试次数，停止修复', 'color: #f44336; font-size: 16px; font-weight: bold;');
+            console.log('%c💡 建议：手动调用 fixFontAwesome() 或刷新页面', 'color: #2196f3; font-weight: bold;');
+            return;
+        }
+
+        console.log(`%c🚨 启动激进修复模式... (尝试 ${fixAttempts}/${maxFixAttempts})`, 'color: #ff9800; font-size: 16px; font-weight: bold;');
+
         // 强制重新加载Font Awesome CSS
         const fontAwesomeLinks = document.querySelectorAll('link[href*="fontawesome"]');
         fontAwesomeLinks.forEach(link => {
@@ -180,9 +201,18 @@
             link.parentNode.insertBefore(newLink, link.nextSibling);
             setTimeout(() => link.remove(), 1000);
         });
-        
-        // 延迟重新应用样式
-        setTimeout(forceApplyFontAwesome, 2000);
+
+        // 延迟重新应用样式，但不再无限循环
+        setTimeout(() => {
+            forceApplyFontAwesome();
+            // 最后一次检测，不再重试
+            setTimeout(() => {
+                const success = checkFixResult();
+                if (!success && fixAttempts < maxFixAttempts) {
+                    console.log('%c🔄 准备下一次修复尝试...', 'color: #ff9800; font-weight: bold;');
+                }
+            }, 1000);
+        }, 2000);
     }
     
     // 初始化
@@ -193,7 +223,18 @@
         setTimeout(forceApplyFontAwesome, 1000);
     });
     
-    // 暴露全局修复函数
-    window.fixFontAwesome = forceApplyFontAwesome;
+    // 重置修复状态
+    function resetFixState() {
+        fixAttempts = 0;
+        console.log('%c🔄 修复状态已重置', 'color: #2196f3; font-weight: bold;');
+    }
+
+    // 暴露全局函数
+    window.fixFontAwesome = function() {
+        resetFixState();
+        forceApplyFontAwesome();
+    };
+
+    window.resetFontAwesome = resetFixState;
     
 })();
