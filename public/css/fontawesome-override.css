@@ -53,12 +53,16 @@
 .fa-weibo:before,
 .fab.fa-weibo:before {
     content: "\f18a" !important; /* FA6: Weibo */
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
 }
 
 /* QQ图标 - QQ */
 .fa-qq:before,
 .fab.fa-qq:before {
     content: "\f1d6" !important; /* FA6: QQ */
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
 }
 
 /* ==========================================================================
@@ -98,8 +102,35 @@
 
 /* 社交分享图标 */
 .social-share .fa:before,
-.social-share .fas:before,
+.social-share .fas:before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
+/* 社交分享品牌图标 (微博、QQ等) */
 .social-share .fab:before {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
+}
+
+/* 分享按钮特定图标强制修复 */
+.social-share .fa-weibo:before,
+.social-share .fab.fa-weibo:before {
+    content: "\f18a" !important; /* FA6: Weibo */
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
+}
+
+.social-share .fa-qq:before,
+.social-share .fab.fa-qq:before {
+    content: "\f1d6" !important; /* FA6: QQ */
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
+}
+
+.social-share .fa-link:before,
+.social-share .fas.fa-link:before {
+    content: "\f0c1" !important; /* FA6: Link */
     font-family: "Font Awesome 6 Free" !important;
     font-weight: 900 !important;
 }
