@@ -143,8 +143,8 @@
             setTimeout(() => {
                 const success = checkFixResult();
                 if (!success) {
-                    console.log('%c🔄 初次修复未完全成功，启动激进修复...', 'color: #ff9800; font-weight: bold;');
-                    setTimeout(aggressiveFix, 1000);
+                    console.log('%c🔄 初次修复未完全成功，启动持续监听修复...', 'color: #ff9800; font-weight: bold;');
+                    startContinuousMonitoring();
                 }
             }, 500);
         }
@@ -181,38 +181,71 @@
     let fixAttempts = 0;
     const maxFixAttempts = 3;
 
-    // 更激进的修复方法
-    function aggressiveFix() {
-        fixAttempts++;
+    // 持续监听修复方法 - 监听DOM变化和用户交互
+    function startContinuousMonitoring() {
+        console.log('%c🔄 启动持续监听修复模式...', 'color: #ff9800; font-size: 16px; font-weight: bold;');
 
-        if (fixAttempts > maxFixAttempts) {
-            console.log('%c🛑 已达到最大修复尝试次数，停止修复', 'color: #f44336; font-size: 16px; font-weight: bold;');
-            console.log('%c💡 建议：手动调用 fixFontAwesome() 或刷新页面', 'color: #2196f3; font-weight: bold;');
-            return;
-        }
+        // 创建MutationObserver监听DOM变化
+        const observer = new MutationObserver(function(mutations) {
+            let needsRefix = false;
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' || mutation.type === 'childList') {
+                    // 检查是否有样式相关的变化
+                    if (mutation.target.classList && (
+                        mutation.target.classList.contains('fa') ||
+                        mutation.target.classList.contains('fas') ||
+                        mutation.target.classList.contains('far') ||
+                        mutation.target.classList.contains('fab')
+                    )) {
+                        needsRefix = true;
+                    }
+                }
+            });
 
-        console.log(`%c🚨 启动激进修复模式... (尝试 ${fixAttempts}/${maxFixAttempts})`, 'color: #ff9800; font-size: 16px; font-weight: bold;');
-
-        // 强制重新加载Font Awesome CSS
-        const fontAwesomeLinks = document.querySelectorAll('link[href*="fontawesome"]');
-        fontAwesomeLinks.forEach(link => {
-            const newLink = link.cloneNode();
-            newLink.href = link.href + '&force=' + Date.now();
-            link.parentNode.insertBefore(newLink, link.nextSibling);
-            setTimeout(() => link.remove(), 1000);
+            if (needsRefix) {
+                console.log('%c🔄 检测到图标相关DOM变化，重新修复...', 'color: #ff9800; font-weight: bold;');
+                setTimeout(() => {
+                    resetFixState();
+                    forceApplyFontAwesome();
+                }, 100);
+            }
         });
 
-        // 延迟重新应用样式，但不再无限循环
-        setTimeout(() => {
-            forceApplyFontAwesome();
-            // 最后一次检测，不再重试
-            setTimeout(() => {
-                const success = checkFixResult();
-                if (!success && fixAttempts < maxFixAttempts) {
-                    console.log('%c🔄 准备下一次修复尝试...', 'color: #ff9800; font-weight: bold;');
-                }
-            }, 1000);
-        }, 2000);
+        // 开始观察整个文档
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        });
+
+        // 监听用户交互事件
+        const interactionEvents = ['click', 'mouseover', 'focus', 'scroll'];
+        interactionEvents.forEach(eventType => {
+            document.addEventListener(eventType, function() {
+                // 延迟检查，避免频繁触发
+                setTimeout(() => {
+                    const success = checkFixResult();
+                    if (!success) {
+                        console.log(`%c🔄 ${eventType}事件后检测到图标问题，重新修复...`, 'color: #ff9800; font-weight: bold;');
+                        resetFixState();
+                        forceApplyFontAwesome();
+                    }
+                }, 200);
+            }, { passive: true, once: false });
+        });
+
+        // 定期检查（每5秒）
+        setInterval(() => {
+            const success = checkFixResult();
+            if (!success) {
+                console.log('%c🔄 定期检查发现图标问题，重新修复...', 'color: #ff9800; font-weight: bold;');
+                resetFixState();
+                forceApplyFontAwesome();
+            }
+        }, 5000);
+
+        console.log('%c✅ 持续监听修复已启动', 'color: #4caf50; font-weight: bold;');
     }
     
     // 监听Editor.md渲染完成
