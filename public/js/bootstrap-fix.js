@@ -297,13 +297,37 @@
         utils.log('Bootstrap dependency manager initialization complete');
     }
 
+    // Bootstrap ready handler - 等待Bootstrap加载完成
+    function waitForBootstrap(callback, maxAttempts = 50) {
+        let attempts = 0;
+
+        function checkBootstrap() {
+            attempts++;
+
+            if (utils.isBootstrapAvailable()) {
+                utils.log('Bootstrap detected, initializing fix...');
+                callback();
+            } else if (attempts < maxAttempts) {
+                utils.log(`Waiting for Bootstrap... (attempt ${attempts}/${maxAttempts})`);
+                setTimeout(checkBootstrap, 100);
+            } else {
+                utils.log('Bootstrap not detected after maximum attempts, initializing anyway', 'warn');
+                callback();
+            }
+        }
+
+        checkBootstrap();
+    }
+
     // DOM ready handler
     function onDOMReady() {
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initialize);
+            document.addEventListener('DOMContentLoaded', function() {
+                waitForBootstrap(initialize);
+            });
         } else {
-            // DOM already loaded, initialize immediately
-            setTimeout(initialize, 50);
+            // DOM already loaded, wait for Bootstrap then initialize
+            waitForBootstrap(initialize);
         }
     }
 
