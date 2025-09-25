@@ -325,26 +325,44 @@ function initMarkdownEditor() {
 
 // 加载Editor.md资源（本地版本）
 function loadEditorMd() {
-    // 检查本地资源是否已加载
-    if (typeof $ !== 'undefined' && typeof editormd !== 'undefined') {
+    // Check if Editor.md is already available
+    if (typeof window.editormd !== 'undefined' && typeof window.jQuery !== 'undefined') {
         createMarkdownEditor();
         return;
     }
 
-    // 本地资源已在页面头部加载，直接创建编辑器
+    // Listen for the editormdReady event
+    window.addEventListener('editormdReady', function() {
+        console.log('Editor.md ready event received');
+        createMarkdownEditor();
+    });
+
+    // Fallback timeout in case event doesn't fire
     setTimeout(function() {
-        if (typeof $ !== 'undefined' && typeof editormd !== 'undefined') {
+        if (typeof window.editormd !== 'undefined' && typeof window.jQuery !== 'undefined') {
             createMarkdownEditor();
         } else {
-            console.error('本地Editor.md资源加载失败');
+            console.error('Editor.md dependencies failed to load within timeout');
             fallbackToTextarea();
         }
-    }, 100);
+    }, 5000); // 5 second timeout
 }
 
 // 创建Markdown编辑器
 function createMarkdownEditor() {
     try {
+        console.log('Creating Editor.md instance...');
+
+        // Ensure jQuery is available for Editor.md
+        if (typeof window.jQuery === 'undefined') {
+            throw new Error('jQuery is not available for Editor.md');
+        }
+
+        // Ensure Editor.md is available
+        if (typeof window.editormd === 'undefined') {
+            throw new Error('Editor.md is not available');
+        }
+
         markdownEditor = editormd("editormd", {
             width: "100%",
             height: 500,
@@ -372,12 +390,45 @@ function createMarkdownEditor() {
             imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
             imageUploadURL: "/admin/upload/image",
             onload: function() {
-                console.log('Markdown编辑器加载完成');
+                console.log('Editor.md loaded successfully with flowchart support');
+
+                // Test flowchart functionality
+                setTimeout(function() {
+                    testFlowchartSupport();
+                }, 1000);
             }
         });
+
+        console.log('Editor.md instance created successfully');
+
     } catch (error) {
-        console.error('创建Markdown编辑器失败:', error);
+        console.error('Failed to create Editor.md instance:', error);
         fallbackToTextarea();
+    }
+}
+
+// Test flowchart support
+function testFlowchartSupport() {
+    try {
+        const previewContainer = markdownEditor.previewContainer;
+        if (previewContainer && previewContainer.length > 0) {
+            console.log('Editor.md preview container available');
+
+            // Check if flowchart dependencies are loaded
+            if (typeof window.flowchart !== 'undefined') {
+                console.log('Flowchart.js is available');
+            } else {
+                console.warn('Flowchart.js is not available');
+            }
+
+            if (typeof window.Diagram !== 'undefined') {
+                console.log('Sequence diagram is available');
+            } else {
+                console.warn('Sequence diagram is not available');
+            }
+        }
+    } catch (error) {
+        console.warn('Error testing flowchart support:', error);
     }
 }
 
@@ -550,28 +601,96 @@ document.getElementById('postForm').addEventListener('submit', function(e) {
 });
 </script>
 
-<!-- 本地Editor.md资源 -->
+<!-- Editor.md Resources -->
 <link rel="stylesheet" href="/public/editor.md/css/editormd.min.css">
-<!-- jQuery冲突处理 -->
+
+<!-- jQuery and Editor.md Dependencies -->
 <script>
-// 保存现有的Bootstrap引用
-if (typeof window.bootstrap !== 'undefined') {
-    window._bootstrap = window.bootstrap;
-}
+/**
+ * Editor.md Dependency Manager
+ * 正确加载jQuery和Editor.md，支持流程图和时序图
+ */
+(function() {
+    'use strict';
+
+    // Store Bootstrap reference to prevent conflicts
+    const originalBootstrap = window.bootstrap;
+
+    // Load jQuery if not already loaded
+    if (typeof window.jQuery === 'undefined') {
+        console.log('Loading jQuery for Editor.md...');
+
+        // Create script element for jQuery
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = '/public/editor.md/lib/jquery.min.js';
+        jqueryScript.onload = function() {
+            console.log('jQuery loaded successfully');
+            loadEditorMdDependencies();
+        };
+        jqueryScript.onerror = function() {
+            console.error('Failed to load jQuery');
+        };
+        document.head.appendChild(jqueryScript);
+    } else {
+        console.log('jQuery already available');
+        loadEditorMdDependencies();
+    }
+
+    function loadEditorMdDependencies() {
+        // Restore Bootstrap reference
+        if (originalBootstrap) {
+            window.bootstrap = originalBootstrap;
+        }
+
+        // Store jQuery reference for Editor.md
+        window.editormdJQuery = window.jQuery;
+
+        // Load Editor.md core
+        const editormdScript = document.createElement('script');
+        editormdScript.src = '/public/editor.md/editormd.min.js';
+        editormdScript.onload = function() {
+            console.log('Editor.md core loaded');
+            loadFlowchartDependencies();
+        };
+        editormdScript.onerror = function() {
+            console.error('Failed to load Editor.md core');
+        };
+        document.head.appendChild(editormdScript);
+    }
+
+    function loadFlowchartDependencies() {
+        // Load flowchart dependencies
+        const dependencies = [
+            '/public/editor.md/lib/raphael.min.js',
+            '/public/editor.md/lib/underscore.min.js',
+            '/public/editor.md/lib/flowchart.min.js',
+            '/public/editor.md/lib/jquery.flowchart.min.js',
+            '/public/editor.md/lib/sequence-diagram.min.js'
+        ];
+
+        let loadedCount = 0;
+
+        dependencies.forEach(function(src) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = function() {
+                loadedCount++;
+                console.log('Loaded dependency:', src);
+
+                if (loadedCount === dependencies.length) {
+                    console.log('All Editor.md dependencies loaded successfully');
+                    // Trigger custom event to notify that Editor.md is ready
+                    window.dispatchEvent(new CustomEvent('editormdReady'));
+                }
+            };
+            script.onerror = function() {
+                console.error('Failed to load dependency:', src);
+            };
+            document.head.appendChild(script);
+        });
+    }
+})();
 </script>
-<script src="/public/editor.md/lib/jquery.min.js"></script>
-<script>
-// 恢复Bootstrap引用，避免jQuery覆盖
-if (typeof window._bootstrap !== 'undefined') {
-    window.bootstrap = window._bootstrap;
-    delete window._bootstrap;
-}
-// 为Editor.md设置jQuery引用
-if (typeof window.jQuery !== 'undefined') {
-    window.editormdJQuery = window.jQuery;
-}
-</script>
-<script src="/public/editor.md/editormd.min.js"></script>
 
 <!-- 编辑器样式 -->
 <style>
