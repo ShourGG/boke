@@ -187,5 +187,7 @@
 
     <!-- Fluid主题JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/theme-toggle.js"></script>
+    <!-- Font Awesome 强制修复脚本 -->
+    <script src="<?= SITE_URL ?>/public/js/fontawesome-fix.js"></script>
 </body>
 </html>
