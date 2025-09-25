@@ -14,7 +14,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome (本地版本) -->
-    <link href="<?= SITE_URL ?>/public/fontawesome-free-6.5.1-web/css/all.min.css" rel="stylesheet">
+    <link href="<?= SITE_URL ?>/public/fontawesome-free-6.5.1-web/css/all.min.css?v=<?= time() ?>" rel="stylesheet">
     <!-- Admin CSS -->
     <link href="<?= SITE_URL ?>/public/css/admin.css" rel="stylesheet">
 </head>
