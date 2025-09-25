@@ -215,12 +215,71 @@
         }, 2000);
     }
     
+    // 监听Editor.md渲染完成
+    function watchForEditorMd() {
+        // 检查是否是文章详情页
+        if (document.getElementById('post-content-view')) {
+            console.log('%c📝 检测到文章详情页，监听Editor.md渲染', 'color: #ff9800; font-weight: bold;');
+
+            // 监听DOM变化，当Editor.md渲染完成后重新修复
+            const observer = new MutationObserver(function(mutations) {
+                let shouldRefix = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        // 检查是否有新的内容被添加
+                        for (let node of mutation.addedNodes) {
+                            if (node.nodeType === 1 && (
+                                node.classList.contains('markdown-body') ||
+                                node.querySelector && node.querySelector('.markdown-body')
+                            )) {
+                                shouldRefix = true;
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                if (shouldRefix) {
+                    console.log('%c🔄 Editor.md渲染完成，重新修复Font Awesome', 'color: #ff9800; font-weight: bold;');
+                    setTimeout(() => {
+                        resetFixState();
+                        forceApplyFontAwesome();
+                    }, 500);
+                }
+            });
+
+            // 开始观察
+            observer.observe(document.getElementById('post-content-view'), {
+                childList: true,
+                subtree: true
+            });
+
+            // 5秒后停止观察（避免无限监听）
+            setTimeout(() => {
+                observer.disconnect();
+                console.log('%c⏹️ Editor.md监听已停止', 'color: #9e9e9e; font-weight: bold;');
+            }, 5000);
+        }
+    }
+
     // 初始化
     waitForDOM(function() {
         console.log('%c🚀 Font Awesome 修复脚本已加载', 'color: #2196f3; font-size: 14px; font-weight: bold;');
-        
+
+        // 启动Editor.md监听
+        watchForEditorMd();
+
         // 延迟执行，确保其他CSS都已加载
         setTimeout(forceApplyFontAwesome, 1000);
+
+        // 如果是文章页面，额外延迟3秒再修复一次（确保Editor.md渲染完成）
+        if (document.getElementById('post-content-view')) {
+            setTimeout(() => {
+                console.log('%c🔄 文章页面额外修复', 'color: #ff9800; font-weight: bold;');
+                resetFixState();
+                forceApplyFontAwesome();
+            }, 3000);
+        }
     });
     
     // 重置修复状态
