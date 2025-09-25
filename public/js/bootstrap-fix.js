@@ -19,7 +19,8 @@
     const config = {
         debug: false,
         retryAttempts: 3,
-        retryDelay: 100
+        retryDelay: 100,
+        suppressSelectorErrors: true
     };
 
     // Utility functions
@@ -133,11 +134,98 @@
         }
     };
 
+    // Selector engine fix
+    const selectorEngineFix = {
+        patchSelectorEngine: function() {
+            if (!utils.isBootstrapAvailable()) {
+                return;
+            }
+
+            try {
+                // Patch Bootstrap's selector engine to handle errors gracefully
+                if (window.bootstrap && window.bootstrap.SelectorEngine) {
+                    const originalFind = window.bootstrap.SelectorEngine.find;
+                    const originalFindOne = window.bootstrap.SelectorEngine.findOne;
+
+                    window.bootstrap.SelectorEngine.find = function(selector, element) {
+                        try {
+                            return originalFind.call(this, selector, element);
+                        } catch (error) {
+                            if (config.suppressSelectorErrors) {
+                                utils.log('Selector engine error suppressed: ' + error.message, 'warn');
+                                return [];
+                            }
+                            throw error;
+                        }
+                    };
+
+                    window.bootstrap.SelectorEngine.findOne = function(selector, element) {
+                        try {
+                            return originalFindOne.call(this, selector, element);
+                        } catch (error) {
+                            if (config.suppressSelectorErrors) {
+                                utils.log('Selector engine error suppressed: ' + error.message, 'warn');
+                                return null;
+                            }
+                            throw error;
+                        }
+                    };
+
+                    utils.log('Bootstrap selector engine patched successfully');
+                }
+            } catch (error) {
+                utils.log('Failed to patch selector engine: ' + error.message, 'error');
+            }
+        },
+
+        setupErrorSuppression: function() {
+            if (!config.suppressSelectorErrors) {
+                return;
+            }
+
+            // Suppress specific selector-engine errors
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+                const message = args[0];
+
+                if (typeof message === 'string' && (
+                    message.includes('selector-engine') ||
+                    message.includes('Cannot read properties of undefined') && message.includes('call') ||
+                    message.includes('find') && args[1] && args[1].includes('selector-engine')
+                )) {
+                    // Suppress these specific errors
+                    return;
+                }
+
+                // Allow other errors through
+                originalConsoleError.apply(console, args);
+            };
+
+            // Suppress unhandled errors from selector engine
+            window.addEventListener('error', function(event) {
+                const message = event.message;
+                if (message && (
+                    message.includes('selector-engine') ||
+                    (message.includes('Cannot read properties of undefined') && message.includes('call'))
+                )) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            utils.log('Selector engine error suppression enabled');
+        }
+    };
+
     // Main initialization function
     function initialize() {
         utils.log('Starting Bootstrap dependency manager initialization');
 
-        // Resolve jQuery conflicts first
+        // Fix selector engine issues first
+        selectorEngineFix.patchSelectorEngine();
+        selectorEngineFix.setupErrorSuppression();
+
+        // Resolve jQuery conflicts
         jqueryManager.resolveConflicts();
 
         // Initialize Bootstrap components

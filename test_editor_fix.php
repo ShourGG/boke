@@ -29,7 +29,19 @@ require_once 'config/config.php';
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    <strong>测试目标：</strong>验证jQuery依赖冲突修复、Bootstrap组件正常工作、Editor.md流程图支持
+                    <strong>测试目标：</strong>验证jQuery依赖冲突修复、Bootstrap组件正常工作、Editor.md流程图支持、icon-fallback无限循环修复、selector-engine错误修复
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>修复内容：</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>✅ 修复icon-fallback.js无限循环问题</li>
+                        <li>✅ 优化MutationObserver性能</li>
+                        <li>✅ 修复Bootstrap selector-engine错误</li>
+                        <li>✅ 添加错误抑制机制</li>
+                        <li>✅ 改进依赖管理和状态跟踪</li>
+                    </ul>
                 </div>
                 
                 <!-- Bootstrap Components Test -->
