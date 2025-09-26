@@ -34,7 +34,18 @@ class BannerSettings
                     'banner_subtitle' => SITE_DESCRIPTION,
                     'banner_enabled' => 1,
                     'parallax_enabled' => 0,
-                    'overlay_opacity' => 0.30
+                    'overlay_opacity' => 0.30,
+                    // 副标题样式默认值
+                    'subtitle_color' => '#ffffff',
+                    'subtitle_font_family' => 'inherit',
+                    'subtitle_font_size' => '3rem',
+                    'subtitle_font_weight' => '300',
+                    'subtitle_text_shadow' => '0 2px 4px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.6)',
+                    'subtitle_animation' => 'typewriter',
+                    'subtitle_gradient_enabled' => 0,
+                    'subtitle_gradient_start' => '#ffffff',
+                    'subtitle_gradient_end' => '#f8f9fa',
+                    'subtitle_gradient_direction' => '135deg'
                 ];
             }
             
@@ -47,7 +58,18 @@ class BannerSettings
                 'banner_subtitle' => SITE_DESCRIPTION,
                 'banner_enabled' => 1,
                 'parallax_enabled' => 0,
-                'overlay_opacity' => 0.30
+                'overlay_opacity' => 0.30,
+                // 副标题样式默认值
+                'subtitle_color' => '#ffffff',
+                'subtitle_font_family' => 'inherit',
+                'subtitle_font_size' => '3rem',
+                'subtitle_font_weight' => '300',
+                'subtitle_text_shadow' => '0 2px 4px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.6)',
+                'subtitle_animation' => 'typewriter',
+                'subtitle_gradient_enabled' => 0,
+                'subtitle_gradient_start' => '#ffffff',
+                'subtitle_gradient_end' => '#f8f9fa',
+                'subtitle_gradient_direction' => '135deg'
             ];
         }
     }
@@ -72,6 +94,18 @@ class BannerSettings
             // Ensure opacity is within valid range
             $overlayOpacity = max(0, min(1, $overlayOpacity));
 
+            // 副标题样式数据验证
+            $subtitleColor = htmlspecialchars($data['subtitle_color'] ?? '#ffffff', ENT_QUOTES, 'UTF-8');
+            $subtitleFontFamily = htmlspecialchars($data['subtitle_font_family'] ?? 'inherit', ENT_QUOTES, 'UTF-8');
+            $subtitleFontSize = htmlspecialchars($data['subtitle_font_size'] ?? '3rem', ENT_QUOTES, 'UTF-8');
+            $subtitleFontWeight = htmlspecialchars($data['subtitle_font_weight'] ?? '300', ENT_QUOTES, 'UTF-8');
+            $subtitleTextShadow = htmlspecialchars($data['subtitle_text_shadow'] ?? '0 2px 4px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.6)', ENT_QUOTES, 'UTF-8');
+            $subtitleAnimation = htmlspecialchars($data['subtitle_animation'] ?? 'typewriter', ENT_QUOTES, 'UTF-8');
+            $subtitleGradientEnabled = isset($data['subtitle_gradient_enabled']) ? 1 : 0;
+            $subtitleGradientStart = htmlspecialchars($data['subtitle_gradient_start'] ?? '#ffffff', ENT_QUOTES, 'UTF-8');
+            $subtitleGradientEnd = htmlspecialchars($data['subtitle_gradient_end'] ?? '#f8f9fa', ENT_QUOTES, 'UTF-8');
+            $subtitleGradientDirection = htmlspecialchars($data['subtitle_gradient_direction'] ?? '135deg', ENT_QUOTES, 'UTF-8');
+
             // Debug: Log processed data
             error_log("BannerSettings::updateSettings - Processed data: " . json_encode([
                 'banner_image' => $bannerImage,
@@ -94,13 +128,19 @@ class BannerSettings
                     UPDATE banner_settings
                     SET banner_image = ?, banner_title = ?, banner_subtitle = ?,
                         banner_enabled = ?, parallax_enabled = ?, overlay_opacity = ?,
-                        updated_at = CURRENT_TIMESTAMP
+                        subtitle_color = ?, subtitle_font_family = ?, subtitle_font_size = ?,
+                        subtitle_font_weight = ?, subtitle_text_shadow = ?, subtitle_animation = ?,
+                        subtitle_gradient_enabled = ?, subtitle_gradient_start = ?, subtitle_gradient_end = ?,
+                        subtitle_gradient_direction = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 ");
                 $result = $stmt->execute([
                     $bannerImage, $bannerTitle, $bannerSubtitle,
                     $bannerEnabled, $parallaxEnabled, $overlayOpacity,
-                    $exists['id']
+                    $subtitleColor, $subtitleFontFamily, $subtitleFontSize,
+                    $subtitleFontWeight, $subtitleTextShadow, $subtitleAnimation,
+                    $subtitleGradientEnabled, $subtitleGradientStart, $subtitleGradientEnd,
+                    $subtitleGradientDirection, $exists['id']
                 ]);
                 error_log("BannerSettings::updateSettings - Update result: " . ($result ? 'SUCCESS' : 'FAILED'));
             } else {
@@ -108,12 +148,19 @@ class BannerSettings
                 error_log("BannerSettings::updateSettings - Inserting new record");
                 $stmt = $this->db->prepare("
                     INSERT INTO banner_settings
-                    (banner_image, banner_title, banner_subtitle, banner_enabled, parallax_enabled, overlay_opacity)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    (banner_image, banner_title, banner_subtitle, banner_enabled, parallax_enabled, overlay_opacity,
+                     subtitle_color, subtitle_font_family, subtitle_font_size, subtitle_font_weight,
+                     subtitle_text_shadow, subtitle_animation, subtitle_gradient_enabled,
+                     subtitle_gradient_start, subtitle_gradient_end, subtitle_gradient_direction)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $result = $stmt->execute([
                     $bannerImage, $bannerTitle, $bannerSubtitle,
-                    $bannerEnabled, $parallaxEnabled, $overlayOpacity
+                    $bannerEnabled, $parallaxEnabled, $overlayOpacity,
+                    $subtitleColor, $subtitleFontFamily, $subtitleFontSize,
+                    $subtitleFontWeight, $subtitleTextShadow, $subtitleAnimation,
+                    $subtitleGradientEnabled, $subtitleGradientStart, $subtitleGradientEnd,
+                    $subtitleGradientDirection
                 ]);
                 error_log("BannerSettings::updateSettings - Insert result: " . ($result ? 'SUCCESS' : 'FAILED'));
             }

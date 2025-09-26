@@ -116,7 +116,31 @@
                                 </div>
                             <?php endif; ?>
                             <div class="h2">
-                                <span id="subtitle" data-typewriter-texts="<?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?>"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
+                                <span id="subtitle"
+                                      data-typewriter-texts="<?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?>"
+                                      style="
+                                          <?php if (isset($bannerConfig['subtitle_color'])): ?>
+                                          color: <?= htmlspecialchars($bannerConfig['subtitle_color']) ?> !important;
+                                          <?php endif; ?>
+                                          <?php if (isset($bannerConfig['subtitle_font_family']) && $bannerConfig['subtitle_font_family'] !== 'inherit'): ?>
+                                          font-family: <?= htmlspecialchars($bannerConfig['subtitle_font_family']) ?> !important;
+                                          <?php endif; ?>
+                                          <?php if (isset($bannerConfig['subtitle_font_size'])): ?>
+                                          font-size: <?= htmlspecialchars($bannerConfig['subtitle_font_size']) ?> !important;
+                                          <?php endif; ?>
+                                          <?php if (isset($bannerConfig['subtitle_font_weight'])): ?>
+                                          font-weight: <?= htmlspecialchars($bannerConfig['subtitle_font_weight']) ?> !important;
+                                          <?php endif; ?>
+                                          <?php if (isset($bannerConfig['subtitle_text_shadow']) && $bannerConfig['subtitle_text_shadow'] !== 'none'): ?>
+                                          text-shadow: <?= htmlspecialchars($bannerConfig['subtitle_text_shadow']) ?> !important;
+                                          <?php endif; ?>
+                                          <?php if (isset($bannerConfig['subtitle_gradient_enabled']) && $bannerConfig['subtitle_gradient_enabled']): ?>
+                                          background: linear-gradient(<?= htmlspecialchars($bannerConfig['subtitle_gradient_direction'] ?? '135deg') ?>, <?= htmlspecialchars($bannerConfig['subtitle_gradient_start'] ?? '#ffffff') ?> 0%, <?= htmlspecialchars($bannerConfig['subtitle_gradient_end'] ?? '#f8f9fa') ?> 100%) !important;
+                                          -webkit-background-clip: text !important;
+                                          -webkit-text-fill-color: transparent !important;
+                                          background-clip: text !important;
+                                          <?php endif; ?>
+                                      "><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
                             </div>
                         </div>
 
