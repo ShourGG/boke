@@ -236,6 +236,7 @@
 
                 toggle.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
                     console.log('%c🖱️ Navigation toggle clicked!', 'color: #4caf50; font-weight: bold;');
 
                     const targetSelector = this.getAttribute('data-bs-target');
@@ -243,13 +244,51 @@
 
                     if (target) {
                         const isShown = target.classList.contains('show');
+                        const isCollapsing = target.classList.contains('collapsing');
+
+                        // 防止在动画过程中重复点击
+                        if (isCollapsing) {
+                            console.log('%c⏳ Animation in progress, ignoring click', 'color: #ff9800;');
+                            return;
+                        }
+
+                        console.log('%c🔍 Current state - isShown:', 'color: #2196f3;', isShown);
 
                         if (isShown) {
+                            // 关闭菜单
+                            target.classList.add('collapsing');
                             target.classList.remove('show');
-                            console.log('%c📤 Navigation collapsed', 'color: #4caf50;');
+
+                            // 设置高度为0来触发动画
+                            target.style.height = target.scrollHeight + 'px';
+                            setTimeout(() => {
+                                target.style.height = '0px';
+                            }, 10);
+
+                            // 动画完成后清理
+                            setTimeout(() => {
+                                target.classList.remove('collapsing');
+                                target.style.height = '';
+                            }, 350);
+
+                            console.log('%c📤 Navigation collapsed', 'color: #4caf50; font-weight: bold;');
                         } else {
-                            target.classList.add('show');
-                            console.log('%c📥 Navigation expanded', 'color: #4caf50;');
+                            // 打开菜单
+                            target.classList.add('collapsing');
+                            target.style.height = '0px';
+
+                            setTimeout(() => {
+                                target.style.height = target.scrollHeight + 'px';
+                            }, 10);
+
+                            // 动画完成后添加show类
+                            setTimeout(() => {
+                                target.classList.remove('collapsing');
+                                target.classList.add('show');
+                                target.style.height = '';
+                            }, 350);
+
+                            console.log('%c📥 Navigation expanded', 'color: #4caf50; font-weight: bold;');
                         }
                     } else {
                         console.log('%c❌ Target not found:', 'color: #f44336;', targetSelector);
@@ -258,6 +297,37 @@
             });
 
             console.log('%c✅ Manual navigation handlers added!', 'color: #4caf50; font-weight: bold;');
+
+            // 添加点击外部区域关闭菜单功能
+            document.addEventListener('click', function(e) {
+                const navCollapse = document.querySelector('#navbarNav');
+                const navToggler = document.querySelector('.navbar-toggler');
+
+                if (navCollapse && navCollapse.classList.contains('show')) {
+                    // 检查点击是否在导航区域外
+                    if (!navCollapse.contains(e.target) && !navToggler.contains(e.target)) {
+                        console.log('%c🖱️ Clicked outside navigation, closing menu', 'color: #ff9800;');
+
+                        // 关闭菜单
+                        navCollapse.classList.add('collapsing');
+                        navCollapse.classList.remove('show');
+
+                        navCollapse.style.height = navCollapse.scrollHeight + 'px';
+                        setTimeout(() => {
+                            navCollapse.style.height = '0px';
+                        }, 10);
+
+                        setTimeout(() => {
+                            navCollapse.classList.remove('collapsing');
+                            navCollapse.style.height = '';
+                        }, 350);
+
+                        console.log('%c📤 Navigation closed by outside click', 'color: #4caf50;');
+                    }
+                }
+            });
+
+            console.log('%c✅ Outside click handler added!', 'color: #4caf50; font-weight: bold;');
         }
 
         // 4. 初始化
