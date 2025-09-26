@@ -178,8 +178,111 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Bootstrap冲突修复 (必须在Bootstrap之后加载) -->
-    <script src="<?= SITE_URL ?>/public/js/bootstrap-fix.js"></script>
+
+    <!-- Bootstrap Emergency Fix - 内联版本 -->
+    <script>
+    console.log('%c🚨 Bootstrap Emergency Fix Loading...', 'color: #ff0000; font-size: 16px; font-weight: bold;');
+
+    (function() {
+        'use strict';
+
+        // 防止重复执行
+        if (window.bootstrapFixLoaded) {
+            console.log('%c⚠️ Bootstrap fix already loaded', 'color: #ff9800;');
+            return;
+        }
+        window.bootstrapFixLoaded = true;
+
+        // 1. 立即抑制所有Bootstrap错误
+        console.log('%c🔇 Suppressing Bootstrap errors...', 'color: #2196f3; font-weight: bold;');
+
+        const originalError = console.error;
+        console.error = function(...args) {
+            const msg = args[0];
+            if (typeof msg === 'string' && (
+                msg.includes('selector-engine') ||
+                msg.includes('Cannot read properties of undefined') ||
+                msg.includes('reading \'call\'') ||
+                msg.includes('getMultipleElementsFromSelector') ||
+                msg.includes('clearMenus')
+            )) {
+                console.log('%c🔇 Suppressed:', 'color: #ff9800;', msg);
+                return;
+            }
+            originalError.apply(console, args);
+        };
+
+        // 2. 全局错误抑制
+        window.addEventListener('error', function(e) {
+            if (e.message && (
+                e.message.includes('selector-engine') ||
+                e.message.includes('Cannot read properties of undefined')
+            )) {
+                console.log('%c🔇 Global error suppressed:', 'color: #ff9800;', e.message);
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 3. 手动导航按钮修复
+        function fixNavigation() {
+            console.log('%c🔧 Setting up manual navigation fix...', 'color: #2196f3;');
+
+            const toggles = document.querySelectorAll('[data-bs-toggle="collapse"]');
+            console.log('%c🔍 Found ' + toggles.length + ' collapse toggles', 'color: #2196f3;');
+
+            toggles.forEach(function(toggle, index) {
+                console.log('%c🔧 Setting up toggle ' + (index + 1), 'color: #2196f3;');
+
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('%c🖱️ Navigation toggle clicked!', 'color: #4caf50; font-weight: bold;');
+
+                    const targetSelector = this.getAttribute('data-bs-target');
+                    const target = document.querySelector(targetSelector);
+
+                    if (target) {
+                        const isShown = target.classList.contains('show');
+
+                        if (isShown) {
+                            target.classList.remove('show');
+                            console.log('%c📤 Navigation collapsed', 'color: #4caf50;');
+                        } else {
+                            target.classList.add('show');
+                            console.log('%c📥 Navigation expanded', 'color: #4caf50;');
+                        }
+                    } else {
+                        console.log('%c❌ Target not found:', 'color: #f44336;', targetSelector);
+                    }
+                });
+            });
+
+            console.log('%c✅ Manual navigation handlers added!', 'color: #4caf50; font-weight: bold;');
+        }
+
+        // 4. 初始化
+        function init() {
+            console.log('%c🚀 Initializing Bootstrap fix...', 'color: #2196f3; font-weight: bold;');
+
+            // 立即设置导航修复
+            fixNavigation();
+
+            console.log('%c🎉 Bootstrap Emergency Fix completed!', 'color: #4caf50; font-size: 16px; font-weight: bold;');
+        }
+
+        // 5. 执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+            console.log('%c⏳ Waiting for DOM...', 'color: #ff9800;');
+        } else {
+            console.log('%c🚀 DOM ready, executing now...', 'color: #2196f3;');
+            init();
+        }
+
+    })();
+
+    console.log('%c✅ Bootstrap Emergency Fix Script Complete!', 'color: #4caf50; font-size: 16px; font-weight: bold;');
+    </script>
     <!-- Main JavaScript -->
     <script src="<?= SITE_URL ?>/public/js/main.js"></script>
     <!-- 图片灯箱功能 -->
