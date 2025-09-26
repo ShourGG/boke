@@ -107,13 +107,17 @@ class TypewriterEffect {
     setupInitialState() {
         // 清空文字内容
         this.subtitleEl.innerHTML = '<span class="typewriter-text"></span><span class="typewriter-cursor">' + this.options.cursorChar + '</span>';
-        
+
         this.textSpan = this.subtitleEl.querySelector('.typewriter-text');
         this.cursorSpan = this.subtitleEl.querySelector('.typewriter-cursor');
-        
+
         // 设置光标样式
         this.cursorSpan.style.opacity = '1';
         this.cursorSpan.style.animation = 'none';
+
+        // 添加激活类，显示打字机效果
+        this.subtitleEl.classList.add('typewriter-active');
+        this.subtitleEl.style.opacity = '1';
     }
     
     startCursorBlink() {
@@ -225,35 +229,35 @@ class TypewriterEffect {
 // 全局初始化函数
 function initTypewriterEffect() {
     console.log('%c🎬 Initializing Banner Typewriter Effect...', 'color: #2196f3; font-weight: bold;');
-    
+
     // 等待DOM完全加载
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initTypewriterEffect, 1000); // 延迟1秒确保其他脚本加载完成
+            setTimeout(initTypewriterEffect, 50); // 最小延迟50ms
         });
         return;
     }
-    
+
     // 检查是否在首页且有Banner
     const banner = document.querySelector('#banner');
     const subtitleEl = document.querySelector('#subtitle');
-    
+
     if (!banner || !subtitleEl) {
         console.log('%c⚠️ Banner or subtitle not found, skipping typewriter effect', 'color: #ff9800;');
         return;
     }
-    
-    // 创建打字机效果实例
+
+    // 立即启动打字机效果（CSS已经预隐藏了文字）
     window.bannerTypewriter = new TypewriterEffect({
         typeSpeed: 80,           // 打字速度
-        deleteSpeed: 40,         // 删除速度  
+        deleteSpeed: 40,         // 删除速度
         pauseTime: 3000,         // 每行完成后暂停3秒
         cursorChar: '|',         // 光标字符
         cursorBlinkSpeed: 600,   // 光标闪烁速度
         loop: true,              // 循环播放
         debug: false             // 调试模式
     });
-    
+
     console.log('%c🎉 Banner Typewriter Effect started!', 'color: #4caf50; font-size: 16px; font-weight: bold;');
 }
 

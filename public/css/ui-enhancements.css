@@ -168,6 +168,13 @@
     min-height: 1.2em; /* 防止高度跳动 */
     display: inline-block;
     vertical-align: baseline;
+    opacity: 0; /* 初始隐藏，防止闪烁 */
+    transition: opacity 0.3s ease; /* 平滑显示 */
+}
+
+/* 打字机效果激活后显示 */
+#subtitle.typewriter-active {
+    opacity: 1;
 }
 
 /* 打字机效果的平滑过渡 */
