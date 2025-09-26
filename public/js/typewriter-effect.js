@@ -86,12 +86,8 @@ class TypewriterEffect {
                 } else if (originalText.includes('\n')) {
                     this.options.texts = originalText.split('\n').map(text => text.trim());
                 } else {
-                    // 单行文字，可以设置一些默认的多行文字
-                    this.options.texts = [
-                        originalText,
-                        'Welcome to Koi Blog',
-                        'A personal blog with website directory'
-                    ];
+                    // 单行文字，只显示这一行文字
+                    this.options.texts = [originalText];
                 }
             }
         }
@@ -99,8 +95,12 @@ class TypewriterEffect {
         // 过滤空文字
         this.options.texts = this.options.texts.filter(text => text.length > 0);
 
-        if (this.options.debug) {
-            console.log('%c📝 Texts to display:', 'color: #ff9800;', this.options.texts);
+        // 如果只有一行文字，禁用循环模式
+        if (this.options.texts.length === 1) {
+            this.options.loop = false;
+            console.log('%c📝 Single text detected, loop disabled:', 'color: #ff9800;', this.options.texts[0]);
+        } else {
+            console.log('%c📝 Multiple texts to display:', 'color: #ff9800;', this.options.texts);
         }
     }
     
@@ -173,11 +173,18 @@ class TypewriterEffect {
                 
                 this.typeInterval = setTimeout(() => this.typeText(), this.options.typeSpeed);
             } else {
-                // 当前行打字完成，暂停后开始删除
-                this.typeInterval = setTimeout(() => {
-                    this.isDeleting = true;
-                    this.typeText();
-                }, this.options.pauseTime);
+                // 当前行打字完成
+                if (!this.options.loop && this.options.texts.length === 1) {
+                    // 单行文字且不循环，保持显示
+                    console.log('%c✅ Single text typing completed, keeping displayed', 'color: #4caf50; font-weight: bold;');
+                    return;
+                } else {
+                    // 多行文字或循环模式，暂停后开始删除
+                    this.typeInterval = setTimeout(() => {
+                        this.isDeleting = true;
+                        this.typeText();
+                    }, this.options.pauseTime);
+                }
             }
         } else {
             // 删除模式

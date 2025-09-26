@@ -116,7 +116,7 @@
                                 </div>
                             <?php endif; ?>
                             <div class="h2">
-                                <span id="subtitle" data-typewriter-texts="<?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?>|Welcome to Koi Blog|A personal blog with website directory|Discover amazing content and resources"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
+                                <span id="subtitle" data-typewriter-texts="<?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?>"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
                             </div>
                         </div>
 
