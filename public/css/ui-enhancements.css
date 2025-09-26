@@ -150,6 +150,48 @@
         0 1px 0 rgba(0, 0, 0, 0.9);
 }
 
+/* ===== TYPEWRITER EFFECT STYLES ===== */
+.typewriter-text {
+    display: inline;
+    color: inherit;
+}
+
+.typewriter-cursor {
+    display: inline;
+    color: #ffffff;
+    font-weight: 300;
+    animation: none; /* 由JavaScript控制闪烁 */
+}
+
+/* 打字机容器样式 */
+#subtitle {
+    min-height: 1.2em; /* 防止高度跳动 */
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+/* 打字机效果的平滑过渡 */
+.banner-text .h2 #subtitle {
+    transition: none; /* 禁用过渡效果，让打字机效果更自然 */
+}
+
+/* 响应式打字机效果 */
+@media (max-width: 768px) {
+    .typewriter-cursor {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .typewriter-cursor {
+        font-size: 0.8em;
+    }
+
+    #subtitle {
+        min-height: 1em;
+    }
+}
+
 .banner-text .h2 {
     font-weight: 400;
     opacity: 0.95;

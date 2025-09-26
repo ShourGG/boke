@@ -116,7 +116,7 @@
                                 </div>
                             <?php endif; ?>
                             <div class="h2">
-                                <span id="subtitle"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
+                                <span id="subtitle" data-typewriter-texts="<?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?>|Welcome to Koi Blog|A personal blog with website directory|Discover amazing content and resources"><?= htmlspecialchars($bannerConfig['banner_subtitle'] ?: (isset($subtitle) ? $subtitle : SITE_DESCRIPTION)) ?></span>
                             </div>
                         </div>
 
@@ -362,5 +362,7 @@
     <script src="<?= SITE_URL ?>/public/js/theme-toggle.js"></script>
     <!-- Font Awesome 强制修复脚本 -->
     <script src="<?= SITE_URL ?>/public/js/fontawesome-fix.js"></script>
+    <!-- Banner打字机效果 -->
+    <script src="<?= SITE_URL ?>/public/js/typewriter-effect.js"></script>
 </body>
 </html>
